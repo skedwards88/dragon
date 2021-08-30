@@ -2,36 +2,49 @@
 
 - reputation: int
 - gold: int
+- actions: int ?
 - time in cave: int, increases whenever move to cave location/sublocation
 - unsinged body parts: [eyebrows, hair, nose, ears, heels]
+- singed body parts: []
 - fire: bool
 - naked: bool
 - squirrel dead: bool
+- horse dead: bool
+- horse tethered: bool
+- horse mounted: bool
 - poisoned: bool
 - dragon sleep: bool
 - poopy: bool
+- handkerchief damp: bool
+- masked: bool
+- baby cough: bool
+- played for adolescent: bool
 
 ## Items
 
 - All items
   - Actions
     - Take (if item location is not inventory). You now have {item description}.
-    - Drop/Give (if item is in inventory) (item location changes to player location). You drop/give the {item name} at/in/to the {player location}.
-    - Use (if item is in inventory)
+    - Drop (if item is in inventory) (item location changes to player location). You drop the {item name} at/in the {player location}.
+    - Give (if item is in inventory) (item location changes to player location). You give the {item name} at/in/to the {player location}. can give to any sentient item at location or in inventory todo. What happens if you give something and then want it back--should you only be able to give things that are replenishable (apples, berries) or meant to be given? If you try to give something that isn't meant to ge given, should the response be {recipient} doesn't want this?
+    - Use (if item is in inventory). Use has item specific verb.
 
 - Lute
   - Location starts as room
   - Take: The instrument feels familiar in your hands.
-  - Use:
+  - Use (play):
     - todo
+    - if location is adolescent and adolescent is crying/ if crying adolescent at location
+      - if have not played for adolescent: The music seems to cheer the youth up. Can you just do infinitely for increased reputation? Reputation + 1
+      - else: They appreciate the music, but don't seem keen to listen all day.
     - else: You play a beautiful melody.
 
 - Clothes
   - Location starts as wardrobe
-  - Use: naked = false. You put your clothes on.
+  - Use (wear): if naked. You put your clothes on. naked = false.
   - Drop: naked = true.
     - You strip down and drop your clothes at/in the {player location}
-    - If stream or fountain: In addition to above: Your clothes look much cleaner now.
+    - If stream or fountain: In addition to above: Your clothes look much cleaner now. todo lose reputation if at fountain (drinking water)?
 
 - Handkerchief
   - Location starts as null
@@ -40,14 +53,14 @@
     - else: handkerchief
   - Actions
     - Drop
-      - if player location is fountain, damp = true
-    - Use
-      - if player location is manor or nursery and if damp: you hold the handkerchief over your nose and mouth. The damp cloth lets you breath in the smoke and heat.
-      - if player location is manor or nursery and if not damp: you hold the handkerchief over your nose and mouth. On its own, it does nothing to block the smoke.
-      - else: You wipe your brow | You blow your nose
-  - Location: Inventory or place or person
-  - Damp: bool
-  - in use: bool
+      - if player location is fountain/stream/puddle, damp = true
+    - Use (wear)
+      - You tie the handkerchief over your nose and mouth. masked = true
+      - if player location is manor or nursery and if damp: The damp cloth lets you breath in the smoke and heat.
+      - if player location is manor or nursery and if not damp: On its own, it does nothing to block the smoke.
+      - if player location is defecatory: Even with it, the stench reaches your nose. ?
+  - Give:
+    - if recipient is adolescent: You offer the handkerchief that you saw the adolescent drop. "Th-thank you," they sob. She tells you that she was meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, she set the mayor's house on fire, not realizing that the baby was trapped inside. Reputation + 1
 
 - Baby
   - Location starts in nursery
@@ -57,17 +70,16 @@
     - Take:
       - If item location is nursery: You pick up the baby from the crib. The baby coughs as you take it from the open window. baby location = inventory.
     - Drop:
-      - If player location is balcony and baby location is inventory: You drop the baby off the balcony. The crowd below catches the baby. baby location = fountain.
-      - else: You drop the crying baby. It starts crying even louder.
+      - If player location is nursery window and baby location is inventory: You drop the baby out the window. The crowd below catches the baby. baby location = fountain.
+      - else: You drop the crying baby. It cries even louder.
     - Use: it's unclear what use this item has
-  - Cough: bool
 
 - Sword
   - Location starts in smithy
   - Actions:
     - Admire:
       - if sword location is smithy and own is false: You admire the sword. The smith sees you admiring the sword and offers to sell it at a discount. cost = 40 gold.
-    - Take: (if item location is smithy and own is false) You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The smithy grabs the sword from you and returns it to the table." Reputation -1. item location = smithy
+    - Take: (if item location is smithy) You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The smithy grabs the sword from you and returns it to the table." Reputation -1. item location = smithy
     - Buy with gold (if own is false and gold > cost): sword location is now inventory. Gold -50. own = true.
     - Buy with lute (if own is false and lute in inventory): sword location is now inventory. lute location = smithy. own = true.
     - Use
@@ -77,25 +89,27 @@
 
 - Horse
   - Location starts in south gate
+  - Sentient (can give items to)
   - Actions
     - Take:
-      - location does not change to inventory when take
-      - if horse not dead: You try to grab the horse's reins, but it evades you.
-      - if horse dead: This dead horse is too heavy to carry.
+      - if horse not dead and horse not tethered: You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. horse location does not change.
+      - if horse dead: This dead horse is too heavy to carry. horse location does not change.
+      - if horse tethered: normal take
     - Drop:
-      - if in use: You unmount the horse. need to tie up? in use = false
+      - You (if mounted: unmount the horse and) let go of the horse's reins. tethered = false
       - if location = clearing: The horse immediately starts to munch on the berries. It starts to foam at the mouth, then falls over dead.
       - else:
     - Use:
-      - if not in use: You mount the horse. Much easier than walking! in_use = true
-      - if in use: This is a one trick pony. He's already carrying you. What more do you want him to do?!
-    - In use: bool
+      - if not mounted: verb is mount. You mount the horse. Much easier than walking! mounted = true
+      - if mounted: Verb is unmount. You unmount the horse, keeping hold of the horse's reins.
 
 - Apple ? not sure if should be able to take multiple (would need count and would need to override take so that can take if already have item)
   - Location starts in inn
   - Actions
     - Drop
       - if player location = s gate and horse location = s gate: This horse seems very interested in food. The horse walks over to eat the apple. While he is preoccupied, you grab the reins. apple location = inn.
+    - Give
+      - if recipient is horse: This horse seems very interested in food. The horse walks over to eat the apple. While he is preoccupied, you grab the reins. horse location = inventory. apple location = inn ?.
     - Use
       - if player location = s gate and horse location = s gate: This horse seems very interested in food. The horse walks over to eat the apple. While he is preoccupied, you grab the reins. apple location = inn.
       - else: you eat the apple? apple location = inn.
@@ -127,96 +141,130 @@
 
 ## All locations
 
+- Items (list items at location; click on item to interact)
 - Leave (give options to connected locations)
 - Inventory (show items. once select item, show actions for item)
-- Items (list items at location; click on item to interact)
 
 ### Room
 
 You are in a room with a bed. A window faces the west. A wardrobe sits on the north side of the room, opposite a door.
-if lute location is room: At the foot of the bed is a lute.
+if lute location is room: A lute leans against the bed.
 if fire: You smell fire and hear screams in the distance.
+
+connections: window, wardrobe, door
 
 ### Window
 
-if fire: Through the window, you can see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion.
-else: Through the window, you see the charred remains of a mansion.
+if fire: Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion.
+else: Through the window, you see the charred remains of a nearby mansion.
+
+connections: room
 
 ### Wardrobe
 
-You open the wardrobe. Inside, there is a mirror (if clothes location is wardrobe: and a set of clothes).
+Inside the wardrobe, there is a mirror (if clothes location is wardrobe: and a set of clothes).
+
+connections: room, mirror
 
 ### Mirror
 
 You look into the mirror.
 if naked: You're naked!
+if poopy: Your clothes are covered in dragon poop.
+if singed body parts: your {body parts} are singed
 else: you are quite good looking, if you do say so yourself
-todo maybe modify based on dragon poop, etc.
+
+connections: wardrobe
 
 ### Inn
 
 You enter what appears to be the common room of an inn. A bowl of apples sits out for inn guests to enjoy.
-if naked: The inn keeper laughs, "Haven't you hear of clothes?" Reputation -1.
+if naked: The inn keeper laughs, "Haven't you heard of clothes?" Reputation -1.
 todo should nakedness be a factor in all interactions?
+
+connections: room, courtyard
 
 ### Courtyard
 
-You are in a small courtyard. The entrance to the inn sits at the north side. To the west you see a fountain. To the east you hear sounds of a smithy.
+You are in a small courtyard. The entrance to the inn sits at the north side. To the east you hear sounds of a smithy. To the west you see a fountain. (if fire: Beyond the fountain, you see flames and smoke.)
 
 - If handkerchief location null: An adolescent runs west to east, crying as they flee. They drop a handkerchief in their distress. (Then handkerchief location is courtyard.)
 
+connections: inn, fountain, smithy
+
 ### Fountain
 
-You are at a fountain. In the center is a statue of a dragon surrounded by cowering people. To the east is a courtyard. To the north is a manor.
+You stand at the edge of a fountain. In the center is a statue of a dragon surrounded by cowering people. To the east is a courtyard. To the north is a manor.
 
 - If fire: The manor is on fire and surrounded by a crowd of people.
   - if baby location is nursery: You hear a voice sobbing, "My baby! My baby is trapped in the nursery."
-  - if baby location is inventory: You hear a voice: "My baby! You saved my baby! But my dear baby has a terrible cough from you carrying it through the smoke. Regardless, take this gold as thanks." As you take the gold and praise, you see the manor collapse. Finally, the crowd is able to douse the flames. fire = false. Reputation +1. Gold +50
-  - if baby location is fountain: "Thank you for saving my baby! Please take this gold as thanks." As you take the gold and praise, you see the manor collapse. Finally, the crowd is able to douse the flames. fire = false. Reputation +2. Gold +50.
+  - if baby location is inventory: You hear a voice: "My baby! You saved my baby! But my dear baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." As you take the gold and praise, you see the roof collapse. Finally, the crowd is able to douse the flames. fire = false. Reputation +1. Gold +50
+  - if baby location is fountain: "Thank you for saving my baby! Please take this gold as thanks." As you take the gold and praise, you see the roof collapse. Finally, the crowd is able to douse the flames. fire = false. Reputation +2. Gold +50.
 - If not fire: The manor is a framework of charred wood.
+
+connections: courtyard, manor
 
 ### Manor
 
 - if fire: You stand in the entrance of the burning manor.
   - if baby location is nursery: You hear a baby crying upstairs.
   - if handkerchief is not in use and damp: Your throat burns from the smoke and heat. You can't breath this air.
-  - if baby location is inventory: cough = true
-- if no fire: The manor seems like it is about to collapse.
+  - if baby location is inventory: baby cough = true
+- if no fire: The manor seems like it is about to collapse further.
 - For items in manor: List items in manor
+
+connections: fountain, nursery
 
 ### Nursery
 
-- if fire: You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. Outside the window, you see the gathered crowd.
-  - if handkerchief is not in use and damp: You collapse from the smoke. Game over.
-- if no fire: The manor collapses on you. Game over.
+- if fire and baby location is nursery: You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke.
+- if fire and baby location is not nursery: You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room.
+  - if handkerchief is not in use and damp: The smoke is suffocating. Unable to bear it any longer, you run from the mansion. player location = fountain.
+- if no fire: Part of the manor collapses, burying you in rubble. The townsfolk dig you out, scolding you for your carelessness. Reputation -2. player location = fountain.
 
-## Balcony
+connections: manor, nursery window
+
+## Nursery window
+
+Below the window, you see the gathered crowd.
+
+connections: nursery
 
 ## Smithy
 
-You stand in front of the blacksmith shop. To the north and south are city gates.
+You stand in front of a blacksmith shop. To the north and south are city gates. To the west is a courtyard.
 
 - if sword in smithy: In front of the shop, you see a sword gleaming as if someone was recently polishing it. The blacksmith is busy but acknowledges you with a nod.
+
+connections: north gate, south gate, courtyard
+
+todo need to work out interactions
 
 ## South Gate
 
 You are standing at the south gate, which opens to a wide field. There is no road in sight. To the north, you hear sounds of the smithy.
 
-- if horse at south gate: A horse is grazing in the field. A sign reads "Free horse (if you can catch it)"
+- if horse location is south gate: A horse is grazing in the field. A sign reads "Free horse (if you can catch it)"
 
-# North Gate
+connections: smithy
+
+## North Gate
 
 You are standing at the north gate. To the north, you see a road leading up a mountain.
 
 - if ?: The adolescent that you saw earlier is standing at the gate, still crying.
 
-At N. Gate you encounter young woman. She doesn’t want to talk. You can give her back her handkerchief and/or play a song on the lute for increased reputation. You can leave North to get to the Long Road.
+should adolescent be a person at location or a location that you move to? does it make a difference? Or can it just be a state of this location? todo
 
-## Road 1
+## Road 1 todo
 
-From Long Road, it takes one turn to get to stream if on horse, else you have to select “keep walking” a few times, adding 5 time each.
+You walk along a road. To the south, you see the south gate. To the north, the road leads up a mountain.
+
+connections: road 1 unless horse mounted, then road 3
 
 ## Road 2
+
+You walk along a long road. You imagine the road would feel shorter with a horse. To the south, the road leads back to the city. To the north, the road leads up a mountain.
 
 ## Road 3
 
@@ -271,7 +319,7 @@ If time in cave = 4 or poopy+hidden+berries in puddle: The dragon prowls into th
   if poop and hidden: The dragon takes a drink from the water.
     if berries in water: dragon is poisoned/weakened/foam smothers its flames
     else: The dragon exits the defecatory. You hear coins clanking as it settles back into its sea of treasure.
-    
+
 
 ## Puddle
 
