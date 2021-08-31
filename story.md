@@ -173,7 +173,9 @@ connections: wardrobe
 
 You enter what appears to be the common room of an inn. A bowl of apples sits out for inn guests to enjoy.
 if naked: The inn keeper laughs, "Haven't you heard of clothes?" Reputation -1.
-todo should nakedness be a factor in all interactions?
+
+fixme: only one apple in the game. if the horse runs away after, you just make due without.
+fixme: if stay naked, you get ridiculed at every interaction.
 
 connections: room, courtyard
 
@@ -254,9 +256,9 @@ connections: blacksmith shop
 
 You are standing at the north gate. To the north, you see a road leading up a mountain.
 
-- if ?: The adolescent that you saw earlier is standing at the gate, still crying.
+fixme: adolescent is a sentient whose location is north gate.
 
-should adolescent be a person at location or a location that you move to? does it make a difference? Or can it just be a state of this location? todo
+- if crying: The adolescent that you saw earlier is standing at the gate, still crying.
 
 connections: blacksmith shop, road 1
 
@@ -303,12 +305,13 @@ connections: clearing
 
 location = clearing
 The wizard looks at you though bushy eyebrows.
-if score location is wizard: I have a musical score that will be useful. I would trade it for (if sword in inventory: your sword or) a share of the treasure that you seek. Actions:
+if score location is wizard: I have a musical score that will be useful. I would trade it for (if sword in inventory: your sword or) a share of the treasure that you seek. fixme add sword return policy. Actions:
   trade sword for score: sword location is wizard. score location is inventory.
   trade sword for promise: promise is true. score location is inventory.
 if horse in inventory: I do not think your horse will make it much further on this road. Would you like me to hold your horse?
   Actions: give horse to wizard. horse location is wizard. tethered = true.
-if horse location is wizard: Would you like your horse? Action: take horse. horse location = inventory, tethered = true.
+if horse location is wizard: Would you like your horse? Action: take horse. horse location = inventory, tethered = true. fixme: just have horse at wizard location that you can take?
+fixme: add way to exchange score for sword.
 
 connections: clearing
 
@@ -344,10 +347,11 @@ If dragon not poisoned and time in cave = 4 or poopy+hidden+berries in puddle: T
   when singe: It breaths fire at you singing your {body part pop} as you run away. body part pop, die if none left. player location = cliff
 
 If dragon poisoned:
-  The dragon is in a rage, stomping around the cave.
+  The dragon is slower so you don't get singed on sight, but it will singe you if you try to use the sword. You can take the treasure, but you will get singed. To use the sword and/or take treasure without getting singed, you need to play the music to put it to sleep.
 
-  todo You can then play a song (from musical score) to put the dragon to sleep. Return to Wizard to trade back for sword if needed, then slay the dragon. [discuss branching points with Colin here]
-
+If dragon asleep:
+  You can use the sword to kill it
+  You can take the treasure.
 
 ## Puddle
 
