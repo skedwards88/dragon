@@ -57,7 +57,7 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("cliff");
+  const [playerLocation, setPlayerLocation] = useState("room");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
   
@@ -608,18 +608,27 @@ function App() {
             Inventory
           </button>
         </div>
-        <table className="stats">
-          <tr className="stat">
-            <td className="statName">Reputation: </td>
-            <td>{gameState.reputation}</td>
-          </tr>
-          <tr className="stat">
-          <td className="statName">Gold: </td>
-            <td>{gameState.gold}</td>
-          </tr>
-        </table>
+<Stats/>
       </div>
     );
+  }
+
+  function Stats() {
+    return (
+      <table className="stats">
+      <tbody>
+      <tr className="stat">
+        <td className="statName">Reputation: </td>
+        <td>{gameState.reputation}</td>
+      </tr>
+      <tr className="stat">
+      <td className="statName">Gold: </td>
+        <td>{gameState.gold}</td>
+      </tr>
+      </tbody>
+    </table>
+
+    )
   }
 
   function Consequence() {
@@ -686,6 +695,36 @@ function App() {
         >
           Close Inventory
         </button>
+      </div>
+    );
+  }
+
+  if (gameState.reputation <= 0) {
+    const gameEndText = "Even your pride has its limits. With what little reputation you have left, you flee the town."
+    return (
+      <div className="App">
+        <div className="description">{gameEndText}</div>
+        <button
+          className="close" // todo make this reset the game
+        >
+          PLAY AGAIN
+        </button>
+        <Stats/>
+      </div>
+    );
+  }
+
+  if (playerLocation === "gate" && gameState.earnedTreasureAmount) {
+    const gameEndText = "TODO"
+    return (
+      <div className="App">
+        <div className="description">{gameEndText}</div>
+        <button
+          className="close" // todo make this reset the game
+        >
+          PLAY AGAIN
+        </button>
+        <Stats/> // todo show max stats
       </div>
     );
   }
