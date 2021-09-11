@@ -52,7 +52,7 @@ const room = new Location({
       text += "A lute leans against the bed. ";
     }
 
-    if (props.gameState.fire) {
+    if (props.gameState.manorFire) {
       text += "You smell fire and hear screams in the distance. ";
     }
     return text;
@@ -66,7 +66,7 @@ const window = new Location({
   },
   dropPreposition: "at", // todo could change to out and have anything dropped out any window end in location below
   getDescription: function (props) {
-    return props.gameState.fire
+    return props.gameState.manorFire
       ? "Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion. "
       : "Through the window, you see the charred remains of a nearby mansion. ";
   },
@@ -136,7 +136,7 @@ const courtyard = new Location({
   dropPreposition: "in",
   getDescription: function (props) {
     return `You are in a small courtyard. The entrance to the inn sits at the north side. To the east you hear sounds of a blacksmith shop. To the west you see a fountain. ${
-      props.gameState.fire
+      props.gameState.manorFire
         ? "Beyond the fountain, you see flames and smoke. "
         : ""
     }${
@@ -162,7 +162,7 @@ const fountain = new Location({
     let text =
       "You stand at the edge of a fountain. In the center is a statue of a dragon surrounded by cowering people. To the east is a courtyard. To the north is a manor. ";
 
-    if (props.gameState.fire) {
+    if (props.gameState.manorFire) {
       text += "\n\nThe manor is on fire and surrounded by a crowd of people. ";
     } else {
       text += "\n\nThe manor is a framework of charred wood. ";
@@ -196,7 +196,7 @@ const fountain = new Location({
   },
   onExitGameStateEffect: function (props) {
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
-      return { fire: false, receivedBabyReward: true };
+      return { manorFire: false, receivedBabyReward: true };
     }
   },
   onEnterItemLocationEffect: function (props) {
@@ -215,16 +215,16 @@ const manor = new Location({
   id: "manor",
   dropPreposition: "in",
   getConnections: function (props) {
-    return props.gameState.fire &&
+    return props.gameState.manorFire &&
       props.gameState.handkerchiefDamp &&
-      props.gameState.masked
+      props.gameState.playerMasked
       ? ["nursery", "fountain"]
       : ["fountain"]; // todo allow to continue if not masked but developcough/lose reputation. todo could instead allow to continue if no fire but have manor collapse
   },
   getDescription: function (props) {
     let text = "";
 
-    if (props.gameState.fire) {
+    if (props.gameState.manorFire) {
       text += "You stand in the entrance of the burning manor. ";
     } else {
       text += "You stand in the charred remains of the manor. ";
@@ -235,17 +235,17 @@ const manor = new Location({
     }
 
     if (
-      props.gameState.fire &&
-      (!props.gameState.handkerchiefDamp || !props.gameState.masked)
+      props.gameState.manorFire &&
+      (!props.gameState.handkerchiefDamp || !props.gameState.playerMasked)
     ) {
       text +=
         "\n\nYour throat burns from the smoke and heat. You can't breath this air. ";
     }
 
     if (
-      props.gameState.fire &&
+      props.gameState.manorFire &&
       props.gameState.handkerchiefDamp &&
-      props.gameState.masked
+      props.gameState.playerMasked
     ) {
       text +=
         "\n\nAlthough the smoke is thick, the damp handkerchief over your mouth helps you breath. ";
@@ -270,7 +270,7 @@ const nursery = new Location({
     return ["nurseryWindow", "manor"];
   },
   getDescription: function (props) {
-    if (props.gameState.fire) {
+    if (props.gameState.manorFire) {
       if (props.itemLocations.nursery.has("baby")) {
         return "You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. ";
       } else {
@@ -296,7 +296,7 @@ const nurseryWindow = new Location({
     return ["nursery"];
   },
   getDescription: function (props) {
-    return props.gameState.fire
+    return props.gameState.manorFire
       ? "Below the window, you see the gathered crowd. "
       : "You see the charred remains of the manor below you. ";
   },
@@ -504,13 +504,31 @@ const road3 = new Location({
     }
   },
   getDescription: function (props) {
-    return `You stand at the end of a long road. The city gates sit to the south. To the north, you see mountains. 
-    
-    ${
-      props.gameState.horseMounted
-        ? "\n\nThankfully, the horse lets you travel quickly. "
-        : ""
-    }`;
+    if (
+      props.gameState.promisedTreasure &&
+      props.gameState.earnedTreasureAmount
+    ) {
+      return 'As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke.';
+    } else {
+      let text = `You stand at the end of a long road. The city gates sit to the south. To the north, you see mountains. `
+
+      if (props.gameState.horseMounted) {
+        text += "\n\nThankfully, the horse lets you travel quickly. "
+      }
+      return text
+    }
+  },
+
+  onEnterGameStateEffect: function (props) {
+    if (
+      props.gameState.promisedTreasure &&
+      props.gameState.earnedTreasureAmount
+    ) {
+      return {
+        cursed: true,
+        gold: props.gameState.gold - props.gameState.earnedTreasureAmount,
+      };
+}
   },
 });
 
@@ -715,7 +733,7 @@ const caveEntrance = new Location({
     }
 
     if (
-      (!props.gameState.poopy || props.gameState.naked) &&
+      (!props.gameState.clothesPoopy || props.gameState.naked) &&
       !props.gameState.dragonAsleep
     )
       text += 'From the east room, a voice booms "WHO DO I SMELL?"';
@@ -761,7 +779,7 @@ const puddle = new Location({
       // if dragon is not poisoned and time is enough to trigger dragon entry and you are not poopy+hidden, you get singed
       ...(!props.gameState.dragonPoisoned &&
         (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.poopy ||
+        (!props.gameState.clothesPoopy ||
           props.gameState.naked ||
           props.playerLocation !== "boulder") && {
           singeCount: props.gameState.singeCount + 1,
@@ -796,14 +814,14 @@ const boulder = new Location({
       // if dragon is not poisoned and time is enough to trigger dragon entry and you are not poopy+hidden, you get singed
       ...(!props.gameState.dragonPoisoned &&
         (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.poopy ||
+        (!props.gameState.clothesPoopy ||
           props.gameState.naked ||
           props.playerLocation !== "boulder") && {
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         }),
       ...(props.itemLocations.puddle.has("berries") &&
-        props.gameState.poopy &&
+        props.gameState.clothesPoopy &&
         !props.gameState.naked &&
         props.playerLocation === "boulder" && { dragonPoisoned: true }),
     };
@@ -813,7 +831,7 @@ const boulder = new Location({
 
     if (
       props.itemLocations.puddle.has("berries") &&
-      props.gameState.poopy &&
+      props.gameState.clothesPoopy &&
       !props.gameState.naked &&
       props.playerLocation === "boulder"
     ) {
@@ -845,7 +863,7 @@ const dung = new Location({
       // if dragon is not poisoned and time is enough to trigger dragon entry and you are not poopy+hidden, you get singed
       ...(!props.gameState.dragonPoisoned &&
         (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.poopy ||
+        (!props.gameState.clothesPoopy ||
           props.gameState.naked ||
           props.playerLocation !== "boulder") && {
           singeCount: props.gameState.singeCount + 1,
@@ -922,7 +940,7 @@ function dragonDescription(props) {
   // If the dragon is not due to return yet but the poison conditions are met
   if (
     timeInterval < 3 &&
-    props.gameState.poopy &&
+    props.gameState.clothesPoopy &&
     !props.gameState.naked &&
     props.playerLocation === "boulder" &&
     props.itemLocations.puddle.has("berries")
@@ -933,7 +951,7 @@ function dragonDescription(props) {
 
   if (
     timeInterval === 3 ||
-    (props.gameState.poopy &&
+    (props.gameState.clothesPoopy &&
       !props.gameState.naked &&
       props.playerLocation === "boulder" &&
       props.itemLocations.puddle.has("berries"))
@@ -941,26 +959,26 @@ function dragonDescription(props) {
     text += "The dragon prowls into the cavern. ";
     // not poop and not hidden
     if (
-      (!props.gameState.poopy || props.gameState.naked) &&
+      (!props.gameState.clothesPoopy || props.gameState.naked) &&
       props.playerLocation !== "boulder"
     ) {
       text += `"I KNEW I SMELT A HUMAN." The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
     } // poop and not hidden
     else if (
-      props.gameState.poopy &&
+      props.gameState.clothesPoopy &&
       !props.gameState.naked &&
       props.playerLocation !== "boulder"
     ) {
       text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
     } // not poop and hidden
     else if (
-      (!props.gameState.poopy || props.gameState.naked) &&
+      (!props.gameState.clothesPoopy || props.gameState.naked) &&
       props.playerLocation === "boulder"
     ) {
       text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peaks around the boulder and spots you. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
     } // poop and hidden
     else if (
-      props.gameState.poopy &&
+      props.gameState.clothesPoopy &&
       !props.gameState.naked &&
       props.playerLocation === "boulder"
     ) {

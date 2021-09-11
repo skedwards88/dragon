@@ -151,7 +151,7 @@ const clothes = new Item({
   id: "clothes",
   spawnLocation: "wardrobe",
   getDescription: function (props) {
-    return props.gameState.poopy ? "poopy set of clothes" : "set of clothes";
+    return props.gameState.clothesPoopy ? "poopy set of clothes" : "set of clothes";
   },
 
   getUseVerb: function (props) {
@@ -162,7 +162,7 @@ const clothes = new Item({
       ? "You put on the clothes. "
       : "You strip down. ";
 
-    if (props.gameState.poopy) {
+    if (props.gameState.clothesPoopy) {
       text +=
         "You wrinkle your nose in distaste. Certainly you are not fit for fine company anymore.";
     }
@@ -187,9 +187,9 @@ const clothes = new Item({
   },
   getCustomDropGameEffect: function (props) {
     if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
-      return { naked: true, poopy: false }; // todo lose reputation if at fountain (drinking water)?
+      return { naked: true, clothesPoopy: false }; // todo lose reputation if at fountain (drinking water)?
     } else if (props.playerLocation === "dung") {
-      return { naked: true, poopy: true };
+      return { naked: true, clothesPoopy: true };
     } else {
       return { naked: true };
     }
@@ -217,14 +217,14 @@ const clothes = new Item({
 
     if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
       return new ItemInteraction({
-        gameEffect: { naked: true, poopy: false },
+        gameEffect: { naked: true, clothesPoopy: false },
         description: writeDescription(props),
       });
     }
 
     if (props.playerLocation === "dung") {
       return new ItemInteraction({
-        gameEffect: { naked: true, poopy: true },
+        gameEffect: { naked: true, clothesPoopy: true },
         description: writeDescription(props),
       });
     }
@@ -314,17 +314,17 @@ const handkerchief = new Item({
       : "handkerchief";
   },
   getUseVerb: function (props) {
-    return props.gameState.masked ? "Remove" : "Wear";
+    return props.gameState.playerMasked ? "Remove" : "Wear";
   },
   getCustomUseDescription: function (props) {
     let text = "";
-    props.gameState.masked
+    props.gameState.playerMasked
       ? (text += "You remove the handkerchief from your nose and mouth. ")
       : (text += "You tie the handkerchief around your nose and mouth. ");
 
     if (
       ["manor", "nursery", "nurseryWindow"].includes(props.playerLocation) &&
-      props.gameState.fire &&
+      props.gameState.manorFire &&
       props.gameState.handkerchiefDamp
     ) {
       text += "The damp handkerchief lets you breath more easily. ";
@@ -332,7 +332,7 @@ const handkerchief = new Item({
 
     if (
       ["manor", "nursery", "nurseryWindow"].includes(props.playerLocation) &&
-      props.gameState.fire &&
+      props.gameState.manorFire &&
       !props.gameState.handkerchiefDamp
     ) {
       text += "On its own, the handkerchief does little to block the smoke. ";
@@ -347,16 +347,16 @@ const handkerchief = new Item({
     return text;
   },
   getCustomUseGameEffect: function (props) {
-    return props.gameState.masked ? { masked: false } : { masked: true };
+    return props.gameState.playerMasked ? { playerMasked: false } : { playerMasked: true };
   },
   getCustomDropDescription: function (props) {
     return `You remove the handkerchief from your nose and mouth and drop it ${props.dropPreposition} the ${props.playerLocation}. `;
   },
   getCustomDropGameEffect: function (props) {
     if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
-      return { handkerchiefDamp: true, masked: false };
+      return { handkerchiefDamp: true, playerMasked: false };
     } else {
-      return { masked: false };
+      return { playerMasked: false };
     }
   },
   getCustomGiveDescription: function (props) {
@@ -504,7 +504,7 @@ const sword = new Item({
     if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
       return {
         reputation: props.gameState.reputation - 1,
-        swordCost: props.gameState.swordCost + 10,
+        swordCost: max(props.gameState.swordCost + 10, props.gameState.maxSwordCost),
       }; // todo this means sword cost can exceed amount of gold that you have...set max?
     }
   },
@@ -653,7 +653,7 @@ const berries = new Item({
   }, // todo where do the berries go when you eat them?
   getCustomUseGameEffect: function (props) {
     return {
-      poisoned: true,
+      playerPoisoned: true,
       reputation: props.gameState.reputation - 1,
     };
   },
