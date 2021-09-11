@@ -1,0 +1,90 @@
+html {
+  background-color: rgb(240, 240, 241);
+}
+
+.App {
+  font-family: Arial, Helvetica, sans-serif;
+  display: flex;
+  margin: 10px;
+  text-align: center;
+  justify-items: center;
+  white-space: pre-line;
+  flex-direction: column;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+}
+
+.stats {
+  display: flex;
+  padding: 10px;
+  justify-content: space-around;
+  white-space: pre;
+}
+
+.stat {
+  display: flex;
+}
+
+.statName {
+  font-weight: bold;
+}
+
+.description {
+  padding: 20px;
+}
+
+.connection,
+.close {
+  background-color: rgb(110, 121, 158);
+  border-color: rgb(110, 121, 158);
+  color: rgb(240, 240, 241);
+}
+
+.item,
+.inventory {
+  background-color: rgb(38, 36, 129);
+  border-color: rgb(38, 36, 129);
+  color: rgb(240, 240, 241);
+}
+
+.item-action {
+  background-color: rgb(38, 36, 129);
+  border-color: rgb(38, 36, 129);
+  color: rgb(240, 240, 241);
+  border-width: 5px 15px;
+}
+
+button {
+  border-radius: 5px;
+  border: 10px solid;
+  font-size: medium;
+  margin: 5px;
+}
+
+button:disabled {
+  opacity: 0.2;
+  color: white;
+  touch-action: none;
+}
+
+.inventoryItem {
+  border-width: 1px 0 1px 0;
+  border-color: black;
+  border-style: solid;
+  padding: 5px 0;
+}
+
+.inventoryItem:first-child {
+  border-width: 4px 0 1px 0;
+  border-color: black;
+  border-style: solid;
+}
+
+.inventoryItem:last-child {
+  border-width: 1px 0 2px 0;
+  border-color: black;
+  border-style: solid;
+}
