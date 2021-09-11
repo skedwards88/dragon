@@ -64,16 +64,18 @@ function App() {
   function moveItem({ item, oldLocation, newLocation }) {
     if (oldLocation === newLocation) return
 
-    console.log(`'moving' ${item} from ${oldLocation} to ${newLocation}`);
+    console.log(`moving' ${item} from ${oldLocation} to ${newLocation}`);
     itemLocations[oldLocation].delete(item);
     itemLocations[newLocation].add(item);
     setItemLocations(itemLocations);
   }
 
   function handleMovePlayer(newLocation) {
+
     let gameStateChanges = {};
 
     const oldLocation = playerLocation;
+    console.log(`moving player from ${oldLocation} to ${newLocation}`);
 
     const customExitStateEffect =
       locations[oldLocation].onExitGameStateEffect &&
@@ -93,6 +95,7 @@ function App() {
       });
     gameStateChanges = { ...gameStateChanges, ...customEnterStateEffect };
 
+    console.log(`updating game state: ${gameStateChanges}`)
     if (Object.keys(gameStateChanges).length) {
       setGameState({
         ...gameState,
@@ -128,6 +131,8 @@ function App() {
   }
 
   function handleTake(item) {
+    console.log(`taking ${item} at ${playerLocation}`)
+
     // Get the "take"" description for the item -- this will be the consequence text
     const customDescription =
       items[item].getCustomTakeDescription &&
@@ -177,6 +182,7 @@ function App() {
         itemLocations: itemLocations,
       });
 
+    console.log(`updating game state: ${customGameEffect}`)
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -196,6 +202,8 @@ function App() {
   }
 
   function handleUse(item) {
+    console.log(`using ${item} at ${playerLocation}`)
+
     // Get the "use"" description for the item -- this will be the consequence text
     const customDescription =
       items[item].getCustomUseDescription &&
@@ -219,6 +227,7 @@ function App() {
       });
 
     // Update game state with any custom effect
+    console.log(`updating game state: ${customGameEffect}`)
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -231,6 +240,8 @@ function App() {
   }
 
   function handleDrop(item) {
+    console.log(`dropping ${item} at ${playerLocation}`)
+
     // const customDrop = items[item].getCustomDrop({
     //   dropPreposition: locations[playerLocation].dropPreposition,
     //   playerLocation: playerLocation,
@@ -276,6 +287,7 @@ function App() {
         itemLocations: itemLocations,
       });
 
+      console.log(`updating game state: ${customGameEffect}`)
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -295,6 +307,8 @@ function App() {
   }
 
   function handlePay() {
+    console.log(`paying ${playerLocation}`)
+
     // todo not checking yet if you have enough gold to buy
     if (
       (locations[playerLocation].payDescription &&
@@ -351,6 +365,7 @@ function App() {
         itemLocations: itemLocations,
       });
 
+    console.log(`updating game state: ${customGameEffect}`)
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -375,6 +390,8 @@ function App() {
   }
 
   function handleGive(item) {
+    console.log(`giving ${item} to ${playerLocation}`)
+
     // If "give" is not handled, you can't give
     if (
       (items[item].getCustomGiveDescription &&
@@ -460,7 +477,8 @@ function App() {
         itemLocations: itemLocations,
       });
 
-    if (customGameEffect) {
+      console.log(`updating game state: ${customGameEffect}`)
+      if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
 
