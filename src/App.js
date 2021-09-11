@@ -8,18 +8,19 @@ function App() {
     reputation: 10,
     gold: 0,
     timeInCave: 0,
-    swordCost: 50,
+    swordCost: 40,
+    maxSwordCost: 50,
     ownSword: false,
-    fire: true,
+    manorFire: true,
     naked: true,
     squirrelDead: false,
     horseDead: false,
     horseTethered: false,
     horseMounted: false,
-    poisoned: false,
-    poopy: false,
+    playerPoisoned: false,
+    clothesPoopy: false,
     handkerchiefDamp: false,
-    masked: false,
+    playerMasked: false,
     babyCough: false,
     savedBaby: false,
     receivedBabyReward: false,
@@ -30,7 +31,7 @@ function App() {
     dragonPoisoned: false,
     dragonAsleep: false,
     dragonDead: false,
-    treasureAmount: 100,
+    treasureAmount: 200,
     earnedTreasureAmount: 0,
     singeCount: 0,
     ownScore: false,
@@ -54,17 +55,16 @@ function App() {
   }
 
   const startingItemLocations = buildStartingLocations();
-
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
-
   const [gameState, setGameState] = useState(startingState);
   const [playerLocation, setPlayerLocation] = useState("cliff");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
   
   function moveItem({ item, oldLocation, newLocation }) {
+    if (oldLocation === newLocation) return
+
     console.log(`'moving' ${item} from ${oldLocation} to ${newLocation}`);
-    // todo can skip if location unchanged
     itemLocations[oldLocation].delete(item);
     itemLocations[newLocation].add(item);
     setItemLocations(itemLocations);
@@ -590,7 +590,7 @@ function App() {
             Inventory
           </button>
         </div>
-        <div className="stats">
+        {/* <div className="stats">
           <div className="stat">
             <div className="statName">Reputation: </div>
             <div className="statValue">{gameState.reputation}</div>
@@ -599,7 +599,17 @@ function App() {
             <div className="statName">Gold: </div>
             <div className="statValue">{gameState.gold}</div>
           </div>
-        </div>
+        </div> */}
+        <table className="stats">
+          <tr className="stat">
+            <td className="statName">Reputation: </td>
+            <td>{gameState.reputation}</td>
+          </tr>
+          <tr className="stat">
+          <td className="statName">Gold: </td>
+            <td>{gameState.gold}</td>
+          </tr>
+        </table>
       </div>
     );
   }
