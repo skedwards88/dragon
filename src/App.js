@@ -608,16 +608,6 @@ function App() {
             Inventory
           </button>
         </div>
-        {/* <div className="stats">
-          <div className="stat">
-            <div className="statName">Reputation: </div>
-            <div className="statValue">{gameState.reputation}</div>
-          </div>
-          <div className="stat">
-            <div className="statName">Gold: </div>
-            <div className="statValue">{gameState.gold}</div>
-          </div>
-        </div> */}
         <table className="stats">
           <tr className="stat">
             <td className="statName">Reputation: </td>
