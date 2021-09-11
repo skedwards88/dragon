@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./App.css";
-import { allItems } from "./items.js";
+import { items } from "./items.js";
 import { locations } from "./locations.js";
 
 function App() {
@@ -47,7 +47,7 @@ function App() {
       (location) => (startingItemLocations[location] = new Set())
     );
 
-    for (const [item, itemInfo] of Object.entries(allItems)) {
+    for (const [item, itemInfo] of Object.entries(items)) {
       startingItemLocations[itemInfo.spawnLocation].add(item);
     }
 
@@ -130,8 +130,8 @@ function App() {
   function handleTake(item) {
     // Get the "take"" description for the item -- this will be the consequence text
     const customDescription =
-      allItems[item].getCustomTakeDescription &&
-      allItems[item].getCustomTakeDescription({
+      items[item].getCustomTakeDescription &&
+      items[item].getCustomTakeDescription({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -141,7 +141,7 @@ function App() {
       customDescription ||
       `You now have ${
         ["a", "e", "i", "o", "u"].includes(
-          allItems[item]
+          items[item]
             .getDescription({
               playerLocation: playerLocation,
               gameState: gameState,
@@ -151,7 +151,7 @@ function App() {
         )
           ? "an"
           : "a"
-      } ${allItems[item].getDescription({
+      } ${items[item].getDescription({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -159,8 +159,8 @@ function App() {
 
     // Get the "take" end location for the item -- will usually be "inventory"
     const customItemLocation =
-      allItems[item].getCustomTakeLocation &&
-      allItems[item].getCustomTakeLocation({
+      items[item].getCustomTakeLocation &&
+      items[item].getCustomTakeLocation({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -170,8 +170,8 @@ function App() {
 
     // Get any effect on the game state
     const customGameEffect =
-      allItems[item].getCustomTakeGameEffect &&
-      allItems[item].getCustomTakeGameEffect({
+      items[item].getCustomTakeGameEffect &&
+      items[item].getCustomTakeGameEffect({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -198,8 +198,8 @@ function App() {
   function handleUse(item) {
     // Get the "use"" description for the item -- this will be the consequence text
     const customDescription =
-      allItems[item].getCustomUseDescription &&
-      allItems[item].getCustomUseDescription({
+      items[item].getCustomUseDescription &&
+      items[item].getCustomUseDescription({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -207,12 +207,12 @@ function App() {
 
     const description =
       customDescription ||
-      `You use the ${allItems[item].displayName.toLowerCase()}.`;
+      `You use the ${items[item].displayName.toLowerCase()}.`;
 
     // Get any effect on the game state
     const customGameEffect =
-      allItems[item].getCustomUseGameEffect &&
-      allItems[item].getCustomUseGameEffect({
+      items[item].getCustomUseGameEffect &&
+      items[item].getCustomUseGameEffect({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -231,7 +231,7 @@ function App() {
   }
 
   function handleDrop(item) {
-    // const customDrop = allItems[item].getCustomDrop({
+    // const customDrop = items[item].getCustomDrop({
     //   dropPreposition: locations[playerLocation].dropPreposition,
     //   playerLocation: playerLocation,
     //   gameState: gameState,
@@ -242,8 +242,8 @@ function App() {
 
     // Get the "drop"" description for the item -- this will be the consequence text
     const customDescription =
-      allItems[item].getCustomDropDescription &&
-      allItems[item].getCustomDropDescription({
+      items[item].getCustomDropDescription &&
+      items[item].getCustomDropDescription({
         dropPreposition: locations[playerLocation].dropPreposition,
         playerLocation: playerLocation,
         gameState: gameState,
@@ -256,8 +256,8 @@ function App() {
 
     // Get the "drop" end location for the item -- will usually be the current player location
     const customItemLocation =
-      allItems[item].getCustomDropLocation &&
-      allItems[item].getCustomDropLocation({
+      items[item].getCustomDropLocation &&
+      items[item].getCustomDropLocation({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -269,8 +269,8 @@ function App() {
 
     // Get any effect on the game state
     const customGameEffect =
-      allItems[item].getCustomDropGameEffect &&
-      allItems[item].getCustomDropGameEffect({
+      items[item].getCustomDropGameEffect &&
+      items[item].getCustomDropGameEffect({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -377,26 +377,26 @@ function App() {
   function handleGive(item) {
     // If "give" is not handled, you can't give
     if (
-      (allItems[item].getCustomGiveDescription &&
-        allItems[item].getCustomGiveDescription({
+      (items[item].getCustomGiveDescription &&
+        items[item].getCustomGiveDescription({
           playerLocation: playerLocation,
           gameState: gameState,
           itemLocations: itemLocations,
         })) ||
-      (allItems[item].getCustomGiveLocation &&
-        allItems[item].getCustomGiveLocation({
+      (items[item].getCustomGiveLocation &&
+        items[item].getCustomGiveLocation({
           playerLocation: playerLocation,
           gameState: gameState,
           itemLocations: itemLocations,
         })) ||
-      (allItems[item].getCustomGiveGameEffect &&
-        allItems[item].getCustomGiveGameEffect({
+      (items[item].getCustomGiveGameEffect &&
+        items[item].getCustomGiveGameEffect({
           playerLocation: playerLocation,
           gameState: gameState,
           itemLocations: itemLocations,
         })) ||
-      (allItems[item].getCustomGiveItemLocationEffect &&
-        allItems[item].getCustomGiveItemLocationEffect({
+      (items[item].getCustomGiveItemLocationEffect &&
+        items[item].getCustomGiveItemLocationEffect({
           playerLocation: playerLocation,
           gameState: gameState,
           itemLocations: itemLocations,
@@ -419,8 +419,8 @@ function App() {
   function handleAcceptedGive(item) {
     // Get the "give" description for the item -- this will be the consequence text
     const customDescription =
-      allItems[item].getCustomGiveDescription &&
-      allItems[item].getCustomGiveDescription({
+      items[item].getCustomGiveDescription &&
+      items[item].getCustomGiveDescription({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -431,8 +431,8 @@ function App() {
 
     // Get the "drop" end location for the item -- will usually be the current player location
     const customItemLocation =
-      allItems[item].getCustomGiveLocation &&
-      allItems[item].getCustomGiveLocation({
+      items[item].getCustomGiveLocation &&
+      items[item].getCustomGiveLocation({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -444,8 +444,8 @@ function App() {
 
     // Determine if another item should also move
     const giveItemLocationEffect =
-      allItems[item].getCustomGiveItemLocationEffect &&
-      allItems[item].getCustomGiveItemLocationEffect({
+      items[item].getCustomGiveItemLocationEffect &&
+      items[item].getCustomGiveItemLocationEffect({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -453,8 +453,8 @@ function App() {
 
     // Get any effect on the game state
     const customGameEffect =
-      allItems[item].getCustomGiveGameEffect &&
-      allItems[item].getCustomGiveGameEffect({
+      items[item].getCustomGiveGameEffect &&
+      items[item].getCustomGiveGameEffect({
         playerLocation: playerLocation,
         gameState: gameState,
         itemLocations: itemLocations,
@@ -486,7 +486,7 @@ function App() {
     return Array.from(itemsAtLocation).map((item) => {
       return (
         <button onClick={(e) => handleTake(item)} className="item" key={item}>
-          {allItems[item].displayName ? allItems[item].displayName : item}
+          {items[item].displayName ? items[item].displayName : item}
         </button>
       );
     });
@@ -497,7 +497,7 @@ function App() {
       return (
         <div className="inventoryItem" key={item}>
           <div key={item}>
-            {allItems[item].getDescription({
+            {items[item].getDescription({
               playerLocation: playerLocation,
               gameState: gameState,
               itemLocations: itemLocations,
@@ -508,7 +508,7 @@ function App() {
             className="item-action"
             key={item + "-use"}
           >
-            {allItems[item].getUseVerb({
+            {items[item].getUseVerb({
               playerLocation: playerLocation,
               gameState: gameState,
               itemLocations: itemLocations,

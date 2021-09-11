@@ -949,7 +949,7 @@ const score = new Item({
 
 // todo would it be better to have all drop, etc as one function?
 
-export const allItems = {
+export const items = {
   lute: lute,
   clothes: clothes,
   apple: apple,
@@ -962,5 +962,5 @@ export const allItems = {
   score: score,
 };
 export default {
-  allItems,
+  items,
 };
