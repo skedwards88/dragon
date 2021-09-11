@@ -39,12 +39,6 @@ payItemLocationEffect
   // todo PWA / offline
 
 
-
-
-
-
-
-
 Go south along the long road and come to the N. gate where the townspeople are waiting. End game text describes different outcomes based on how you played. In the best scenario, it describes you marching clean, on horseback, holding a scepter, without too much time passing. If you killed the dragon, you can stay in the village (optionally pair with smith or young woman). You even become mayor if your reputation is high enough! If you didn’t kill the dragon, you make it out of the village before the angry dragon burns it down.
 
 
@@ -64,3 +58,34 @@ if you return the score to the wizard and have the treasure, wizard shouldn't of
 when pay wizard -- make sure decrements gold
 
 make lose condition if get down to 0 reputation
+
+    reputation: 10,
+    gold: 0,
+    playerMasked: false,
+    savedBaby: false,
+    treasureAmount: 200,
+
+```javascript
+`You arrive at the city gates ${horseMounted ? "proudly mounted on your horse" :"weary from the long walk"}. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair.
+
+${naked ? `The townsfolk jeer at your lack of clothes. ` : ""}${clothesPoopy && !naked ? "The townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. " :""}
+
+
+${playerPoisoned ? "Your face is still splotchy and swollen from eating the berries. " :""}${singeCount ? `You have ${singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `: ""}
+
+${cursed ? "Although the curse is not visible, a forbidding aura hangs around you, driving the townsfolk away. You wonder what effect the curse will have on your life." : ""}
+
+${dragonDead ? `The townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers.` : `Initially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "" as the townsfolk glance angrily at you. Eager to escape the wrath of the dragon and townsfolk, you flee town.`}
+`
+```
+
+clothed and poopy
+clothed and clean -- nothing
+
+horseMounted +1
+playerPoisoned --  nothing. lost reputation as it happened
+singeCount -- nothing. lost reputation as it happened
+dragonDead +2
+naked -1
+clothesPoopy -1
+cursed -1
