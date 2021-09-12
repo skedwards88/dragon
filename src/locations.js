@@ -343,7 +343,15 @@ const blacksmith = new Location({
     return ["smithy"];
   },
   getDescription: function (props) {
-    let text = `The blacksmith sets down their work. ${props.gameState.naked ? `"No clothes? You best stay away from the furnace lest you burn something important. "` : ""}${props.gameState.playerMasked ? "They eye the handkerchief tied over your face warily, but don't comment on it." : ""}`;
+    let text = `The blacksmith sets down their work. ${
+      props.gameState.naked
+        ? `"No clothes? You best stay away from the furnace lest you burn something important. "`
+        : ""
+    }${
+      props.gameState.playerMasked
+        ? "They eye the handkerchief tied over your face warily, but don't comment on it."
+        : ""
+    }`;
 
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
       text += `\n\n"Are you interested in buying that sword?" they ask. It costs ${
@@ -353,25 +361,21 @@ const blacksmith = new Location({
           ? " or I would trade it for your lute"
           : ""
       }. " `;
-
     }
     return text;
-
   },
   onEnterGameStateEffect: function (props) {
     if (props.gameState.naked) {
       return {
-        reputation: props.gameState.reputation - 1
-      }
+        reputation: props.gameState.reputation - 1,
+      };
     }
   },
   onExitGameStateEffect: function (props) {},
   onEnterItemLocationEffect: function (props) {},
   onExitItemLocationEffect: function (props) {},
 
-  customPay: function(props) {
-
-  },
+  customPay: function (props) {},
 
   payDescription: function (props) {
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
@@ -458,17 +462,19 @@ const youth = new Location({
     return ["gate"];
   },
   getDescription: function (props) {
-    let text = `The youth stands by the city gates${props.gameState.playedForYouth ? " crying" : ""}. `
-      if (props.gameState.naked) {
-        text += `"Ack! Where are your clothes?!"`
-      }  
-      return text
+    let text = `The youth stands by the city gates${
+      props.gameState.playedForYouth ? " crying" : ""
+    }. `;
+    if (props.gameState.naked) {
+      text += `"Ack! Where are your clothes?!"`;
+    }
+    return text;
   },
   onEnterGameStateEffect: function (props) {
     if (props.gameState.naked) {
       return {
-        reputation: props.gameState.reputation - 1
-      }
+        reputation: props.gameState.reputation - 1,
+      };
     }
   },
   onExitGameStateEffect: function (props) {},
@@ -542,12 +548,12 @@ const road3 = new Location({
     ) {
       return 'As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke.';
     } else {
-      let text = `You stand at the end of a long road. The city gates sit to the south. To the north, you see mountains. `
+      let text = `You stand at the end of a long road. The city gates sit to the south. To the north, you see mountains. `;
 
       if (props.gameState.horseMounted) {
-        text += "\n\nThankfully, the horse lets you travel quickly. "
+        text += "\n\nThankfully, the horse lets you travel quickly. ";
       }
-      return text
+      return text;
     }
   },
 
@@ -560,7 +566,7 @@ const road3 = new Location({
         cursed: true,
         gold: props.gameState.gold - props.gameState.earnedTreasureAmount,
       };
-}
+    }
   },
 });
 
@@ -649,7 +655,11 @@ const wizard = new Location({
   getDescription: function (props) {
     let text = "The wizard looks at you though bushy eyebrows. ";
 
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
+    if (
+      props.itemLocations.wizard.has("score") &&
+      !props.gameState.ownScore &&
+      !props.gameState.earnedTreasureAmount
+    ) {
       text += `"I have a musical score that will be useful. I would trade it for ${
         props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
       }gold. \n\nI see your gold pouch is light, but I believe this score will lead to treasure if you combine it with your wit. I would accept gold on credit, and will take half the treasure that you earn. \n\nAll sales on credit are final. All sales completed at time of purchase are refundable."`;
@@ -670,7 +680,11 @@ const wizard = new Location({
   onExitItemLocationEffect: function (props) {},
 
   payDescription: function (props) {
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
+    if (
+      props.itemLocations.wizard.has("score") &&
+      !props.gameState.ownScore &&
+      !props.gameState.earnedTreasureAmount
+    ) {
       return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
     }
 
@@ -695,7 +709,11 @@ const wizard = new Location({
     }
   },
   payGameStateEffect: function (props) {
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
+    if (
+      props.itemLocations.wizard.has("score") &&
+      !props.gameState.ownScore &&
+      !props.gameState.earnedTreasureAmount
+    ) {
       return {
         ownScore: true,
         promisedTreasure: true,
@@ -708,12 +726,16 @@ const wizard = new Location({
     ) {
       return {
         promisedTreasure: false,
-        gold: props.gameState.gold - (props.gameState.treasureAmount / 2),
+        gold: props.gameState.gold - props.gameState.treasureAmount / 2,
       };
     }
   },
   payItemLocationEffect: function (props) {
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
+    if (
+      props.itemLocations.wizard.has("score") &&
+      !props.gameState.ownScore &&
+      !props.gameState.earnedTreasureAmount
+    ) {
       return {
         item: "score",
         oldLocation: "wizard",
