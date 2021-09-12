@@ -208,15 +208,15 @@ const clothes = new Item({
 const apple = new Item({
   id: "apple",
   spawnLocation: "inn",
-  getDescription: function (props) {
+  getDescription: function () {
     return "fresh apple";
   },
   // todo when you eat the apple, it remains in inventory; it should not. also, if apple is not in inventory, it should be in inn so you can get another one
 
-  getUseVerb: function (props) {
+  getUseVerb: function () {
     return "Eat";
   },
-  getCustomUseDescription: function (props) {
+  getCustomUseDescription: function () {
     return "You eat the apple, feeling refreshed. ";
   },
   // description,
@@ -959,7 +959,7 @@ const treasure = new Item({
 const score = new Item({
   id: "score",
   spawnLocation: "wizard",
-  getDescription: function (props) {
+  getDescription: function () {
     return "musical score";
   },
   getUseVerb: function () {

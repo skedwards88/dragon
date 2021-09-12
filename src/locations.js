@@ -210,7 +210,7 @@ const fountain = new Location({
       };
     }
   },
-  onExitItemLocationEffect: function (props) {},
+  onExitItemLocationEffect: function () {},
 });
 
 const manor = new Location({
@@ -260,9 +260,6 @@ const manor = new Location({
       return { babyCough: true };
     }
   },
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const nursery = new Location({
@@ -282,15 +279,11 @@ const nursery = new Location({
       return "You stand in the charred remains of a nursery. ";
     }
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const nurseryWindow = new Location({
   id: "nurseryWindow",
-  getDisplayName: function (props) {
+  getDisplayName: function () {
     return "Window";
   },
   dropPreposition: "at",
@@ -302,10 +295,6 @@ const nurseryWindow = new Location({
       ? "Below the window, you see the gathered crowd. "
       : "You see the charred remains of the manor below you. ";
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const smithy = new Location({
@@ -324,10 +313,6 @@ const smithy = new Location({
     }
     return text;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const blacksmith = new Location({
@@ -371,12 +356,6 @@ const blacksmith = new Location({
       };
     }
   },
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
-
-  customPay: function (props) {},
-
   payDescription: function (props) {
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
       return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `; // todo this doesn't account for if sword costs more than have
@@ -426,10 +405,6 @@ const pasture = new Location({
 
     return text;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const gate = new Location({
@@ -443,10 +418,6 @@ const gate = new Location({
       !props.gameState.playedForYouth ? ", crying" : ""
     }. `;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const youth = new Location({
@@ -477,9 +448,6 @@ const youth = new Location({
       };
     }
   },
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const road1 = new Location({
@@ -576,13 +544,9 @@ const stream = new Location({
   getConnections: function () {
     return ["clearing", "road3"];
   },
-  getDescription: function (props) {
+  getDescription: function () {
     return "You come across a steam. It looks crossable by foot or by horse. On the north side, you see a bush full of berries. To the south, the road stretches back to the city. ";
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const clearing = new Location({
@@ -614,10 +578,6 @@ const clearing = new Location({
     }
     return text;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const squirrel = new Location({
@@ -634,10 +594,6 @@ const squirrel = new Location({
       ? "The squirrel lies dead on the ground. "
       : "You approach the squirrel. It pauses, perhaps curious if you will feed it, before scampering up the tree. ";
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const wizard = new Location({
@@ -674,10 +630,6 @@ const wizard = new Location({
 
     return text;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 
   payDescription: function (props) {
     if (
@@ -762,15 +714,11 @@ const cliff = new Location({
     }
     return text;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const caveEntrance = new Location({
   id: "caveEntrance",
-  getDisplayName: function (props) {
+  getDisplayName: function () {
     return "Cave entrance";
   },
   dropPreposition: "at",
@@ -794,10 +742,6 @@ const caveEntrance = new Location({
 
     return text;
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const defecatory = new Location({
@@ -806,13 +750,9 @@ const defecatory = new Location({
   getConnections: function () {
     return ["puddle", "boulder", "dung", "caveEntrance"];
   },
-  getDescription: function (props) {
+  getDescription: function () {
     return "You stand in a large, foul smelling cavern. There is a puddle of clear water, a large boulder, and a pile of dragon dung. To the east, you feel the fresh air from the cave entrance. ";
   },
-  onEnterGameStateEffect: function (props) {},
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const puddle = new Location({
@@ -841,9 +781,6 @@ const puddle = new Location({
         }),
     };
   },
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const boulder = new Location({
@@ -892,8 +829,6 @@ const boulder = new Location({
       return { dragonPoisoned: true };
     }
   },
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const dung = new Location({
@@ -925,9 +860,6 @@ const dung = new Location({
         }),
     };
   },
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 const lair = new Location({
@@ -981,9 +913,6 @@ const lair = new Location({
       };
     }
   },
-  onExitGameStateEffect: function (props) {},
-  onEnterItemLocationEffect: function (props) {},
-  onExitItemLocationEffect: function (props) {},
 });
 
 function dragonDescription(props) {
