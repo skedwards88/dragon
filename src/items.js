@@ -24,8 +24,6 @@ class Item {
     getUseVerb = function () {
       return "Use";
     },
-    getCustomUseDescription,
-    getCustomUseGameEffect,
 
     getCustomDrop = function () {
       return new ItemInteraction({});
@@ -46,8 +44,6 @@ class Item {
     this.getDescription = getDescription;
 
     this.getUseVerb = getUseVerb;
-    this.getCustomUseDescription = getCustomUseDescription;
-    this.getCustomUseGameEffect = getCustomUseGameEffect;
 
     this.getCustomDrop = getCustomDrop;
     this.getCustomGive = getCustomGive;
