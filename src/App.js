@@ -230,7 +230,8 @@ function App() {
       `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
     setConsequenceText(description);
 
-    const endItemLocation = customInteraction.targetItemLocation || playerLocation;
+    const endItemLocation =
+      customInteraction.targetItemLocation || playerLocation;
     moveItem({
       item: item,
       oldLocation: "inventory",
@@ -271,7 +272,6 @@ function App() {
     } else {
       handleUnwantedPay();
     }
-
   }
 
   function handleUnwantedPay() {
@@ -281,8 +281,7 @@ function App() {
 
   function handleAcceptedPay(customInteraction) {
     const description =
-      customInteraction.description ||
-      `You pay the ${playerLocation}.`;
+      customInteraction.description || `You pay the ${playerLocation}.`;
     setConsequenceText(description);
 
     if (customInteraction.gameEffect) {

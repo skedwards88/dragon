@@ -1,4 +1,4 @@
-import {ItemInteraction} from "./items"
+import { ItemInteraction } from "./items";
 
 class Location {
   constructor({
@@ -24,7 +24,6 @@ class Location {
     getCustomPay = function () {
       return new ItemInteraction({});
     },
-
   }) {
     this.id = id;
     this.getDisplayName = getDisplayName;
@@ -359,22 +358,31 @@ const blacksmith = new Location({
   },
   getCustomPay: function (props) {
     function writeDescription(props) {
-      if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
+      if (
+        !props.gameState.ownSword &&
+        props.itemLocations.smithy.has("sword")
+      ) {
         return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `; // todo this doesn't account for if sword costs more than have
       }
     }
 
     function getGameEffect(props) {
-      if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
+      if (
+        !props.gameState.ownSword &&
+        props.itemLocations.smithy.has("sword")
+      ) {
         return {
           ownSword: true,
           gold: props.gameState.gold - props.gameState.swordCost,
         };
       }
-        }
+    }
 
     function getOtherItemLocation(props) {
-      if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
+      if (
+        !props.gameState.ownSword &&
+        props.itemLocations.smithy.has("sword")
+      ) {
         return {
           item: "sword",
           oldLocation: "smithy",
@@ -650,14 +658,15 @@ const wizard = new Location({
       ) {
         return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
       }
-  
+
       if (
         props.gameState.promisedTreasure &&
         props.gameState.earnedTreasureAmount
       ) {
         let text = "";
         if (
-          props.gameState.earnedTreasureAmount === props.gameState.treasureAmount
+          props.gameState.earnedTreasureAmount ===
+          props.gameState.treasureAmount
         ) {
           text += `"It looks like you succeeded nicely." `;
         }
@@ -667,7 +676,7 @@ const wizard = new Location({
           text += `"It looks like you succeeded, though not as well as I hoped." `;
         }
         text += "The wizard takes a share of your treasure. ";
-  
+
         return text;
       }
     }
@@ -683,7 +692,7 @@ const wizard = new Location({
           promisedTreasure: true,
         };
       }
-  
+
       if (
         props.gameState.promisedTreasure &&
         props.gameState.earnedTreasureAmount
@@ -693,7 +702,7 @@ const wizard = new Location({
           gold: props.gameState.gold - props.gameState.treasureAmount / 2,
         };
       }
-        }
+    }
 
     function getOtherItemLocation(props) {
       if (

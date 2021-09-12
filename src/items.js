@@ -1159,5 +1159,5 @@ export const items = {
 };
 export default {
   items,
-  ItemInteraction
+  ItemInteraction,
 };
