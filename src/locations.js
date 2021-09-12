@@ -444,8 +444,20 @@ const adolescent = new Location({
   getConnections: function () {
     return ["gate"];
   },
-  getDescription: function (props) {}, // todo write description
-  onEnterGameStateEffect: function (props) {},
+  getDescription: function (props) {
+    let text = `The youth stands by the city gates${props.gameState.playedForAdolescent ? " crying" : ""}. `
+      if (props.gameState.naked) {
+        text += `"Ack! Where are your clothes?!"`
+      }  
+      return text
+  },
+  onEnterGameStateEffect: function (props) {
+    if (props.gameState.naked) {
+      return {
+        reputation: props.gameState.reputation - 1
+      }
+    }
+  },
   onExitGameStateEffect: function (props) {},
   onEnterItemLocationEffect: function (props) {},
   onExitItemLocationEffect: function (props) {},
