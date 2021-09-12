@@ -132,17 +132,13 @@ function App() {
   function handleTake(item) {
     console.log(`taking ${item} at ${playerLocation}`);
 
-    // Get the "take"" description for the item -- this will be the consequence text
-    const customDescription =
-      items[item].getCustomTakeDescription &&
-      items[item].getCustomTakeDescription({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
+    const customTake = items[item].getCustomTake({
+      playerLocation: playerLocation,
+      gameState: gameState,
+      itemLocations: itemLocations,
+    });
 
-    const description =
-      customDescription ||
+    const description = customTake.description ? customTake.description :
       `You now have ${
         ["a", "e", "i", "o", "u"].includes(
           items[item]
@@ -160,42 +156,23 @@ function App() {
         gameState: gameState,
         itemLocations: itemLocations,
       })}.`;
+      setConsequenceText(description);
 
-    // Get the "take" end location for the item -- will usually be "inventory"
-    const customItemLocation =
-      items[item].getCustomTakeLocation &&
-      items[item].getCustomTakeLocation({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
+      const endItemLocation = customTake.targetItemLocation ? customTake.targetItemLocation : "inventory";
+      moveItem({
+        item: item,
+        oldLocation: playerLocation,
+        newLocation: endItemLocation,
       });
-
-    const endItemLocation = customItemLocation || "inventory";
-
-    // Get any effect on the game state
-    const customGameEffect =
-      items[item].getCustomTakeGameEffect &&
-      items[item].getCustomTakeGameEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    console.log(`updating game state: ${customGameEffect}`);
-    if (customGameEffect) {
-      setGameState({ ...gameState, ...customGameEffect });
-    }
-
-    // Set the item location to the take end location
-    moveItem({
-      item: item,
-      oldLocation: playerLocation,
-      newLocation: endItemLocation,
-    });
-
-    // set the consequence text to the take description text
-    setConsequenceText(description);
-
+  
+      if (customTake.gameEffect) {
+        console.log(`updating game state: ${JSON.stringify(customTake.gameEffect)}`);
+        setGameState({ ...gameState, ...customTake.gameEffect })
+      }
+  
+      if (customTake.otherItemLocations) {
+        moveItem(customTake.otherItemLocations);
+      }
     // set show consequence to true
     setCurrentDisplay("consequence");
   }

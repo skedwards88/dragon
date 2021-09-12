@@ -27,14 +27,13 @@ class Item {
     getCustomUseDescription,
     getCustomUseGameEffect,
 
-    getCustomTakeDescription,
-    getCustomTakeLocation,
-    getCustomTakeGameEffect,
-
     getCustomDrop = function () {
       return new ItemInteraction({});
     },
     getCustomGive = function () {
+      return new ItemInteraction({});
+    },    
+    getCustomTake = function () {
       return new ItemInteraction({});
     },
 
@@ -48,12 +47,9 @@ class Item {
     this.getCustomUseDescription = getCustomUseDescription;
     this.getCustomUseGameEffect = getCustomUseGameEffect;
 
-    this.getCustomTakeDescription = getCustomTakeDescription;
-    this.getCustomTakeLocation = getCustomTakeLocation;
-    this.getCustomTakeGameEffect = getCustomTakeGameEffect;
-
     this.getCustomDrop = getCustomDrop;
     this.getCustomGive = getCustomGive;
+    this.getCustomTake = getCustomTake;
   }
 }
 
@@ -88,17 +84,17 @@ const lute = new Item({
     }
   },
 
-  getCustomTakeDescription: function (props) {
-    if (props.playerLocation === "room") {
-      return "The lute feels familiar. ";
-    }
+  getCustomTake: function (props) {
+    function writeDescription(props) {
+      if (props.playerLocation === "room") {
+        return "The lute feels familiar. ";
+      }
+      }
+
+    return new ItemInteraction({
+      description: writeDescription(props),
+    });
   },
-  getCustomTakeLocation: function (props) {},
-  getCustomTakeGameEffect: function (props) {},
-// description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomGive: function (props) {
     function writeDescription(props) {
@@ -374,10 +370,6 @@ const handkerchief = new Item({
       description: writeDescription(props),
     });
   },
-// description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomGive: function (props) {
     function writeDescription(props) {
@@ -458,14 +450,19 @@ const baby = new Item({
     });
   },
 
-  getCustomTakeDescription: function (props) {
-    if (props.playerLocation === "nursery") {
-      return "You pick up the baby from the crib. The baby coughs as you move it away from the open window. ";
-    }
+  getCustomTake: function (props) {
+    function writeDescription(props) {
+      if (props.playerLocation === "nursery") {
+        return "You pick up the baby from the crib. The baby coughs as you move it away from the open window. ";
+      }
+      }
+
+    return new ItemInteraction({
+      gameEffect: {savedBaby: true},
+      description: writeDescription(props),
+    });
   },
-  getCustomTakeGameEffect: function (props) {
-    return { savedBaby: true };
-  },
+
 });
 
 const sword = new Item({
@@ -523,47 +520,56 @@ const sword = new Item({
       };
     }
   },
-  getCustomTakeDescription: function (props) {
-    if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
-      return 'You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith shop grabs the sword from you and returns it to the table. ';
-    }
-
-    if (
-      props.playerLocation === "wizard" &&
-      props.itemLocations.inventory.has("score")
-    ) {
-      return "Ah you would like to exchange? You must first give me the score.";
-    }
-  },
-  getCustomTakeLocation: function (props) {
-    console.log(props.playerLocation);
-    console.log(props.itemLocations.inventory.has("score"));
-    if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
-      return "smithy";
-    }
-
-    if (
-      props.playerLocation === "wizard" &&
-      props.itemLocations.inventory.has("score")
-    ) {
-      return "wizard";
-    }
-  },
-  getCustomTakeGameEffect: function (props) {
-    if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
-      return {
-        reputation: props.gameState.reputation - 1,
-        swordCost: max(
-          props.gameState.swordCost + 10,
-          props.gameState.maxSwordCost
-        ),
-      }; // todo this means sword cost can exceed amount of gold that you have...set max?
-    }
-  },
-// description,
+  // description,
   // gameEffect,
   // targetItemLocation,
   // otherItemLocations,
+
+  getCustomTake: function (props) {
+    function writeDescription(props) {
+      if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
+        return 'You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith shop grabs the sword from you and returns it to the table. ';
+      }
+  
+      if (
+        props.playerLocation === "wizard" &&
+        props.itemLocations.inventory.has("score")
+      ) {
+        return "Ah you would like to exchange? You must first give me the score.";
+      }
+      }
+
+    function getGameEffect(props) {
+      if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
+        return {
+          reputation: props.gameState.reputation - 1,
+          swordCost: Math.max(
+            props.gameState.swordCost + 10,
+            props.gameState.maxSwordCost
+          ),
+        }; 
+      }
+    }
+    function getTargetItemLocation(props) {
+      if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
+        return "smithy";
+      }
+  
+      if (
+        props.playerLocation === "wizard" &&
+        props.itemLocations.inventory.has("score")
+      ) {
+        return "wizard";
+      }
+      }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      targetItemLocation: getTargetItemLocation(props),
+      description: writeDescription(props),
+    });
+    
+  },
 
   getCustomGive: function (props) {
     function writeDescription(props) {
@@ -688,24 +694,37 @@ const horse = new Item({
       description: writeDescription(props),
     });
   },
+// description,
+  // gameEffect,
+  // targetItemLocation,
+  // otherItemLocations,
 
-  getCustomTakeDescription: function (props) {
-    if (props.gameState.horseDead) {
-      return "This dead horse is too heavy to carry. ";
-    }
+  getCustomTake: function (props) {
+    function writeDescription(props) {
+      if (props.gameState.horseDead) {
+        return "This dead horse is too heavy to carry. ";
+      }
+  
+      if (!props.gameState.horseTethered) {
+        return "You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. ";
+      }
+      }
 
-    if (!props.gameState.horseTethered) {
-      return "You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. ";
-    }
-  },
-  getCustomTakeLocation: function (props) {
-    if (props.gameState.horseDead) {
-      return props.playerLocation;
-    }
 
-    if (!props.gameState.horseTethered) {
-      return props.playerLocation;
-    }
+    function getTargetItemLocation(props) {
+      if (props.gameState.horseDead) {
+        return props.playerLocation;
+      }
+  
+      if (!props.gameState.horseTethered) {
+        return props.playerLocation;
+      }
+      }
+
+    return new ItemInteraction({
+      targetItemLocation: getTargetItemLocation(props),
+      description: writeDescription(props),
+    });
   },
 
   getCustomGive: function (props) {
@@ -819,107 +838,90 @@ const berries = new Item({
 const treasure = new Item({
   id: "treasure",
   spawnLocation: "lair",
+// description,
+  // gameEffect,
+  // targetItemLocation,
+  // otherItemLocations,
 
-  getCustomTakeDescription: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
+  getCustomTake: function (props) {
+    function writeDescription(props) {
 
-    if (props.gameState.dragonDead) {
-      return "You scoop as much treasure as possible into your bag, avoiding the gore from the severed dragon head. ";
+      if (props.gameState.dragonDead) {
+        return "You scoop as much treasure as possible into your bag, avoiding the gore from the severed dragon head. ";
+      }
+  
+      if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
+        return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. ";
+      }
+  
+      if (
+        props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead
+      ) {
+        return "With the dragon slower from the poison, you can now reach the treasure. You scoop as much treasure as possible into your bag before the dragon singes you. ";
+      }
+  
+      if (
+        !props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead
+      ) {
+        return "You try to steal the treasure, but the dragon singes you before you can get close. ";
+      }
     }
 
-    if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
-      return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. ";
+    function getGameEffect(props) {
+      if (props.gameState.dragonDead || props.gameState.dragonAsleep) {
+        return {
+          gold: props.gameState.gold + props.gameState.treasureAmount,
+          earnedTreasureAmount: props.gameState.treasureAmount,
+        };
+      }
+  
+      if (
+        props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead
+      ) {
+        return {
+          gold: props.gameState.gold + props.gameState.treasureAmount / 2,
+          earnedTreasureAmount: props.gameState.treasureAmount / 2,
+          singeCount: props.gameState.singeCount + 1,
+          reputation: props.gameState.reputation - 1,
+        };
+      }
+  
+      if (
+        !props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead
+      ) {
+        return {
+          singeCount: props.gameState.singeCount + 1,
+          reputation: props.gameState.reputation - 1,
+        };
+      }    }
+
+    function getTargetItemLocation(props) {
+      if (props.gameState.dragonPoisoned || props.gameState.dragonAsleep || props.gameState.dragonDead) {
+        return "outOfPlay";
+      }
+  
+      if (
+        !props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead
+      ) {
+        return "lair";
+      }
     }
 
-    if (
-      props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead
-    ) {
-      return "With the dragon slower from the poison, you can now reach the treasure. You scoop as much treasure as possible into your bag before the dragon singes you. ";
-    }
-
-    if (
-      !props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead
-    ) {
-      return "You try to steal the treasure, but the dragon singes you before you can get close. ";
-    }
-  },
-  getCustomTakeLocation: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
-
-    if (props.gameState.dragonDead) {
-      return "outOfPlay";
-    }
-
-    if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
-      return "outOfPlay";
-    }
-
-    if (
-      props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead
-    ) {
-      return "outOfPlay";
-    }
-
-    if (
-      !props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead
-    ) {
-      return "lair";
-    }
-  },
-  getCustomTakeGameEffect: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
-
-    if (props.gameState.dragonDead) {
-      return {
-        gold: props.gameState.gold + props.gameState.treasureAmount,
-        earnedTreasureAmount: props.gameState.treasureAmount,
-      };
-    }
-
-    if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
-      return {
-        gold: props.gameState.gold + props.gameState.treasureAmount,
-        earnedTreasureAmount: props.gameState.treasureAmount,
-      };
-    }
-
-    if (
-      props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead
-    ) {
-      return {
-        gold: props.gameState.gold + props.gameState.treasureAmount / 2,
-        earnedTreasureAmount: props.gameState.treasureAmount / 2,
-        singeCount: props.gameState.singeCount + 1,
-        reputation: props.gameState.reputation - 1,
-      };
-    }
-
-    if (
-      !props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead
-    ) {
-      return {
-        singeCount: props.gameState.singeCount + 1,
-        reputation: props.gameState.reputation - 1,
-      };
-    }
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      targetItemLocation: getTargetItemLocation(props),
+      description: writeDescription(props),
+    });
   },
 });
 
@@ -993,24 +995,33 @@ const score = new Item({
       };
     }
   },
-
-  getCustomTakeDescription: function (props) {
-    if (!props.gameState.ownScore) {
-      return `"Ah ah!" The wizard shakes a finger at you. Not for free. I would trade it for ${
-        props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
-      }gold.`;
-    }
-  },
-  getCustomTakeLocation: function (props) {
-    if (!props.gameState.ownScore) {
-      return "wizard";
-    }
-  },
-  getCustomTakeGameEffect: function (props) {},
 // description,
   // gameEffect,
   // targetItemLocation,
-  // ,
+  // otherItemLocations,
+
+  getCustomTake: function (props) {
+    function writeDescription(props) {
+      if (!props.gameState.ownScore) {
+        return `"Ah ah!" The wizard shakes a finger at you. Not for free. I would trade it for ${
+          props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
+        }gold.`;
+      }
+      }
+
+
+    function getTargetItemLocation(props) {
+      if (!props.gameState.ownScore) {
+        return "wizard";
+      }
+    }
+
+    return new ItemInteraction({
+      targetItemLocation: getTargetItemLocation(props),
+      description: writeDescription(props),
+    });
+  },
+
 
   getCustomGive: function (props) {
     function writeDescription(props) {
@@ -1081,8 +1092,6 @@ const score = new Item({
     });
   },
 });
-
-// todo would it be better to have all drop, etc as one function?
 
 export const items = {
   lute: lute,
