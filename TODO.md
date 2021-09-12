@@ -1,4 +1,3 @@
-
 onEnterGameStateEffect
 onExitGameStateEffect
 onEnterItemLocationEffect
@@ -25,23 +24,17 @@ payDescription
 payGameStateEffect
 payItemLocationEffect
 
+// todo add tests that locations and items have required values
 
+// todo write end game and scoring
 
+// todo typescript
 
-  // todo add tests that locations and items have required values
+// todo save progress?
 
-  // todo write end game and scoring
-
-  // todo typescript
-
-  // todo save progress?
-
-  // todo PWA / offline
-
+// todo PWA / offline
 
 Go south along the long road and come to the N. gate where the townspeople are waiting. End game text describes different outcomes based on how you played. In the best scenario, it describes you marching clean, on horseback, holding a scepter, without too much time passing. If you killed the dragon, you can stay in the village (optionally pair with smith or young woman). You even become mayor if your reputation is high enough! If you didn’t kill the dragon, you make it out of the village before the angry dragon burns it down.
-
-
 
 make apples be a barrel, always have apple at inn but can also put in inventory
 if take apple when have apple, lose reputation. could allow take (and have x apples) or prevent take

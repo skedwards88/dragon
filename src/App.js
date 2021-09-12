@@ -60,9 +60,9 @@ function App() {
   const [playerLocation, setPlayerLocation] = useState("gate");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
-  
+
   function moveItem({ item, oldLocation, newLocation }) {
-    if (oldLocation === newLocation) return
+    if (oldLocation === newLocation) return;
 
     console.log(`moving' ${item} from ${oldLocation} to ${newLocation}`);
     itemLocations[oldLocation].delete(item);
@@ -71,7 +71,6 @@ function App() {
   }
 
   function handleMovePlayer(newLocation) {
-
     let gameStateChanges = {};
 
     const oldLocation = playerLocation;
@@ -95,7 +94,7 @@ function App() {
       });
     gameStateChanges = { ...gameStateChanges, ...customEnterStateEffect };
 
-    console.log(`updating game state: ${gameStateChanges}`)
+    console.log(`updating game state: ${gameStateChanges}`);
     if (Object.keys(gameStateChanges).length) {
       setGameState({
         ...gameState,
@@ -131,7 +130,7 @@ function App() {
   }
 
   function handleTake(item) {
-    console.log(`taking ${item} at ${playerLocation}`)
+    console.log(`taking ${item} at ${playerLocation}`);
 
     // Get the "take"" description for the item -- this will be the consequence text
     const customDescription =
@@ -182,7 +181,7 @@ function App() {
         itemLocations: itemLocations,
       });
 
-    console.log(`updating game state: ${customGameEffect}`)
+    console.log(`updating game state: ${customGameEffect}`);
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -202,7 +201,7 @@ function App() {
   }
 
   function handleUse(item) {
-    console.log(`using ${item} at ${playerLocation}`)
+    console.log(`using ${item} at ${playerLocation}`);
 
     // Get the "use"" description for the item -- this will be the consequence text
     const customDescription =
@@ -227,7 +226,7 @@ function App() {
       });
 
     // Update game state with any custom effect
-    console.log(`updating game state: ${customGameEffect}`)
+    console.log(`updating game state: ${customGameEffect}`);
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -240,7 +239,7 @@ function App() {
   }
 
   function handleDrop(item) {
-    console.log(`dropping ${item} at ${playerLocation}`)
+    console.log(`dropping ${item} at ${playerLocation}`);
 
     // const customDrop = items[item].getCustomDrop({
     //   dropPreposition: locations[playerLocation].dropPreposition,
@@ -287,7 +286,7 @@ function App() {
         itemLocations: itemLocations,
       });
 
-      console.log(`updating game state: ${customGameEffect}`)
+    console.log(`updating game state: ${customGameEffect}`);
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -307,7 +306,7 @@ function App() {
   }
 
   function handlePay() {
-    console.log(`paying ${playerLocation}`)
+    console.log(`paying ${playerLocation}`);
 
     // todo not checking yet if you have enough gold to buy
     if (
@@ -365,7 +364,7 @@ function App() {
         itemLocations: itemLocations,
       });
 
-    console.log(`updating game state: ${customGameEffect}`)
+    console.log(`updating game state: ${customGameEffect}`);
     if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
@@ -390,7 +389,7 @@ function App() {
   }
 
   function handleGive(item) {
-    console.log(`giving ${item} to ${playerLocation}`)
+    console.log(`giving ${item} to ${playerLocation}`);
 
     // If "give" is not handled, you can't give
     if (
@@ -477,8 +476,8 @@ function App() {
         itemLocations: itemLocations,
       });
 
-      console.log(`updating game state: ${customGameEffect}`)
-      if (customGameEffect) {
+    console.log(`updating game state: ${customGameEffect}`);
+    if (customGameEffect) {
       setGameState({ ...gameState, ...customGameEffect });
     }
 
@@ -608,7 +607,7 @@ function App() {
             Inventory
           </button>
         </div>
-<Stats/>
+        <Stats />
       </div>
     );
   }
@@ -616,18 +615,18 @@ function App() {
   function Stats() {
     return (
       <table className="stats">
-      <tbody>
-      <tr className="stat">
-        <td className="statName">Reputation: </td>
-        <td>{gameState.reputation}</td>
-      </tr>
-      <tr className="stat">
-      <td className="statName">Gold: </td>
-        <td>{gameState.gold}</td>
-      </tr>
-      </tbody>
-    </table>
-    )
+        <tbody>
+          <tr className="stat">
+            <td className="statName">Reputation: </td>
+            <td>{gameState.reputation}</td>
+          </tr>
+          <tr className="stat">
+            <td className="statName">Gold: </td>
+            <td>{gameState.gold}</td>
+          </tr>
+        </tbody>
+      </table>
+    );
   }
 
   function Consequence() {
@@ -699,7 +698,8 @@ function App() {
   }
 
   if (gameState.reputation <= 0) {
-    const gameEndText = "Even your pride has its limits. With what little reputation you have left, you flee the town."
+    const gameEndText =
+      "Even your pride has its limits. With what little reputation you have left, you flee the town.";
     return (
       <div className="App">
         <div className="description">{gameEndText}</div>
@@ -708,20 +708,46 @@ function App() {
         >
           PLAY AGAIN
         </button>
-        <Stats/>
+        <Stats />
       </div>
     );
   }
 
   if (playerLocation === "gate" && gameState.earnedTreasureAmount) {
-    const gameEndText = `You arrive at the city gates ${gameState.horseMounted ? "proudly mounted on your horse" :"weary from the long walk"}. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes. ` : ""}${gameState.clothesPoopy && !gameState.naked ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. " :""}${gameState.playerPoisoned ? "\n\nYour face is still splotchy and swollen from eating the berries. " :""}${gameState.singeCount ? `\n\nYou have ${gameState.singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `: ""}${gameState.cursed ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life. " : ""}${gameState.dragonDead ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ` : `\n\nInitially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "doomed" as the townsfolk glare angrily at you. \n\nEager to escape the wrath of the dragon and townsfolk, you flee town.`}`
+    const gameEndText = `You arrive at the city gates ${
+      gameState.horseMounted
+        ? "proudly mounted on your horse"
+        : "weary from the long walk"
+    }. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${
+      gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes. ` : ""
+    }${
+      gameState.clothesPoopy && !gameState.naked
+        ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. "
+        : ""
+    }${
+      gameState.playerPoisoned
+        ? "\n\nYour face is still splotchy and swollen from eating the berries. "
+        : ""
+    }${
+      gameState.singeCount
+        ? `\n\nYou have ${gameState.singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `
+        : ""
+    }${
+      gameState.cursed
+        ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life. "
+        : ""
+    }${
+      gameState.dragonDead
+        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. `
+        : `\n\nInitially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "doomed" as the townsfolk glare angrily at you. \n\nEager to escape the wrath of the dragon and townsfolk, you flee town.`
+    }`;
 
-    let finalReputation = gameState.reputation
-    if (gameState.horseMounted) finalReputation += 1
-    if (gameState.dragonDead) finalReputation += 2
-    if (gameState.naked) finalReputation -=1
-    if (gameState.clothesPoopy) finalReputation -= 1
-    if (gameState.cursed) finalReputation -= 1
+    let finalReputation = gameState.reputation;
+    if (gameState.horseMounted) finalReputation += 1;
+    if (gameState.dragonDead) finalReputation += 2;
+    if (gameState.naked) finalReputation -= 1;
+    if (gameState.clothesPoopy) finalReputation -= 1;
+    if (gameState.cursed) finalReputation -= 1;
     // Not losing reputation for being poisoned or singed since that happens when the event occurs
 
     return (
@@ -733,31 +759,30 @@ function App() {
           PLAY AGAIN
         </button>
         <table className="stats">
-      <tbody>
-      <tr className="stat">
-        <td className="statName">Reputation: </td>
-        <td>{finalReputation}</td>
-        <td className="statName">Max: </td>
-        <td>TODO </td>
-      </tr>
-      <tr className="stat">
-      <td className="statName">Gold: </td>
-        <td>{gameState.gold}</td>
-      <td className="statName">Max: </td>
-        <td>TODO </td>
-      </tr>
-      </tbody>
-    </table>
-
+          <tbody>
+            <tr className="stat">
+              <td className="statName">Reputation: </td>
+              <td>{finalReputation}</td>
+              <td className="statName">Max: </td>
+              <td>TODO </td>
+            </tr>
+            <tr className="stat">
+              <td className="statName">Gold: </td>
+              <td>{gameState.gold}</td>
+              <td className="statName">Max: </td>
+              <td>TODO </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     );
   }
 
   switch (currentDisplay) {
     case "consequence":
-      return <Consequence/>;
+      return <Consequence />;
     case "inventory":
-      return <Inventory/>;
+      return <Inventory />;
     default:
       return <Location />;
   }
