@@ -32,11 +32,10 @@ class Item {
     },
     getCustomGive = function () {
       return new ItemInteraction({});
-    },    
+    },
     getCustomTake = function () {
       return new ItemInteraction({});
     },
-
   }) {
     this.id = id;
     this.displayName = displayName;
@@ -89,7 +88,7 @@ const lute = new Item({
       if (props.playerLocation === "room") {
         return "The lute feels familiar. ";
       }
-      }
+    }
 
     return new ItemInteraction({
       description: writeDescription(props),
@@ -105,14 +104,16 @@ const lute = new Item({
       ) {
         return "You give your lute to the blacksmith. In exchange, they give you the sword. ";
       }
-      }
+    }
 
     function getGameEffect(props) {
       let gameEffect = {};
 
-      if (!props.gameState.ownSword &&
+      if (
+        !props.gameState.ownSword &&
         props.itemLocations.smithy.has("sword") &&
-        props.playerLocation === "blacksmith") {
+        props.playerLocation === "blacksmith"
+      ) {
         gameEffect = { ...gameEffect, ownSword: true };
       }
 
@@ -120,9 +121,11 @@ const lute = new Item({
     }
 
     function getOtherItemLocation(props) {
-      if (!props.gameState.ownSword &&
+      if (
+        !props.gameState.ownSword &&
         props.itemLocations.smithy.has("sword") &&
-        props.playerLocation === "blacksmith") {
+        props.playerLocation === "blacksmith"
+      ) {
         return {
           item: "sword",
           oldLocation: "smithy",
@@ -133,7 +136,7 @@ const lute = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      otherItemLocations: getOtherItemLocation(props),//todo could make list to handle multiples
+      otherItemLocations: getOtherItemLocation(props), //todo could make list to handle multiples
       description: writeDescription(props),
     });
   },
@@ -254,7 +257,7 @@ const apple = new Item({
 
   getCustomGive: function (props) {
     function writeDescription(props) {
-        // todo should you also be able to give to squirrel?
+      // todo should you also be able to give to squirrel?
 
       if (
         props.itemLocations.pasture.has("horse") &&
@@ -262,13 +265,15 @@ const apple = new Item({
       ) {
         return "This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you tie the reins back to the post. ";
       }
-      }
+    }
 
     function getGameEffect(props) {
       let gameEffect = {};
 
-      if (props.itemLocations.pasture.has("horse") &&
-      props.playerLocation === "pasture") {
+      if (
+        props.itemLocations.pasture.has("horse") &&
+        props.playerLocation === "pasture"
+      ) {
         gameEffect = { ...gameEffect, horseTethered: true };
       }
 
@@ -276,8 +281,10 @@ const apple = new Item({
     }
 
     function getTargetItemLocation(props) {
-      if (props.itemLocations.pasture.has("horse") &&
-      props.playerLocation === "pasture") {
+      if (
+        props.itemLocations.pasture.has("horse") &&
+        props.playerLocation === "pasture"
+      ) {
         return "outOfPlay";
       }
     }
@@ -376,13 +383,16 @@ const handkerchief = new Item({
       if (props.playerLocation === "youth") {
         return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob. \n\nThe youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. `;
       }
-      }
+    }
 
     function getGameEffect(props) {
       let gameEffect = {};
 
       if (props.playerLocation === "youth") {
-        gameEffect = { ...gameEffect, reputation: props.gameState.reputation + 1 };
+        gameEffect = {
+          ...gameEffect,
+          reputation: props.gameState.reputation + 1,
+        };
       }
 
       if (Object.keys(gameEffect).length) return gameEffect;
@@ -400,7 +410,6 @@ const handkerchief = new Item({
       description: writeDescription(props),
     });
   },
-
 });
 
 const baby = new Item({
@@ -455,14 +464,13 @@ const baby = new Item({
       if (props.playerLocation === "nursery") {
         return "You pick up the baby from the crib. The baby coughs as you move it away from the open window. ";
       }
-      }
+    }
 
     return new ItemInteraction({
-      gameEffect: {savedBaby: true},
+      gameEffect: { savedBaby: true },
       description: writeDescription(props),
     });
   },
-
 });
 
 const sword = new Item({
@@ -530,14 +538,14 @@ const sword = new Item({
       if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
         return 'You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith shop grabs the sword from you and returns it to the table. ';
       }
-  
+
       if (
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score")
       ) {
         return "Ah you would like to exchange? You must first give me the score.";
       }
-      }
+    }
 
     function getGameEffect(props) {
       if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
@@ -547,28 +555,27 @@ const sword = new Item({
             props.gameState.swordCost + 10,
             props.gameState.maxSwordCost
           ),
-        }; 
+        };
       }
     }
     function getTargetItemLocation(props) {
       if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
         return "smithy";
       }
-  
+
       if (
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score")
       ) {
         return "wizard";
       }
-      }
+    }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
       targetItemLocation: getTargetItemLocation(props),
       description: writeDescription(props),
     });
-    
   },
 
   getCustomGive: function (props) {
@@ -581,16 +588,17 @@ const sword = new Item({
       ) {
         return "You give your sword to the wizard. In exchange, they give you the musical score. ";
       }
-      }
+    }
 
     function getGameEffect(props) {
       let gameEffect = {};
 
-      if (      props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore &&
-      props.playerLocation === "wizard" &&
-      !props.gameState.earnedTreasureAmount
-) {
+      if (
+        props.itemLocations.wizard.has("score") &&
+        !props.gameState.ownScore &&
+        props.playerLocation === "wizard" &&
+        !props.gameState.earnedTreasureAmount
+      ) {
         gameEffect = { ...gameEffect, ownScore: true };
       }
 
@@ -598,19 +606,23 @@ const sword = new Item({
     }
 
     function getTargetItemLocation(props) {
-      if (props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore &&
-      props.playerLocation === "wizard" &&
-      !props.gameState.earnedTreasureAmount) {
+      if (
+        props.itemLocations.wizard.has("score") &&
+        !props.gameState.ownScore &&
+        props.playerLocation === "wizard" &&
+        !props.gameState.earnedTreasureAmount
+      ) {
         return "wizard";
       }
     }
 
     function getOtherItemLocation(props) {
-      if (props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore &&
-      props.playerLocation === "wizard" &&
-      !props.gameState.earnedTreasureAmount) {
+      if (
+        props.itemLocations.wizard.has("score") &&
+        !props.gameState.ownScore &&
+        props.playerLocation === "wizard" &&
+        !props.gameState.earnedTreasureAmount
+      ) {
         return {
           item: "score",
           oldLocation: "wizard",
@@ -688,13 +700,12 @@ const horse = new Item({
       return gameEffect;
     }
 
-
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
       description: writeDescription(props),
     });
   },
-// description,
+  // description,
   // gameEffect,
   // targetItemLocation,
   // otherItemLocations,
@@ -704,22 +715,21 @@ const horse = new Item({
       if (props.gameState.horseDead) {
         return "This dead horse is too heavy to carry. ";
       }
-  
+
       if (!props.gameState.horseTethered) {
         return "You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. ";
       }
-      }
-
+    }
 
     function getTargetItemLocation(props) {
       if (props.gameState.horseDead) {
         return props.playerLocation;
       }
-  
+
       if (!props.gameState.horseTethered) {
         return props.playerLocation;
       }
-      }
+    }
 
     return new ItemInteraction({
       targetItemLocation: getTargetItemLocation(props),
@@ -728,10 +738,9 @@ const horse = new Item({
   },
 
   getCustomGive: function (props) {
-
     function getGameEffect(props) {
-      if (props.gameState.horseMounted){
-        return {horseMounted: false}
+      if (props.gameState.horseMounted) {
+        return { horseMounted: false };
       }
     }
 
@@ -767,15 +776,21 @@ const berries = new Item({
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
-      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
         return "The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
-      }
+    }
 
     function getGameEffect(props) {
       let gameEffect = {};
 
-      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
         gameEffect = { ...gameEffect, squirrelDead: true };
       }
 
@@ -784,7 +799,10 @@ const berries = new Item({
 
     function getTargetItemLocation(props) {
       // todo is this wht I want?
-      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
         return "clearing";
       }
     }
@@ -795,37 +813,46 @@ const berries = new Item({
       description: writeDescription(props),
     });
   },
-// description,
+  // description,
   // gameEffect,
   // targetItemLocation,
   // otherItemLocations,
 
   getCustomGive: function (props) {
     function writeDescription(props) {
-      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
         return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
-  // todo also give to horse
+      // todo also give to horse
       if (props.playerLocation === "wizard") {
         return `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
       }
-      }
+    }
 
     function getGameEffect(props) {
-      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
         return { squirrelDead: true };
       }
-      }
+    }
 
     function getTargetItemLocation(props) {
-      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
         return "clearing"; // todo is this right?
       }
-  
+
       if (props.playerLocation === "wizard") {
         return "inventory";
       }
-      }
+    }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
@@ -838,22 +865,21 @@ const berries = new Item({
 const treasure = new Item({
   id: "treasure",
   spawnLocation: "lair",
-// description,
+  // description,
   // gameEffect,
   // targetItemLocation,
   // otherItemLocations,
 
   getCustomTake: function (props) {
     function writeDescription(props) {
-
       if (props.gameState.dragonDead) {
         return "You scoop as much treasure as possible into your bag, avoiding the gore from the severed dragon head. ";
       }
-  
+
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
         return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. ";
       }
-  
+
       if (
         props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
@@ -861,7 +887,7 @@ const treasure = new Item({
       ) {
         return "With the dragon slower from the poison, you can now reach the treasure. You scoop as much treasure as possible into your bag before the dragon singes you. ";
       }
-  
+
       if (
         !props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
@@ -878,7 +904,7 @@ const treasure = new Item({
           earnedTreasureAmount: props.gameState.treasureAmount,
         };
       }
-  
+
       if (
         props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
@@ -891,7 +917,7 @@ const treasure = new Item({
           reputation: props.gameState.reputation - 1,
         };
       }
-  
+
       if (
         !props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
@@ -901,13 +927,18 @@ const treasure = new Item({
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         };
-      }    }
+      }
+    }
 
     function getTargetItemLocation(props) {
-      if (props.gameState.dragonPoisoned || props.gameState.dragonAsleep || props.gameState.dragonDead) {
+      if (
+        props.gameState.dragonPoisoned ||
+        props.gameState.dragonAsleep ||
+        props.gameState.dragonDead
+      ) {
         return "outOfPlay";
       }
-  
+
       if (
         !props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
@@ -995,7 +1026,7 @@ const score = new Item({
       };
     }
   },
-// description,
+  // description,
   // gameEffect,
   // targetItemLocation,
   // otherItemLocations,
@@ -1004,11 +1035,12 @@ const score = new Item({
     function writeDescription(props) {
       if (!props.gameState.ownScore) {
         return `"Ah ah!" The wizard shakes a finger at you. Not for free. I would trade it for ${
-          props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
+          props.itemLocations.inventory.has("sword")
+            ? "your fine sword or "
+            : ""
         }gold.`;
       }
-      }
-
+    }
 
     function getTargetItemLocation(props) {
       if (!props.gameState.ownScore) {
@@ -1022,7 +1054,6 @@ const score = new Item({
     });
   },
 
-
   getCustomGive: function (props) {
     function writeDescription(props) {
       if (
@@ -1032,7 +1063,7 @@ const score = new Item({
       ) {
         return '"You would like to exchange?" The wizard takes the musical score in exchange for the sword.';
       }
-  
+
       if (
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score") &&
@@ -1040,7 +1071,7 @@ const score = new Item({
       ) {
         return "Ah ah. All sales on credit are final. The score is yours to keep, and half your resulting treasure is mine.";
       }
-      }
+    }
 
     function getGameEffect(props) {
       if (
@@ -1060,7 +1091,7 @@ const score = new Item({
       ) {
         return "wizard";
       }
-  
+
       if (
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score") &&
@@ -1068,21 +1099,21 @@ const score = new Item({
       ) {
         return "inventory";
       }
-      }
+    }
 
-      function getOtherItemLocation(props) {
-        if (
-          props.playerLocation === "wizard" &&
-          props.itemLocations.inventory.has("score") &&
-          props.itemLocations.wizard.has("sword")
-        ) {
-          return {
-            item: "sword",
-            oldLocation: "wizard",
-            newLocation: "inventory",
-          };
-        }
+    function getOtherItemLocation(props) {
+      if (
+        props.playerLocation === "wizard" &&
+        props.itemLocations.inventory.has("score") &&
+        props.itemLocations.wizard.has("sword")
+      ) {
+        return {
+          item: "sword",
+          oldLocation: "wizard",
+          newLocation: "inventory",
+        };
       }
+    }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),

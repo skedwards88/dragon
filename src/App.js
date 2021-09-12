@@ -138,7 +138,8 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    const description = customTake.description ? customTake.description :
+    const description =
+      customTake.description ||
       `You now have ${
         ["a", "e", "i", "o", "u"].includes(
           items[item]
@@ -156,23 +157,25 @@ function App() {
         gameState: gameState,
         itemLocations: itemLocations,
       })}.`;
-      setConsequenceText(description);
+    setConsequenceText(description);
 
-      const endItemLocation = customTake.targetItemLocation ? customTake.targetItemLocation : "inventory";
-      moveItem({
-        item: item,
-        oldLocation: playerLocation,
-        newLocation: endItemLocation,
-      });
-  
-      if (customTake.gameEffect) {
-        console.log(`updating game state: ${JSON.stringify(customTake.gameEffect)}`);
-        setGameState({ ...gameState, ...customTake.gameEffect })
-      }
-  
-      if (customTake.otherItemLocations) {
-        moveItem(customTake.otherItemLocations);
-      }
+    const endItemLocation = customTake.targetItemLocation || "inventory";
+    moveItem({
+      item: item,
+      oldLocation: playerLocation,
+      newLocation: endItemLocation,
+    });
+
+    if (customTake.gameEffect) {
+      console.log(
+        `updating game state: ${JSON.stringify(customTake.gameEffect)}`
+      );
+      setGameState({ ...gameState, ...customTake.gameEffect });
+    }
+
+    if (customTake.otherItemLocations) {
+      moveItem(customTake.otherItemLocations);
+    }
     // set show consequence to true
     setCurrentDisplay("consequence");
   }
@@ -225,10 +228,12 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    const description = customDrop.description ? customDrop.description : `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
+    const description =
+      customDrop.description ||
+      `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
     setConsequenceText(description);
 
-    const endItemLocation = customDrop.targetItemLocation ? customDrop.targetItemLocation : playerLocation;
+    const endItemLocation = customDrop.targetItemLocation || playerLocation;
     moveItem({
       item: item,
       oldLocation: "inventory",
@@ -236,8 +241,10 @@ function App() {
     });
 
     if (customDrop.gameEffect) {
-      console.log(`updating game state: ${JSON.stringify(customDrop.gameEffect)}`);
-      setGameState({ ...gameState, ...customDrop.gameEffect })
+      console.log(
+        `updating game state: ${JSON.stringify(customDrop.gameEffect)}`
+      );
+      setGameState({ ...gameState, ...customDrop.gameEffect });
     }
 
     if (customDrop.otherItemLocations) {
@@ -353,13 +360,21 @@ function App() {
   }
 
   function handleUnwantedGive(item) {
-    if (locations[playerLocation].getHuman({
-      gameState: gameState,
-      playerLocation: playerLocation,
-      itemLocations: itemLocations,
-    })) {
-      setConsequenceText(`The ${playerLocation} does not want this item but agrees to hold it for you.`);
-      moveItem({item: item, oldLocation: "inventory", newLocation: playerLocation})
+    if (
+      locations[playerLocation].getHuman({
+        gameState: gameState,
+        playerLocation: playerLocation,
+        itemLocations: itemLocations,
+      })
+    ) {
+      setConsequenceText(
+        `The ${playerLocation} does not want this item but agrees to hold it for you.`
+      );
+      moveItem({
+        item: item,
+        oldLocation: "inventory",
+        newLocation: playerLocation,
+      });
     } else {
       setConsequenceText(`The ${playerLocation} does not want this item.`);
     }
@@ -369,8 +384,10 @@ function App() {
   }
 
   function handleAcceptedGive(item, customGive) {
- // todo could consolidate item interactions to single function (give, drop...)
-    const description = customGive.description || `You give the ${item} to the ${playerLocation}.`;
+    // todo could consolidate item interactions to single function (give, drop...)
+    const description =
+      customGive.description ||
+      `You give the ${item} to the ${playerLocation}.`;
     setConsequenceText(description);
 
     const endItemLocation = customGive.targetItemLocation || "outOfPlay";
@@ -381,8 +398,10 @@ function App() {
     });
 
     if (customGive.gameEffect) {
-      console.log(`updating game state: ${JSON.stringify(customGive.gameEffect)}`);
-      setGameState({ ...gameState, ...customGive.gameEffect })
+      console.log(
+        `updating game state: ${JSON.stringify(customGive.gameEffect)}`
+      );
+      setGameState({ ...gameState, ...customGive.gameEffect });
     }
 
     if (customGive.otherItemLocations) {
@@ -396,7 +415,7 @@ function App() {
     return Array.from(itemsAtLocation).map((item) => {
       return (
         <button onClick={() => handleTake(item)} className="item" key={item}>
-          {items[item].displayName ? items[item].displayName : item}
+          {items[item].displayName || item}
         </button>
       );
     });
@@ -462,13 +481,7 @@ function App() {
             playerLocation: playerLocation,
             gameState: gameState,
             itemLocations: itemLocations,
-          })
-            ? locations[connection].getDisplayName({
-                playerLocation: playerLocation,
-                gameState: gameState,
-                itemLocations: itemLocations,
-              })
-            : connection}
+          }) || connection}
         </button>
       );
     });
@@ -532,13 +545,7 @@ function App() {
             playerLocation: playerLocation,
             gameState: gameState,
             itemLocations: itemLocations,
-          })
-            ? locations[playerLocation].getDisplayName({
-                playerLocation: playerLocation,
-                gameState: gameState,
-                itemLocations: itemLocations,
-              })
-            : playerLocation}
+          }) || playerLocation}
         </button>
         <button
           className="inventory"
