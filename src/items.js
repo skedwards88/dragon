@@ -80,13 +80,13 @@ const lute = new Item({
   },
   getCustomUseDescription: function (props) {
     if (
-      props.playerLocation === "adolescent" &&
-      !props.gameState.playedForAdolescent
+      props.playerLocation === "youth" &&
+      !props.gameState.playedForYouth
     ) {
-      return `You play a song for the crying adolescent. The music seems to cheer the youth up. `;
+      return `You play a song for the crying youth. The music seems to cheer the youth up. `;
     } else if (
-      props.playerLocation === "adolescent" &&
-      props.gameState.playedForAdolescent
+      props.playerLocation === "youth" &&
+      props.gameState.playedForYouth
     ) {
       return `They appreciate the music, but don't seem keen to listen all day. `;
     } else {
@@ -95,12 +95,12 @@ const lute = new Item({
   },
   getCustomUseGameEffect: function (props) {
     if (
-      props.playerLocation === "adolescent" &&
-      !props.gameState.playedForAdolescent
+      props.playerLocation === "youth" &&
+      !props.gameState.playedForYouth
     ) {
       return {
         reputation: props.gameState.reputation + 1,
-        playedForAdolescent: true,
+        playedForYouth: true,
       };
     }
   },
@@ -361,17 +361,17 @@ const handkerchief = new Item({
   },
   getCustomGiveDescription: function (props) {
     // todo gender is inconsistent
-    if (props.playerLocation === "adolescent") {
-      return `You offer the handkerchief that you saw the adolescent drop. "Th-thank you," they sob. \n\nShe tells you that she was meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, she set the mayor's house on fire, not realizing that the baby was trapped inside. `;
+    if (props.playerLocation === "youth") {
+      return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob. \n\nShe tells you that she was meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, she set the mayor's house on fire, not realizing that the baby was trapped inside. `;
     }
   },
   getCustomGiveLocation: function (props) {
-    if (props.playerLocation === "adolescent") {
+    if (props.playerLocation === "youth") {
       return "outOfPlay";
     }
   },
   getCustomGiveGameEffect: function (props) {
-    if (props.playerLocation === "adolescent") {
+    if (props.playerLocation === "youth") {
       return { reputation: props.gameState.reputation + 1 };
     }
   },

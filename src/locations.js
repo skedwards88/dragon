@@ -40,8 +40,6 @@ class Location {
   }
 }
 
-// todo order connections in order user will most likely click
-
 const room = new Location({
   id: "room",
   getConnections: function () {
@@ -68,7 +66,7 @@ const window = new Location({
   getConnections: function () {
     return ["room"];
   },
-  dropPreposition: "at", // todo could change to out and have anything dropped out any window end in location below
+  dropPreposition: "at",
   getDescription: function (props) {
     return props.gameState.manorFire
       ? "Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion. "
@@ -145,7 +143,7 @@ const courtyard = new Location({
         : ""
     }${
       props.gameState.firstCourtyardEntry
-        ? "\n\nAn adolescent runs west to east, crying as they flee. They drop a handkerchief in their distress. "
+        ? "\n\nAn youth runs west to east, crying as they flee. They drop a handkerchief in their distress. "
         : ""
     }`;
   },
@@ -429,11 +427,11 @@ const gate = new Location({
   id: "gate",
   dropPreposition: "at",
   getConnections: function () {
-    return ["pasture", "adolescent", "road1", "smithy"];
+    return ["pasture", "youth", "road1", "smithy"];
   },
   getDescription: function (props) {
-    return `You are standing at the north gate. To the north, you see a road leading up a mountain. \n\nThe adolescent that you saw earlier stands at the courtyard${
-      !props.gameState.playedForAdolescent ? ", crying" : ""
+    return `You are standing at the north gate. To the north, you see a road leading up a mountain. \n\nThe youth that you saw earlier stands at the courtyard${
+      !props.gameState.playedForYouth ? ", crying" : ""
     }. `;
   },
   onEnterGameStateEffect: function (props) {},
@@ -442,8 +440,8 @@ const gate = new Location({
   onExitItemLocationEffect: function (props) {},
 });
 
-const adolescent = new Location({
-  id: "adolescent", // todo decide what to call
+const youth = new Location({
+  id: "youth",
   getSentient: function () {
     return true;
   },
@@ -455,7 +453,7 @@ const adolescent = new Location({
     return ["gate"];
   },
   getDescription: function (props) {
-    let text = `The youth stands by the city gates${props.gameState.playedForAdolescent ? " crying" : ""}. `
+    let text = `The youth stands by the city gates${props.gameState.playedForYouth ? " crying" : ""}. `
       if (props.gameState.naked) {
         text += `"Ack! Where are your clothes?!"`
       }  
@@ -1046,7 +1044,7 @@ export const locations = {
   blacksmith: blacksmith,
   pasture: pasture,
   gate: gate,
-  adolescent: adolescent,
+  youth: youth,
   road1: road1,
   road2: road2,
   road3: road3,

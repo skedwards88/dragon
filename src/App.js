@@ -24,7 +24,7 @@ function App() {
     babyCough: false,
     savedBaby: false,
     receivedBabyReward: false,
-    playedForAdolescent: false,
+    playedForYouth: false,
     promisedTreasure: false,
     cursed: false,
     firstCourtyardEntry: true,
