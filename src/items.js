@@ -513,7 +513,7 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard"
+      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
     ) {
       return "You give your sword to the wizard. In exchange, they give you the musical score. ";
     }
@@ -522,7 +522,7 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard"
+      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
     ) {
       return "wizard";
     }
@@ -531,7 +531,7 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard"
+      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
     ) {
       return { ownScore: true };
     }
@@ -540,7 +540,7 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard"
+      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
     ) {
       return {
         item: "score",

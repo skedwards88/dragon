@@ -633,7 +633,7 @@ const wizard = new Location({
   getDescription: function (props) {
     let text = "The wizard looks at you though bushy eyebrows. ";
 
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
+    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
       text += `"I have a musical score that will be useful. I would trade it for ${
         props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
       }gold. \n\nI see your gold pouch is light, but I believe this score will lead to treasure if you combine it with your wit. I would accept gold on credit, and will take half the treasure that you earn. \n\nAll sales on credit are final. All sales completed at time of purchase are refundable."`;
@@ -654,7 +654,7 @@ const wizard = new Location({
   onExitItemLocationEffect: function (props) {},
 
   payDescription: function (props) {
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
+    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
       return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
     }
 
@@ -679,7 +679,7 @@ const wizard = new Location({
     }
   },
   payGameStateEffect: function (props) {
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
+    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
       return {
         ownScore: true,
         promisedTreasure: true,
@@ -692,12 +692,12 @@ const wizard = new Location({
     ) {
       return {
         promisedTreasure: false,
-        treasureAmount: props.gameState.treasureAmount / 2,
+        gold: props.gameState.gold - (props.gameState.treasureAmount / 2),
       };
     }
   },
   payItemLocationEffect: function (props) {
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
+    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore && !props.gameState.earnedTreasureAmount) {
       return {
         item: "score",
         oldLocation: "wizard",
