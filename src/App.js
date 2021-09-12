@@ -502,7 +502,7 @@ function App() {
   function LocationItems({ itemsAtLocation }) {
     return Array.from(itemsAtLocation).map((item) => {
       return (
-        <button onClick={(e) => handleTake(item)} className="item" key={item}>
+        <button onClick={() => handleTake(item)} className="item" key={item}>
           {items[item].displayName ? items[item].displayName : item}
         </button>
       );
@@ -521,7 +521,7 @@ function App() {
             })}
           </div>
           <button
-            onClick={(e) => handleUse(item)}
+            onClick={() => handleUse(item)}
             className="item-action"
             key={item + "-use"}
           >
@@ -532,7 +532,7 @@ function App() {
             })}
           </button>
           <button
-            onClick={(e) => handleDrop(item)}
+            onClick={() => handleDrop(item)}
             className="item-action"
             key={item + "-drop"}
           >
@@ -546,7 +546,7 @@ function App() {
                 itemLocations: itemLocations,
               })
             }
-            onClick={(e) => handleGive(item)}
+            onClick={() => handleGive(item)}
             className="item-action"
             key={item + "-give"}
           >
@@ -563,7 +563,7 @@ function App() {
         <button
           className="connection"
           key={connection}
-          onClick={(e) => handleMovePlayer(connection)}
+          onClick={() => handleMovePlayer(connection)}
         >
           {locations[connection].getDisplayName({
             playerLocation: playerLocation,
@@ -602,7 +602,7 @@ function App() {
           />
           <button
             className="inventory"
-            onClick={(e) => setCurrentDisplay("inventory")}
+            onClick={() => setCurrentDisplay("inventory")}
           >
             Inventory
           </button>
@@ -635,7 +635,7 @@ function App() {
         <div className="description">{consequenceText}</div>
         <button
           className="close"
-          onClick={(e) => setCurrentDisplay("location")}
+          onClick={() => setCurrentDisplay("location")}
         >
           Back to{" "}
           {locations[playerLocation].getDisplayName({
@@ -652,7 +652,7 @@ function App() {
         </button>
         <button
           className="inventory"
-          onClick={(e) => setCurrentDisplay("inventory")}
+          onClick={() => setCurrentDisplay("inventory")}
         >
           Inventory
         </button>
@@ -678,7 +678,7 @@ function App() {
                   itemLocations: itemLocations,
                 })
               }
-              onClick={(e) => handlePay()}
+              onClick={() => handlePay()}
               className="item-action"
               key={"gold-give"}
             >
@@ -689,7 +689,7 @@ function App() {
         <button
           key="back"
           className="close"
-          onClick={(e) => setCurrentDisplay("location")}
+          onClick={() => setCurrentDisplay("location")}
         >
           Close Inventory
         </button>
