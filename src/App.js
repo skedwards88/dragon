@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import "./App.css";
 import { items } from "./items.js";
 import { locations } from "./locations.js";
+import Inventory from "./components/inventory";
+import Location from "./components/location";
+import Consequence from "./components/consequence";
+import GameOver from "./components/gameOver";
 
 function App() {
-
   const startingState = {
     reputation: 10,
     gold: 0,
@@ -36,6 +39,8 @@ function App() {
     earnedTreasureAmount: 0,
     singeCount: 0,
     ownScore: false,
+    maxReputation: "todo",
+    maxGold: "todo",
   };
 
   function buildStartingLocations() {
@@ -63,12 +68,12 @@ function App() {
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
   function handleNewGame() {
-    console.log('new game')
-    setItemLocations(startingItemLocations)
-    setGameState(startingState)
-    setPlayerLocation("room")
-    setConsequenceText("")
-    setCurrentDisplay("location")
+    console.log("new game");
+    setItemLocations(startingItemLocations);
+    setGameState(startingState);
+    setPlayerLocation("room");
+    setConsequenceText("");
+    setCurrentDisplay("location");
   }
 
   function moveItem({ item, oldLocation, newLocation }) {
@@ -380,283 +385,64 @@ function App() {
     setCurrentDisplay("consequence");
   }
 
-  function LocationItems({ itemsAtLocation }) {
-    return Array.from(itemsAtLocation).map((item) => {
-      return (
-        <button onClick={() => handleTake(item)} className="item" key={item}>
-          {items[item].displayName || item}
-        </button>
-      );
-    });
-  }
-
-  function InventoryItems({ itemsInInventory }) {
-    return Array.from(itemsInInventory).map((item) => {
-      return (
-        <div className="inventoryItem" key={item}>
-          <div key={item}>
-            {items[item].getDescription({
-              playerLocation: playerLocation,
-              gameState: gameState,
-              itemLocations: itemLocations,
-            })}
-          </div>
-          <button
-            onClick={() => handleUse(item)}
-            className="item-action"
-            key={item + "-use"}
-          >
-            {items[item].getUseVerb({
-              playerLocation: playerLocation,
-              gameState: gameState,
-              itemLocations: itemLocations,
-            })}
-          </button>
-          <button
-            onClick={() => handleDrop(item)}
-            className="item-action"
-            key={item + "-drop"}
-          >
-            Drop
-          </button>
-          <button
-            disabled={
-              !locations[playerLocation].getSentient({
-                gameState: gameState,
-                playerLocation: playerLocation,
-                itemLocations: itemLocations,
-              })
-            }
-            onClick={() => handleGive(item)}
-            className="item-action"
-            key={item + "-give"}
-          >
-            Give
-          </button>
-        </div>
-      );
-    });
-  }
-
-  function Connections({ connections }) {
-    return connections.map((connection) => {
-      return (
-        <button
-          className="connection"
-          key={connection}
-          onClick={() => handleMovePlayer(connection)}
-        >
-          {locations[connection].getDisplayName({
-            playerLocation: playerLocation,
-            gameState: gameState,
-            itemLocations: itemLocations,
-          }) || connection}
-        </button>
-      );
-    });
-  }
-
-  function Location() {
-    return (
-      <div className="App">
-        <div className="description">
-          {locations[playerLocation].getDescription({
-            playerLocation: playerLocation,
-            gameState: gameState,
-            itemLocations: itemLocations,
-          })}
-        </div>
-        <div className="buttons">
-          <LocationItems itemsAtLocation={itemLocations[playerLocation]} />
-          <Connections
-            connections={locations[playerLocation].getConnections({
-              playerLocation: playerLocation,
-              gameState: gameState,
-              itemLocations: itemLocations,
-            })}
-          />
-          <button
-            className="inventory"
-            onClick={() => setCurrentDisplay("inventory")}
-          >
-            Inventory
-          </button>
-        </div>
-        <Stats />
-      </div>
-    );
-  }
-
-  function Stats() {
-    return (
-      <table className="stats">
-        <tbody>
-          <tr className="stat">
-            <td className="statName">Reputation: </td>
-            <td>{gameState.reputation}</td>
-          </tr>
-          <tr className="stat">
-            <td className="statName">Gold: </td>
-            <td>{gameState.gold}</td>
-          </tr>
-        </tbody>
-      </table>
-    );
-  }
-
-  function Consequence() {
-    return (
-      <div className="App">
-        <div className="description">{consequenceText}</div>
-        <button className="close" onClick={() => setCurrentDisplay("location")}>
-          Back to{" "}
-          {locations[playerLocation].getDisplayName({
-            playerLocation: playerLocation,
-            gameState: gameState,
-            itemLocations: itemLocations,
-          }) || playerLocation}
-        </button>
-        <button
-          className="inventory"
-          onClick={() => setCurrentDisplay("inventory")}
-        >
-          Inventory
-        </button>
-      </div>
-    );
-  }
-
-  function Inventory() {
-    return (
-      <div className="App">
-        <div className="description" key="description">
-          Inventory
-        </div>
-        <div className="inventoryItems">
-          <InventoryItems itemsInInventory={itemLocations.inventory} />
-          <div className="inventoryItem" key="gold">
-            <div key="gold">{gameState.gold + " gold"}</div>
-            <button
-              disabled={
-                !locations[playerLocation].getSentient({
-                  gameState: gameState,
-                  playerLocation: playerLocation,
-                  itemLocations: itemLocations,
-                })
-              }
-              onClick={() => handlePay()}
-              className="item-action"
-              key={"gold-give"}
-            >
-              Pay
-            </button>
-          </div>
-        </div>
-        <button
-          key="back"
-          className="close"
-          onClick={() => setCurrentDisplay("location")}
-        >
-          Close Inventory
-        </button>
-      </div>
-    );
-  }
-
   if (gameState.reputation <= 0) {
-    const gameEndText =
-      "Even your pride has its limits. With what little reputation you have left, you flee the town.";
     return (
-      <div className="App">
-        <div className="description">{gameEndText}</div>
-        <button
-          className="close"
-          onClick={handleNewGame}
-        >
-          PLAY AGAIN
-        </button>
-        <Stats />
-      </div>
+      <GameOver
+        result="lose"
+        handleNewGame={handleNewGame}
+        gameState={gameState}
+      />
     );
   }
 
   if (playerLocation === "gate" && gameState.earnedTreasureAmount) {
-    const gameEndText = `You arrive at the city gates ${
-      gameState.horseMounted
-        ? "proudly mounted on your horse"
-        : "weary from the long walk"
-    }. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${
-      gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes. ` : ""
-    }${
-      gameState.clothesPoopy && !gameState.naked
-        ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. "
-        : ""
-    }${
-      gameState.playerPoisoned
-        ? "\n\nYour face is still splotchy and swollen from eating the berries. "
-        : ""
-    }${
-      gameState.singeCount
-        ? `\n\nYou have ${gameState.singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `
-        : ""
-    }${
-      gameState.cursed
-        ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life. "
-        : ""
-    }${
-      gameState.dragonDead
-        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${
-            gameState.reputation > 10
-              ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot."
-              : ""
-          }`
-        : `\n\nInitially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "doomed" as the townsfolk glare angrily at you. \n\nEager to escape the wrath of the dragon and townsfolk, you flee town.`
-    }`;
-
-    let finalReputation = gameState.reputation;
-    if (gameState.horseMounted) finalReputation += 1;
-    if (gameState.dragonDead) finalReputation += 2;
-    if (gameState.naked) finalReputation -= 1;
-    if (gameState.clothesPoopy) finalReputation -= 1;
-    if (gameState.cursed) finalReputation -= 1;
-    // Not losing reputation for being poisoned or singed since that happens when the event occurs
-
     return (
-      <div className="App">
-        <div className="description">{gameEndText}</div>
-        <button
-          className="close"
-          onClick={handleNewGame}
-        >
-          PLAY AGAIN
-        </button>
-        <table className="stats">
-          <tbody>
-            <tr className="stat">
-              <td className="statName">Reputation: </td>
-              <td>{finalReputation}</td>
-              <td className="statName">Max: </td>
-              <td>TODO </td>
-            </tr>
-            <tr className="stat">
-              <td className="statName">Gold: </td>
-              <td>{gameState.gold}</td>
-              <td className="statName">Max: </td>
-              <td>TODO </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <GameOver
+        result="win"
+        handleNewGame={handleNewGame}
+        gameState={gameState}
+      />
     );
   }
 
   switch (currentDisplay) {
     case "consequence":
-      return <Consequence />;
+      return (
+        <Consequence
+          consequenceText={consequenceText}
+          setCurrentDisplay={setCurrentDisplay}
+          locations={locations}
+          playerLocation={playerLocation}
+          gameState={gameState}
+          itemLocations={itemLocations}
+        />
+      );
     case "inventory":
-      return <Inventory />;
+      return (
+        <Inventory
+          items={items}
+          itemLocations={itemLocations}
+          gameState={gameState}
+          locations={locations}
+          playerLocation={playerLocation}
+          setCurrentDisplay={setCurrentDisplay}
+          handleUse={handleUse}
+          handleDrop={handleDrop}
+          handleGive={handleGive}
+          handlePay={handlePay}
+        />
+      );
     default:
-      return <Location />;
+      return (
+        <Location
+          items={items}
+          itemLocations={itemLocations}
+          gameState={gameState}
+          playerLocation={playerLocation}
+          handleTake={handleTake}
+          handleMovePlayer={handleMovePlayer}
+        />
+      );
   }
 }
 
