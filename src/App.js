@@ -183,38 +183,35 @@ function App() {
   function handleUse(item) {
     console.log(`using ${item} at ${playerLocation}`);
 
-    // Get the "use"" description for the item -- this will be the consequence text
-    const customDescription =
-      items[item].getCustomUseDescription &&
-      items[item].getCustomUseDescription({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
+    const customUse = items[item].getCustomUse({
+      playerLocation: playerLocation,
+      gameState: gameState,
+      itemLocations: itemLocations,
+    });
 
     const description =
-      customDescription ||
+      customUse.description ||
       `You use the ${items[item].displayName.toLowerCase()}.`;
-
-    // Get any effect on the game state
-    const customGameEffect =
-      items[item].getCustomUseGameEffect &&
-      items[item].getCustomUseGameEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    // Update game state with any custom effect
-    console.log(`updating game state: ${customGameEffect}`);
-    if (customGameEffect) {
-      setGameState({ ...gameState, ...customGameEffect });
-    }
-
-    // set the consequence text to the use description text
     setConsequenceText(description);
 
-    // show consequence
+    const endItemLocation = customUse.targetItemLocation || "inventory";
+    moveItem({
+      item: item,
+      oldLocation: "inventory",
+      newLocation: endItemLocation,
+    });
+
+    if (customUse.gameEffect) {
+      console.log(
+        `updating game state: ${JSON.stringify(customUse.gameEffect)}`
+      );
+      setGameState({ ...gameState, ...customUse.gameEffect });
+    }
+
+    if (customUse.otherItemLocations) {
+      moveItem(customUse.otherItemLocations);
+    }
+
     setCurrentDisplay("consequence");
   }
 

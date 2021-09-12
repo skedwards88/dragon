@@ -36,6 +36,9 @@ class Item {
     getCustomTake = function () {
       return new ItemInteraction({});
     },
+    getCustomUse = function () {
+      return new ItemInteraction({});
+    },
   }) {
     this.id = id;
     this.displayName = displayName;
@@ -49,6 +52,7 @@ class Item {
     this.getCustomDrop = getCustomDrop;
     this.getCustomGive = getCustomGive;
     this.getCustomTake = getCustomTake;
+    this.getCustomUse = getCustomUse;
   }
 }
 
@@ -62,25 +66,34 @@ const lute = new Item({
   getUseVerb: function () {
     return "Play";
   },
-  getCustomUseDescription: function (props) {
-    if (props.playerLocation === "youth" && !props.gameState.playedForYouth) {
-      return `You play a song for the crying youth. The music seems to cheer the youth up. `;
-    } else if (
-      props.playerLocation === "youth" &&
-      props.gameState.playedForYouth
-    ) {
-      return `They appreciate the music, but don't seem keen to listen all day. `;
-    } else {
-      return "You play a beautiful melody. ";
+
+  getCustomUse: function (props) {
+    function writeDescription(props) {
+      if (props.playerLocation === "youth" && !props.gameState.playedForYouth) {
+        return `You play a song for the crying youth. The music seems to cheer the youth up. `;
+      } else if (
+        props.playerLocation === "youth" &&
+        props.gameState.playedForYouth
+      ) {
+        return `They appreciate the music, but don't seem keen to listen all day. `;
+      } else {
+        return "You play a beautiful melody. ";
+      }
     }
-  },
-  getCustomUseGameEffect: function (props) {
-    if (props.playerLocation === "youth" && !props.gameState.playedForYouth) {
-      return {
-        reputation: props.gameState.reputation + 1,
-        playedForYouth: true,
-      };
+
+    function getGameEffect(props) {
+      if (props.playerLocation === "youth" && !props.gameState.playedForYouth) {
+        return {
+          reputation: props.gameState.reputation + 1,
+          playedForYouth: true,
+        };
+      }
     }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
 
   getCustomTake: function (props) {
@@ -154,19 +167,27 @@ const clothes = new Item({
   getUseVerb: function (props) {
     return props.gameState.naked ? "Wear" : "Remove";
   },
-  getCustomUseDescription: function (props) {
-    let text = props.gameState.naked
-      ? "You put on the clothes. "
-      : "You strip down. ";
+  getCustomUse: function (props) {
+    function writeDescription(props) {
+      let text = props.gameState.naked
+        ? "You put on the clothes. "
+        : "You strip down. ";
 
-    if (props.gameState.clothesPoopy) {
-      text +=
-        "You wrinkle your nose in distaste. Certainly you are not fit for fine company anymore.";
+      if (props.gameState.clothesPoopy) {
+        text +=
+          "You wrinkle your nose in distaste. Certainly you are not fit for fine company anymore.";
+      }
+      return text;
     }
-    return text;
-  },
-  getCustomUseGameEffect: function (props) {
-    return props.gameState.naked ? { naked: false } : { naked: true };
+
+    function getGameEffect(props) {
+      return props.gameState.naked ? { naked: false } : { naked: true };
+    }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
 
   getCustomDrop: function (props) {
@@ -216,13 +237,15 @@ const apple = new Item({
   getUseVerb: function () {
     return "Eat";
   },
-  getCustomUseDescription: function () {
-    return "You eat the apple, feeling refreshed. ";
+  getCustomUse: function (props) {
+    function writeDescription() {
+      return "You eat the apple, feeling refreshed. ";
+    }
+
+    return new ItemInteraction({
+      description: writeDescription(props),
+    });
   },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
@@ -250,10 +273,6 @@ const apple = new Item({
       description: writeDescription(props),
     });
   },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomGive: function (props) {
     function writeDescription(props) {
@@ -311,45 +330,51 @@ const handkerchief = new Item({
   getUseVerb: function (props) {
     return props.gameState.playerMasked ? "Remove" : "Wear";
   },
-  getCustomUseDescription: function (props) {
-    let text = "";
-    props.gameState.playerMasked
-      ? (text += "You remove the handkerchief from your nose and mouth. ")
-      : (text += "You tie the handkerchief around your nose and mouth. ");
+  getCustomUse: function (props) {
+    function writeDescription(props) {
+      let text = "";
+      props.gameState.playerMasked
+        ? (text += "You remove the handkerchief from your nose and mouth. ")
+        : (text += "You tie the handkerchief around your nose and mouth. ");
 
-    if (
-      ["manor", "nursery", "nurseryWindow"].includes(props.playerLocation) &&
-      props.gameState.manorFire &&
-      props.gameState.handkerchiefDamp
-    ) {
-      text += "The damp handkerchief lets you breath more easily. ";
+      if (
+        ["manor", "nursery", "nurseryWindow"].includes(props.playerLocation) &&
+        props.gameState.manorFire &&
+        props.gameState.handkerchiefDamp
+      ) {
+        text += "The damp handkerchief lets you breath more easily. ";
+      }
+
+      if (
+        ["manor", "nursery", "nurseryWindow"].includes(props.playerLocation) &&
+        props.gameState.manorFire &&
+        !props.gameState.handkerchiefDamp
+      ) {
+        text += "On its own, the handkerchief does little to block the smoke. ";
+      }
+
+      if (
+        ["dung", "defecatory", "boulder", "puddle"].includes(
+          props.playerLocation
+        )
+      ) {
+        text += "Even with it, the stench reaches your nose. ";
+      }
+
+      return text;
     }
 
-    if (
-      ["manor", "nursery", "nurseryWindow"].includes(props.playerLocation) &&
-      props.gameState.manorFire &&
-      !props.gameState.handkerchiefDamp
-    ) {
-      text += "On its own, the handkerchief does little to block the smoke. ";
+    function getGameEffect(props) {
+      return props.gameState.playerMasked
+        ? { playerMasked: false }
+        : { playerMasked: true };
     }
 
-    if (
-      ["dung", "defecatory", "boulder", "puddle"].includes(props.playerLocation)
-    ) {
-      text += "Even with it, the stench reaches your nose. ";
-    }
-
-    return text;
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
-  getCustomUseGameEffect: function (props) {
-    return props.gameState.playerMasked
-      ? { playerMasked: false }
-      : { playerMasked: true };
-  },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
@@ -421,8 +446,14 @@ const baby = new Item({
   getUseVerb: function () {
     return "Use";
   },
-  getCustomUseDescription: function () {
-    return "It's unclear what use this baby has. ";
+  getCustomUse: function (props) {
+    function writeDescription() {
+      return "It's unclear what use this baby has. ";
+    }
+
+    return new ItemInteraction({
+      description: writeDescription(props),
+    });
   },
 
   getCustomDrop: function (props) {
@@ -479,59 +510,59 @@ const sword = new Item({
   getUseVerb: function () {
     return "Attack";
   },
-  getCustomUseDescription: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
+  getCustomUse: function (props) {
+    function writeDescription(props) {
+      if (
+        props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair"
+      ) {
+        return "You cut off the head of the dragon. ";
+      } else if (
+        props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair"
+      ) {
+        return "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. ";
+      } else if (
+        !props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair"
+      ) {
+        return "You try to cut off the dragon's head, but it singes you as soon as you get close enough. ";
+      } else {
+        return "You slash the sword through the air, looking a bit foolish. ";
+      }
+    }
 
-    if (
-      props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair"
-    ) {
-      return "You cut off the head of the dragon. ";
-    } else if (
-      props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair"
-    ) {
-      return "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. ";
-    } else if (
-      !props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair"
-    ) {
-      return "You try to cut off the dragon's head, but it singes you as soon as you get close enough. ";
-    } else {
-      return "You slash the sword through the air, looking a bit foolish. ";
+    function getGameEffect(props) {
+      if (
+        props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair"
+      ) {
+        return {
+          dragonDead: true,
+        };
+      } else if (
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair"
+      ) {
+        return {
+          singeCount: props.gameState.singeCount + 1,
+          reputation: props.gameState.reputation - 1,
+        };
+      }
     }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
-  getCustomUseGameEffect: function (props) {
-    if (
-      props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair"
-    ) {
-      return {
-        dragonDead: true,
-      };
-    } else if (
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair"
-    ) {
-      return {
-        singeCount: props.gameState.singeCount + 1,
-        reputation: props.gameState.reputation - 1,
-      };
-    }
-  },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomTake: function (props) {
     function writeDescription(props) {
@@ -650,20 +681,24 @@ const horse = new Item({
   getUseVerb: function (props) {
     return props.gameState.horseMounted ? "Unmount" : "Mount";
   },
-  getCustomUseDescription: function (props) {
-    return props.gameState.horseMounted
-      ? "You unmount the horse, keeping hold of the horse's reins. "
-      : "You mount the horse. Much easier than walking!"; // todo should you be allowed to mount inside a building?
+  getCustomUse: function (props) {
+    function writeDescription(props) {
+      return props.gameState.horseMounted
+        ? "You unmount the horse, keeping hold of the horse's reins. "
+        : "You mount the horse. Much easier than walking!"; // todo should you be allowed to mount inside a building?
+    }
+
+    function getGameEffect(props) {
+      return props.gameState.horseMounted
+        ? { horseMounted: false }
+        : { horseMounted: true };
+    }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
-  getCustomUseGameEffect: function (props) {
-    return props.gameState.horseMounted
-      ? { horseMounted: false }
-      : { horseMounted: true };
-  },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
@@ -705,10 +740,6 @@ const horse = new Item({
       description: writeDescription(props),
     });
   },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomTake: function (props) {
     function writeDescription(props) {
@@ -760,19 +791,25 @@ const berries = new Item({
   getUseVerb: function () {
     return "Eat";
   },
-  getCustomUseDescription: function () {
-    return "You pop the berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ";
-  }, // todo where do the berries go when you eat them?
-  getCustomUseGameEffect: function (props) {
-    return {
-      playerPoisoned: true,
-      reputation: props.gameState.reputation - 1,
-    };
+  getCustomUse: function (props) {
+    function writeDescription() {
+      return "You pop the berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ";
+    }
+
+    function getGameEffect(props) {
+      return {
+        playerPoisoned: true,
+        reputation: props.gameState.reputation - 1,
+      };
+    }
+
+    // todo where do the berries go when you eat them?
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
@@ -813,10 +850,6 @@ const berries = new Item({
       description: writeDescription(props),
     });
   },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomGive: function (props) {
     function writeDescription(props) {
@@ -865,10 +898,6 @@ const berries = new Item({
 const treasure = new Item({
   id: "treasure",
   spawnLocation: "lair",
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomTake: function (props) {
     function writeDescription(props) {
@@ -965,71 +994,67 @@ const score = new Item({
   getUseVerb: function () {
     return "Play";
   },
-  getCustomUseDescription: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
+  getCustomUse: function (props) {
+    function writeDescription(props) {
+      if (!props.itemLocations.inventory.has("lute")) {
+        return "You would like to play this song, but you have no instrument. ";
+      }
 
-    if (!props.itemLocations.inventory.has("lute")) {
-      return "You would like to play this song, but you have no instrument. ";
+      if (
+        props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair" &&
+        props.itemLocations.inventory.has("lute")
+      ) {
+        return "You play a lulling melody. The dragon closes its eyes and begins to snore. ";
+      }
+
+      if (
+        !props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair" &&
+        props.itemLocations.inventory.has("lute")
+      ) {
+        return "Before you can play the first few notes, the dragon lets out a burst of flame, singing you and nearly burning your lute. ";
+      }
+
+      return "You play a lulling melody. ";
     }
 
-    if (
-      props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair" &&
-      props.itemLocations.inventory.has("lute")
-    ) {
-      return "You play a lulling melody. The dragon closes its eyes and begins to snore. ";
+    function getGameEffect(props) {
+      if (
+        props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair" &&
+        props.itemLocations.inventory.has("lute")
+      ) {
+        return {
+          dragonAsleep: true,
+        };
+      }
+
+      if (
+        !props.gameState.dragonPoisoned &&
+        !props.gameState.dragonAsleep &&
+        !props.gameState.dragonDead &&
+        props.playerLocation === "lair" &&
+        props.itemLocations.inventory.has("lute")
+      ) {
+        return {
+          singeCount: props.gameState.singeCount + 1,
+          reputation: props.gameState.reputation - 1,
+        };
+      }
     }
 
-    if (
-      !props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair" &&
-      props.itemLocations.inventory.has("lute")
-    ) {
-      return "Before you can play the first few notes, the dragon lets out a burst of flame, singing you and nearly burning your lute. ";
-    }
-
-    return "You play a lulling melody. ";
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
-  getCustomUseGameEffect: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
-
-    if (
-      props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair" &&
-      props.itemLocations.inventory.has("lute")
-    ) {
-      return {
-        dragonAsleep: true,
-      };
-    }
-
-    if (
-      !props.gameState.dragonPoisoned &&
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.playerLocation === "lair" &&
-      props.itemLocations.inventory.has("lute")
-    ) {
-      return {
-        singeCount: props.gameState.singeCount + 1,
-        reputation: props.gameState.reputation - 1,
-      };
-    }
-  },
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomTake: function (props) {
     function writeDescription(props) {
