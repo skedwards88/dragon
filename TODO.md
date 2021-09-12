@@ -66,21 +66,8 @@ make lose condition if get down to 0 reputation
     treasureAmount: 200,
 
 ```javascript
-`You arrive at the city gates ${horseMounted ? "proudly mounted on your horse" :"weary from the long walk"}. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair.
-
-${naked ? `The townsfolk jeer at your lack of clothes. ` : ""}${clothesPoopy && !naked ? "The townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. " :""}
-
-
-${playerPoisoned ? "Your face is still splotchy and swollen from eating the berries. " :""}${singeCount ? `You have ${singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `: ""}
-
-${cursed ? "Although the curse is not visible, a forbidding aura hangs around you, driving the townsfolk away. You wonder what effect the curse will have on your life." : ""}
-
-${dragonDead ? `The townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers.` : `Initially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "" as the townsfolk glance angrily at you. Eager to escape the wrath of the dragon and townsfolk, you flee town.`}
 `
 ```
-
-clothed and poopy
-clothed and clean -- nothing
 
 horseMounted +1
 playerPoisoned --  nothing. lost reputation as it happened

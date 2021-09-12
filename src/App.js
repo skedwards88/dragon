@@ -32,7 +32,7 @@ function App() {
     dragonAsleep: false,
     dragonDead: false,
     treasureAmount: 200,
-    earnedTreasureAmount: 0,
+    earnedTreasureAmount: 50,
     singeCount: 0,
     ownScore: false,
   };
@@ -57,7 +57,7 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("room");
+  const [playerLocation, setPlayerLocation] = useState("gate");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
   
@@ -715,7 +715,8 @@ function App() {
   }
 
   if (playerLocation === "gate" && gameState.earnedTreasureAmount) {
-    const gameEndText = "TODO"
+    const gameEndText = `You arrive at the city gates ${gameState.horseMounted ? "proudly mounted on your horse" :"weary from the long walk"}. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes. ` : ""}${gameState.clothesPoopy && !gameState.naked ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. " :""}${gameState.playerPoisoned ? "\n\nYour face is still splotchy and swollen from eating the berries. " :""}${gameState.singeCount ? `\n\nYou have ${gameState.singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `: ""}${gameState.cursed ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life. " : ""}${gameState.dragonDead ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ` : `\n\nInitially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "doomed" as the townsfolk glare angrily at you. \n\nEager to escape the wrath of the dragon and townsfolk, you flee town.`}`
+    
     return (
       <div className="App">
         <div className="description">{gameEndText}</div>
@@ -731,9 +732,9 @@ function App() {
 
   switch (currentDisplay) {
     case "consequence":
-      return <Consequence></Consequence>;
+      return <Consequence/>;
     case "inventory":
-      return <Inventory></Inventory>;
+      return <Inventory/>;
     default:
       return <Location />;
   }
