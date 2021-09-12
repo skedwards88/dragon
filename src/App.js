@@ -248,13 +248,10 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    // Get the "drop"" description for the item -- this will be the consequence text
     const description = customDrop.description ? customDrop.description : `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
+    setConsequenceText(description);
 
     const endItemLocation = customDrop.targetItemLocation ? customDrop.targetItemLocation : playerLocation;
-
-    // Set the item location from the inventory to the new location
-    console.log(`${item} goes to ${endItemLocation}`);
     moveItem({
       item: item,
       oldLocation: "inventory",
@@ -266,10 +263,10 @@ function App() {
       setGameState({ ...gameState, ...customDrop.gameEffect })
     }
 
-    // set the consequence text to the drop description text
-    setConsequenceText(description);
+    if (customDrop.otherItemLocations) {
+      moveItem(customDrop.otherItemLocations);
+    }
 
-    // set show consequence to true
     setCurrentDisplay("consequence");
   }
 
@@ -359,34 +356,20 @@ function App() {
   function handleGive(item) {
     console.log(`giving ${item} to ${playerLocation}`);
 
-    // If "give" is not handled, you can't give
+    const customGive = items[item].getCustomGive({
+      dropPreposition: locations[playerLocation].dropPreposition,
+      playerLocation: playerLocation,
+      gameState: gameState,
+      itemLocations: itemLocations,
+    });
+
     if (
-      (items[item].getCustomGiveDescription &&
-        items[item].getCustomGiveDescription({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })) ||
-      (items[item].getCustomGiveLocation &&
-        items[item].getCustomGiveLocation({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })) ||
-      (items[item].getCustomGiveGameEffect &&
-        items[item].getCustomGiveGameEffect({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })) ||
-      (items[item].getCustomGiveItemLocationEffect &&
-        items[item].getCustomGiveItemLocationEffect({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        }))
+      customGive.description ||
+      customGive.gameEffect ||
+      customGive.targetItemLocation ||
+      customGive.otherItemLocations
     ) {
-      handleAcceptedGive(item);
+      handleAcceptedGive(item, customGive);
     } else {
       handleUnwantedGive(item);
     }
@@ -408,70 +391,27 @@ function App() {
     setCurrentDisplay("consequence");
   }
 
-  function handleAcceptedGive(item) {
-    // Get the "give" description for the item -- this will be the consequence text
-    const customDescription =
-      items[item].getCustomGiveDescription &&
-      items[item].getCustomGiveDescription({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
+  function handleAcceptedGive(item, customGive) {
+ // todo could consolidate item interactions to single function (give, drop...)
+    const description = customGive.description || `You give the ${item} to the ${playerLocation}.`;
+    setConsequenceText(description);
 
-    const description =
-      customDescription || `You give the ${item} to the ${playerLocation}.`;
-
-    // Get the "drop" end location for the item -- will usually be the current player location
-    const customItemLocation =
-      items[item].getCustomGiveLocation &&
-      items[item].getCustomGiveLocation({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    const endItemLocation = customItemLocation || "outOfPlay";
-
-    console.log(`give to ${endItemLocation}`);
-
-    // Determine if another item should also move
-    const giveItemLocationEffect =
-      items[item].getCustomGiveItemLocationEffect &&
-      items[item].getCustomGiveItemLocationEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    // Get any effect on the game state
-    const customGameEffect =
-      items[item].getCustomGiveGameEffect &&
-      items[item].getCustomGiveGameEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    console.log(`updating game state: ${customGameEffect}`);
-    if (customGameEffect) {
-      setGameState({ ...gameState, ...customGameEffect });
-    }
-
-    // Set the item location from the inventory to the new location
+    const endItemLocation = customGive.targetItemLocation || "outOfPlay";
     moveItem({
       item: item,
       oldLocation: "inventory",
       newLocation: endItemLocation,
     });
 
-    if (giveItemLocationEffect) {
-      moveItem(giveItemLocationEffect);
+    if (customGive.gameEffect) {
+      console.log(`updating game state: ${JSON.stringify(customGive.gameEffect)}`);
+      setGameState({ ...gameState, ...customGive.gameEffect })
     }
 
-    // set the consequence text to the give description text
-    setConsequenceText(description);
+    if (customGive.otherItemLocations) {
+      moveItem(customGive.otherItemLocations);
+    }
 
-    // set show consequence to true
     setCurrentDisplay("consequence");
   }
 
