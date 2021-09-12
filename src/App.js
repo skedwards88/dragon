@@ -441,6 +441,7 @@ function App() {
           playerLocation={playerLocation}
           handleTake={handleTake}
           handleMovePlayer={handleMovePlayer}
+          setCurrentDisplay={setCurrentDisplay}
         />
       );
   }

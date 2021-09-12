@@ -43,6 +43,7 @@ export default function Location({
   itemLocations,
   gameState,
   playerLocation,
+  setCurrentDisplay
 }) {
   console.log(`in loc ${playerLocation}`);
   return (
