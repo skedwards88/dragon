@@ -23,15 +23,16 @@ html {
   justify-content: space-around;
   white-space: pre;
   margin: auto;
+  
 }
 
 .stat {
   text-align: right;
-
 }
 
 .statName {
   font-weight: bold;
+  padding-left: 15px;
 }
 
 .description {

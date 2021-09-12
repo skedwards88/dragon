@@ -68,11 +68,3 @@ make lose condition if get down to 0 reputation
 ```javascript
 `
 ```
-
-horseMounted +1
-playerPoisoned --  nothing. lost reputation as it happened
-singeCount -- nothing. lost reputation as it happened
-dragonDead +2
-naked -1
-clothesPoopy -1
-cursed -1
