@@ -368,6 +368,11 @@ const blacksmith = new Location({
   onExitGameStateEffect: function (props) {},
   onEnterItemLocationEffect: function (props) {},
   onExitItemLocationEffect: function (props) {},
+
+  customPay: function(props) {
+
+  },
+
   payDescription: function (props) {
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
       return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `; // todo this doesn't account for if sword costs more than have

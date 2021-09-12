@@ -1,7 +1,7 @@
 class ItemInteraction {
   constructor({
-    description,
     gameEffect,
+    description,
     targetItemLocation,
     otherItemLocations,
   }) {
@@ -27,10 +27,6 @@ class Item {
     getCustomUseDescription,
     getCustomUseGameEffect,
 
-    getCustomDropDescription,
-    getCustomDropLocation,
-    getCustomDropGameEffect,
-
     getCustomTakeDescription,
     getCustomTakeLocation,
     getCustomTakeGameEffect,
@@ -40,7 +36,9 @@ class Item {
     getCustomGiveGameEffect,
     getCustomGiveItemLocationEffect,
 
-    getCustomDrop,
+    getCustomDrop = function () {
+      return new ItemInteraction({});
+    },
   }) {
     this.id = id;
     this.displayName = displayName;
@@ -50,10 +48,6 @@ class Item {
     this.getUseVerb = getUseVerb;
     this.getCustomUseDescription = getCustomUseDescription;
     this.getCustomUseGameEffect = getCustomUseGameEffect;
-
-    this.getCustomDropDescription = getCustomDropDescription;
-    this.getCustomDropLocation = getCustomDropLocation;
-    this.getCustomDropGameEffect = getCustomDropGameEffect;
 
     this.getCustomTakeDescription = getCustomTakeDescription;
     this.getCustomTakeLocation = getCustomTakeLocation;
@@ -79,10 +73,7 @@ const lute = new Item({
     return "Play";
   },
   getCustomUseDescription: function (props) {
-    if (
-      props.playerLocation === "youth" &&
-      !props.gameState.playedForYouth
-    ) {
+    if (props.playerLocation === "youth" && !props.gameState.playedForYouth) {
       return `You play a song for the crying youth. The music seems to cheer the youth up. `;
     } else if (
       props.playerLocation === "youth" &&
@@ -94,10 +85,7 @@ const lute = new Item({
     }
   },
   getCustomUseGameEffect: function (props) {
-    if (
-      props.playerLocation === "youth" &&
-      !props.gameState.playedForYouth
-    ) {
+    if (props.playerLocation === "youth" && !props.gameState.playedForYouth) {
       return {
         reputation: props.gameState.reputation + 1,
         playedForYouth: true,
@@ -151,7 +139,9 @@ const clothes = new Item({
   id: "clothes",
   spawnLocation: "wardrobe",
   getDescription: function (props) {
-    return props.gameState.clothesPoopy ? "poopy set of clothes" : "set of clothes";
+    return props.gameState.clothesPoopy
+      ? "poopy set of clothes"
+      : "set of clothes";
   },
 
   getUseVerb: function (props) {
@@ -171,34 +161,6 @@ const clothes = new Item({
   getCustomUseGameEffect: function (props) {
     return props.gameState.naked ? { naked: false } : { naked: true };
   },
-
-  getCustomDropDescription: function (props) {
-    let text = "";
-
-    props.gameState.naked
-      ? (text += `You drop your clothes ${props.dropPreposition} the ${props.playerLocation}. `)
-      : (text += `You strip down and drop your clothes ${props.dropPreposition} the ${props.playerLocation}. `);
-
-    if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
-      text += "Your clothes look much cleaner now. ";
-    }
-
-    return text;
-  },
-  getCustomDropGameEffect: function (props) {
-    if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
-      return { naked: true, clothesPoopy: false }; // todo lose reputation if at fountain (drinking water)?
-    } else if (props.playerLocation === "dung") {
-      return { naked: true, clothesPoopy: true };
-    } else {
-      return { naked: true };
-    }
-  },
-
-  // description,
-  // gameEffect,
-  // targetItemLocation,
-  // otherItemLocations,
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
@@ -250,31 +212,38 @@ const apple = new Item({
   getCustomUseDescription: function (props) {
     return "You eat the apple, feeling refreshed. ";
   },
-  getCustomDropDescription: function (props) {
-    // todo should you be able to drop/give to squirrel also?
+  // description,
+  // gameEffect,
+  // targetItemLocation,
+  // otherItemLocations,
+
+  getCustomDrop: function (props) {
+    function writeDescription(props) {
+      // todo should you be able to drop/give to squirrel also?
+      if (
+        props.itemLocations.pasture.has("horse") &&
+        props.playerLocation === "pasture"
+      ) {
+        return "This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you tie the reins back to the post. ";
+      }
+    }
+
     if (
       props.itemLocations.pasture.has("horse") &&
       props.playerLocation === "pasture"
     ) {
-      return "This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you tie the reins back to the post. ";
+      return new ItemInteraction({
+        gameEffect: { horseTethered: true },
+        targetItemLocation: "outOfPlay",
+        description: writeDescription(props),
+      });
     }
+
+    return new ItemInteraction({
+      description: writeDescription(props),
+    });
   },
-  getCustomDropLocation: function (props) {
-    if (
-      props.itemLocations.pasture.has("horse") &&
-      props.playerLocation === "pasture"
-    ) {
-      return "outOfPlay";
-    }
-  },
-  getCustomDropGameEffect: function (props) {
-    if (
-      props.itemLocations.pasture.has("horse") &&
-      props.playerLocation === "pasture"
-    ) {
-      return { horseTethered: true };
-    }
-  },
+
   // todo should you also be able to give to squirrel?
   getCustomGiveDescription: function (props) {
     if (
@@ -347,18 +316,42 @@ const handkerchief = new Item({
     return text;
   },
   getCustomUseGameEffect: function (props) {
-    return props.gameState.playerMasked ? { playerMasked: false } : { playerMasked: true };
+    return props.gameState.playerMasked
+      ? { playerMasked: false }
+      : { playerMasked: true };
   },
-  getCustomDropDescription: function (props) {
-    return `You remove the handkerchief from your nose and mouth and drop it ${props.dropPreposition} the ${props.playerLocation}. `;
-  },
-  getCustomDropGameEffect: function (props) {
-    if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
-      return { handkerchiefDamp: true, playerMasked: false };
-    } else {
-      return { playerMasked: false };
+  // description,
+  // gameEffect,
+  // targetItemLocation,
+  // otherItemLocations,
+
+  getCustomDrop: function (props) {
+    function writeDescription(props) {
+      if (props.gameState.playerMasked) {
+        return `You remove the handkerchief from your nose and mouth and drop it ${props.dropPreposition} the ${props.playerLocation}. `;
+      }
     }
+
+    function getGameEffect(props) {
+      let gameEffect = {};
+
+      if (props.gameState.playerMasked) {
+        gameEffect = { ...gameEffect, playerMasked: false };
+      }
+
+      if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
+        gameEffect = { ...gameEffect, handkerchiefDamp: true };
+      }
+
+      if (Object.keys(gameEffect).length) return gameEffect;
+    }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
+
   getCustomGiveDescription: function (props) {
     // todo gender is inconsistent
     if (props.playerLocation === "youth") {
@@ -389,24 +382,39 @@ const baby = new Item({
   getCustomUseDescription: function () {
     return "It's unclear what use this baby has. ";
   },
-  getCustomDropDescription: function (props) {
-    if (props.playerLocation === "nursery") {
-      return "You place the baby back in the crib. ";
-    } else if (props.playerLocation === "nurseryWindow") {
-      return "You drop the baby out of the open window. The crowd below catches the baby. ";
-    } else {
-      return "You drop the crying baby. It cries even louder. ";
+
+  getCustomDrop: function (props) {
+    function writeDescription(props) {
+      if (props.playerLocation === "nursery") {
+        return "You place the baby back in the crib. ";
+      } else if (props.playerLocation === "nurseryWindow") {
+        return "You drop the baby out of the open window. The crowd below catches the baby. ";
+      } else {
+        return "You drop the crying baby. It cries even louder. ";
+      }
     }
-  },
-  getCustomDropLocation: function (props) {
-    if (props.playerLocation === "nurseryWindow") {
-      return "outOfPlay";
+
+    function getGameEffect(props) {
+      let gameEffect = {};
+
+      if (!props.playerLocation === "nurseryWindow") {
+        gameEffect = { ...gameEffect, savedBaby: false };
+      }
+
+      if (Object.keys(gameEffect).length) return gameEffect;
     }
-  },
-  getCustomDropGameEffect: function (props) {
-    if (!props.playerLocation === "nurseryWindow") {
-      return { savedBaby: false };
+
+    function getTargetItemLocation(props) {
+      if (props.playerLocation === "nurseryWindow") {
+        return "outOfPlay";
+      }
     }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      targetItemLocation: getTargetItemLocation(props),
+      description: writeDescription(props),
+    });
   },
 
   getCustomTakeDescription: function (props) {
@@ -504,7 +512,10 @@ const sword = new Item({
     if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
       return {
         reputation: props.gameState.reputation - 1,
-        swordCost: max(props.gameState.swordCost + 10, props.gameState.maxSwordCost),
+        swordCost: max(
+          props.gameState.swordCost + 10,
+          props.gameState.maxSwordCost
+        ),
       }; // todo this means sword cost can exceed amount of gold that you have...set max?
     }
   },
@@ -513,7 +524,8 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
+      props.playerLocation === "wizard" &&
+      !props.gameState.earnedTreasureAmount
     ) {
       return "You give your sword to the wizard. In exchange, they give you the musical score. ";
     }
@@ -522,7 +534,8 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
+      props.playerLocation === "wizard" &&
+      !props.gameState.earnedTreasureAmount
     ) {
       return "wizard";
     }
@@ -531,7 +544,8 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
+      props.playerLocation === "wizard" &&
+      !props.gameState.earnedTreasureAmount
     ) {
       return { ownScore: true };
     }
@@ -540,7 +554,8 @@ const sword = new Item({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      props.playerLocation === "wizard" && !props.gameState.earnedTreasureAmount
+      props.playerLocation === "wizard" &&
+      !props.gameState.earnedTreasureAmount
     ) {
       return {
         item: "score",
@@ -571,35 +586,51 @@ const horse = new Item({
       ? { horseMounted: false }
       : { horseMounted: true };
   },
-  getCustomDropDescription: function (props) {
-    let text = "";
+  // description,
+  // gameEffect,
+  // targetItemLocation,
+  // otherItemLocations,
 
-    if (props.gameState.horseMounted) {
-      text += "You unmount the horse and let go of the horse's reins. ";
-    } else {
-      text += "You drop the horse's reins. ";
+  getCustomDrop: function (props) {
+    function writeDescription(props) {
+      let text = "";
+
+      if (props.gameState.horseMounted) {
+        text += "You unmount the horse and let go of the horse's reins. ";
+      } else {
+        text += "You drop the horse's reins. ";
+      }
+
+      if (props.playerLocation === "clearing") {
+        text +=
+          "The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. ";
+      } else {
+        text +=
+          "You let go of the horse's reins. The horse trots away, probably in search of grass to munch. ";
+      }
+
+      return text;
     }
 
-    if (props.playerLocation === "clearing") {
-      text +=
-        "The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. ";
-    } else {
-      text +=
-        "You let go of the horse's reins. The horse trots away, probably in search of grass to munch. ";
+    function getGameEffect(props) {
+      let gameEffect = { horseTethered: false };
+
+      if (props.playerLocation === "clearing") {
+        gameEffect = { ...gameEffect, horseDead: true };
+      }
+
+      if (props.gameState.horseMounted) {
+        gameEffect = { ...gameEffect, horseMounted: false };
+      }
+
+      return gameEffect;
     }
 
-    return text;
-  },
-  getCustomDropGameEffect: function (props) {
-    if (props.playerLocation === "clearing") {
-      return {
-        horseTethered: false,
-        horseMounted: false,
-        horseDead: true,
-      };
-    } else {
-      return { horseTethered: false, horseMounted: false };
-    }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      description: writeDescription(props),
+    });
   },
 
   getCustomTakeDescription: function (props) {
@@ -657,21 +688,42 @@ const berries = new Item({
       reputation: props.gameState.reputation - 1,
     };
   },
-  getCustomDropDescription: function (props) {
-    if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
-      return "The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
+  // description,
+  // gameEffect,
+  // targetItemLocation,
+  // otherItemLocations,
+
+  getCustomDrop: function (props) {
+    function writeDescription(props) {
+      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+        return "The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
+      }
+      }
+
+    function getGameEffect(props) {
+      let gameEffect = {};
+
+      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+        gameEffect = { ...gameEffect, squirrelDead: true };
+      }
+
+      if (Object.keys(gameEffect).length) return gameEffect;
     }
-  },
-  getCustomDropLocation: function (props) {
-    if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
-      return "clearing";
+
+    function getTargetItemLocation(props) {
+      // todo is this wht I want?
+      if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
+        return "clearing";
+      }
     }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      targetItemLocation: getTargetItemLocation(props),
+      description: writeDescription(props),
+    });
   },
-  getCustomDropGameEffect: function (props) {
-    if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
-      return { squirrelDead: true };
-    }
-  },
+
   getCustomGiveDescription: function (props) {
     if (props.playerLocation === "squirrel" && !props.gameState.squirrelDead) {
       return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";

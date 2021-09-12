@@ -57,7 +57,7 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("gate");
+  const [playerLocation, setPlayerLocation] = useState("room");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
@@ -241,62 +241,30 @@ function App() {
   function handleDrop(item) {
     console.log(`dropping ${item} at ${playerLocation}`);
 
-    // const customDrop = items[item].getCustomDrop({
-    //   dropPreposition: locations[playerLocation].dropPreposition,
-    //   playerLocation: playerLocation,
-    //   gameState: gameState,
-    //   itemLocations: itemLocations,
-    // });
-
-    // console.log(customDrop && customDrop.description);
+    const customDrop = items[item].getCustomDrop({
+      dropPreposition: locations[playerLocation].dropPreposition,
+      playerLocation: playerLocation,
+      gameState: gameState,
+      itemLocations: itemLocations,
+    });
 
     // Get the "drop"" description for the item -- this will be the consequence text
-    const customDescription =
-      items[item].getCustomDropDescription &&
-      items[item].getCustomDropDescription({
-        dropPreposition: locations[playerLocation].dropPreposition,
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
+    const description = customDrop.description ? customDrop.description : `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
 
-    const description =
-      customDescription ||
-      `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
-
-    // Get the "drop" end location for the item -- will usually be the current player location
-    const customItemLocation =
-      items[item].getCustomDropLocation &&
-      items[item].getCustomDropLocation({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    const endItemLocation = customItemLocation || playerLocation;
-
-    console.log(`drop at ${endItemLocation}`);
-
-    // Get any effect on the game state
-    const customGameEffect =
-      items[item].getCustomDropGameEffect &&
-      items[item].getCustomDropGameEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    console.log(`updating game state: ${customGameEffect}`);
-    if (customGameEffect) {
-      setGameState({ ...gameState, ...customGameEffect });
-    }
+    const endItemLocation = customDrop.targetItemLocation ? customDrop.targetItemLocation : playerLocation;
 
     // Set the item location from the inventory to the new location
+    console.log(`${item} goes to ${endItemLocation}`);
     moveItem({
       item: item,
       oldLocation: "inventory",
       newLocation: endItemLocation,
     });
+
+    if (customDrop.gameEffect) {
+      console.log(`updating game state: ${JSON.stringify(customDrop.gameEffect)}`);
+      setGameState({ ...gameState, ...customDrop.gameEffect })
+    }
 
     // set the consequence text to the drop description text
     setConsequenceText(description);
