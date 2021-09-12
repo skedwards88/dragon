@@ -41,8 +41,6 @@ maybe add count to apples so can have more than one
 
 if naked, lose reputation at manor, blacksmith, adolescent
 
-if masked, lose reputation at blacksmith
-
 instead of wizard offering to hold horse -- make the default give be "x doesn't want this item, but agrees to hold this item for you"--need to exempt squirrel
 
 if you return the score to the wizard and have the treasure, wizard shouldn't offer the score again

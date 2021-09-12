@@ -338,10 +338,10 @@ const blacksmith = new Location({
     return ["smithy"];
   },
   getDescription: function (props) {
-    let text = "The blacksmith looks up as you walk in. ";
+    let text = `The blacksmith sets down their work. ${props.gameState.naked ? `"No clothes? You best stay away from the furnace lest you burn something important. "` : ""}${props.gameState.playerMasked ? "They eye the handkerchief tied over your face warily, but don't comment on it." : ""}`;
 
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      text += `"Are you interested in buying that sword? It costs ${
+      text += `\n\n"Are you interested in buying that sword?" they ask. It costs ${
         props.gameState.swordCost
       } gold${
         props.itemLocations.inventory.has("lute")
@@ -349,10 +349,17 @@ const blacksmith = new Location({
           : ""
       }. " `;
 
-      return text;
+    }
+    return text;
+
+  },
+  onEnterGameStateEffect: function (props) {
+    if (props.gameState.naked) {
+      return {
+        reputation: props.gameState.reputation - 1
+      }
     }
   },
-  onEnterGameStateEffect: function (props) {},
   onExitGameStateEffect: function (props) {},
   onEnterItemLocationEffect: function (props) {},
   onExitItemLocationEffect: function (props) {},
