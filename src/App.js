@@ -4,6 +4,7 @@ import { items } from "./items.js";
 import { locations } from "./locations.js";
 
 function App() {
+
   const startingState = {
     reputation: 10,
     gold: 0,
@@ -60,6 +61,15 @@ function App() {
   const [playerLocation, setPlayerLocation] = useState("room");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
+
+  function handleNewGame() {
+    console.log('new game')
+    setItemLocations(startingItemLocations)
+    setGameState(startingState)
+    setPlayerLocation("room")
+    setConsequenceText("")
+    setCurrentDisplay("location")
+  }
 
   function moveItem({ item, oldLocation, newLocation }) {
     if (oldLocation === newLocation) return;
@@ -560,7 +570,8 @@ function App() {
       <div className="App">
         <div className="description">{gameEndText}</div>
         <button
-          className="close" // todo make this reset the game
+          className="close"
+          onClick={handleNewGame}
         >
           PLAY AGAIN
         </button>
@@ -614,7 +625,8 @@ function App() {
       <div className="App">
         <div className="description">{gameEndText}</div>
         <button
-          className="close" // todo make this reset the game
+          className="close"
+          onClick={handleNewGame}
         >
           PLAY AGAIN
         </button>
