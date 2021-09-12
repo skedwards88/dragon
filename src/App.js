@@ -32,7 +32,7 @@ function App() {
     dragonAsleep: false,
     dragonDead: false,
     treasureAmount: 200,
-    earnedTreasureAmount: 50,
+    earnedTreasureAmount: 0,
     singeCount: 0,
     ownScore: false,
   };
@@ -57,7 +57,7 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("gate");
+  const [playerLocation, setPlayerLocation] = useState("room");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
@@ -633,10 +633,7 @@ function App() {
     return (
       <div className="App">
         <div className="description">{consequenceText}</div>
-        <button
-          className="close"
-          onClick={() => setCurrentDisplay("location")}
-        >
+        <button className="close" onClick={() => setCurrentDisplay("location")}>
           Back to{" "}
           {locations[playerLocation].getDisplayName({
             playerLocation: playerLocation,
@@ -738,7 +735,7 @@ function App() {
         : ""
     }${
       gameState.dragonDead
-        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. `
+        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${gameState.reputation > 10 ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot.":""}`
         : `\n\nInitially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "doomed" as the townsfolk glare angrily at you. \n\nEager to escape the wrath of the dragon and townsfolk, you flee town.`
     }`;
 
