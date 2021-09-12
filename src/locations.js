@@ -1,3 +1,5 @@
+import {ItemInteraction} from "./items"
+
 class Location {
   constructor({
     id,
@@ -19,9 +21,10 @@ class Location {
     onExitGameStateEffect,
     onEnterItemLocationEffect,
     onExitItemLocationEffect,
-    payDescription,
-    payGameStateEffect,
-    payItemLocationEffect,
+    getCustomPay = function () {
+      return new ItemInteraction({});
+    },
+
   }) {
     this.id = id;
     this.getDisplayName = getDisplayName;
@@ -34,9 +37,7 @@ class Location {
     this.onExitGameStateEffect = onExitGameStateEffect;
     this.onEnterItemLocationEffect = onEnterItemLocationEffect;
     this.onExitItemLocationEffect = onExitItemLocationEffect;
-    this.payDescription = payDescription;
-    this.payGameStateEffect = payGameStateEffect;
-    this.payItemLocationEffect = payItemLocationEffect;
+    this.getCustomPay = getCustomPay;
   }
 }
 
@@ -356,27 +357,37 @@ const blacksmith = new Location({
       };
     }
   },
-  payDescription: function (props) {
-    if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `; // todo this doesn't account for if sword costs more than have
+  getCustomPay: function (props) {
+    function writeDescription(props) {
+      if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
+        return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `; // todo this doesn't account for if sword costs more than have
+      }
     }
-  },
-  payGameStateEffect: function (props) {
-    if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      return {
-        ownSword: true,
-        gold: props.gameState.gold - props.gameState.swordCost,
-      };
+
+    function getGameEffect(props) {
+      if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
+        return {
+          ownSword: true,
+          gold: props.gameState.gold - props.gameState.swordCost,
+        };
+      }
+        }
+
+    function getOtherItemLocation(props) {
+      if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
+        return {
+          item: "sword",
+          oldLocation: "smithy",
+          newLocation: "inventory",
+        };
+      }
     }
-  },
-  payItemLocationEffect: function (props) {
-    if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      return {
-        item: "sword",
-        oldLocation: "smithy",
-        newLocation: "inventory",
-      };
-    }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      otherItemLocations: getOtherItemLocation(props), //todo could make list to handle multiples
+      description: writeDescription(props),
+    });
   },
 });
 
@@ -630,70 +641,79 @@ const wizard = new Location({
 
     return text;
   },
-
-  payDescription: function (props) {
-    if (
-      props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore &&
-      !props.gameState.earnedTreasureAmount
-    ) {
-      return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
-    }
-
-    if (
-      props.gameState.promisedTreasure &&
-      props.gameState.earnedTreasureAmount
-    ) {
-      let text = "";
+  getCustomPay: function (props) {
+    function writeDescription(props) {
       if (
-        props.gameState.earnedTreasureAmount === props.gameState.treasureAmount
+        props.itemLocations.wizard.has("score") &&
+        !props.gameState.ownScore &&
+        !props.gameState.earnedTreasureAmount
       ) {
-        text += `"It looks like you succeeded nicely." `;
+        return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
       }
+  
       if (
-        props.gameState.earnedTreasureAmount < props.gameState.treasureAmount
+        props.gameState.promisedTreasure &&
+        props.gameState.earnedTreasureAmount
       ) {
-        text += `"It looks like you succeeded, though not as well as I hoped." `;
+        let text = "";
+        if (
+          props.gameState.earnedTreasureAmount === props.gameState.treasureAmount
+        ) {
+          text += `"It looks like you succeeded nicely." `;
+        }
+        if (
+          props.gameState.earnedTreasureAmount < props.gameState.treasureAmount
+        ) {
+          text += `"It looks like you succeeded, though not as well as I hoped." `;
+        }
+        text += "The wizard takes a share of your treasure. ";
+  
+        return text;
       }
-      text += "The wizard takes a share of your treasure. ";
-
-      return text;
-    }
-  },
-  payGameStateEffect: function (props) {
-    if (
-      props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore &&
-      !props.gameState.earnedTreasureAmount
-    ) {
-      return {
-        ownScore: true,
-        promisedTreasure: true,
-      };
     }
 
-    if (
-      props.gameState.promisedTreasure &&
-      props.gameState.earnedTreasureAmount
-    ) {
-      return {
-        promisedTreasure: false,
-        gold: props.gameState.gold - props.gameState.treasureAmount / 2,
-      };
+    function getGameEffect(props) {
+      if (
+        props.itemLocations.wizard.has("score") &&
+        !props.gameState.ownScore &&
+        !props.gameState.earnedTreasureAmount
+      ) {
+        return {
+          ownScore: true,
+          promisedTreasure: true,
+        };
+      }
+  
+      if (
+        props.gameState.promisedTreasure &&
+        props.gameState.earnedTreasureAmount
+      ) {
+        return {
+          promisedTreasure: false,
+          gold: props.gameState.gold - props.gameState.treasureAmount / 2,
+        };
+      }
+        }
+
+    function getOtherItemLocation(props) {
+      if (
+        props.itemLocations.wizard.has("score") &&
+        !props.gameState.ownScore &&
+        !props.gameState.earnedTreasureAmount
+      ) {
+        return {
+          item: "score",
+          oldLocation: "wizard",
+          newLocation: "inventory",
+        };
+      }
     }
-  },
-  payItemLocationEffect: function (props) {
-    if (
-      props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore &&
-      !props.gameState.earnedTreasureAmount
-    ) {
-      return {
-        item: "score",
-        oldLocation: "wizard",
-        newLocation: "inventory",
-      };
-    }
+
+    return new ItemInteraction({
+      gameEffect: getGameEffect(props),
+      otherItemLocations: getOtherItemLocation(props), //todo could make list to handle multiples
+      description: writeDescription(props),
+    });
   },
 });
 

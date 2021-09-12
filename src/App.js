@@ -64,7 +64,7 @@ function App() {
   function moveItem({ item, oldLocation, newLocation }) {
     if (oldLocation === newLocation) return;
 
-    console.log(`moving' ${item} from ${oldLocation} to ${newLocation}`);
+    console.log(`moving ${item} from ${oldLocation} to ${newLocation}`);
     itemLocations[oldLocation].delete(item);
     itemLocations[newLocation].add(item);
     setItemLocations(itemLocations);
@@ -94,7 +94,7 @@ function App() {
       });
     gameStateChanges = { ...gameStateChanges, ...customEnterStateEffect };
 
-    console.log(`updating game state: ${gameStateChanges}`);
+    console.log(`updating game state: ${JSON.stringify(gameStateChanges)}`);
     if (Object.keys(gameStateChanges).length) {
       setGameState({
         ...gameState,
@@ -132,14 +132,14 @@ function App() {
   function handleTake(item) {
     console.log(`taking ${item} at ${playerLocation}`);
 
-    const customTake = items[item].getCustomTake({
+    const customInteraction = items[item].getCustomTake({
       playerLocation: playerLocation,
       gameState: gameState,
       itemLocations: itemLocations,
     });
 
     const description =
-      customTake.description ||
+      customInteraction.description ||
       `You now have ${
         ["a", "e", "i", "o", "u"].includes(
           items[item]
@@ -159,57 +159,57 @@ function App() {
       })}.`;
     setConsequenceText(description);
 
-    const endItemLocation = customTake.targetItemLocation || "inventory";
+    const endItemLocation = customInteraction.targetItemLocation || "inventory";
     moveItem({
       item: item,
       oldLocation: playerLocation,
       newLocation: endItemLocation,
     });
 
-    if (customTake.gameEffect) {
+    if (customInteraction.gameEffect) {
       console.log(
-        `updating game state: ${JSON.stringify(customTake.gameEffect)}`
+        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
       );
-      setGameState({ ...gameState, ...customTake.gameEffect });
+      setGameState({ ...gameState, ...customInteraction.gameEffect });
     }
 
-    if (customTake.otherItemLocations) {
-      moveItem(customTake.otherItemLocations);
+    if (customInteraction.otherItemLocations) {
+      moveItem(customInteraction.otherItemLocations);
     }
-    // set show consequence to true
+
     setCurrentDisplay("consequence");
   }
 
   function handleUse(item) {
     console.log(`using ${item} at ${playerLocation}`);
 
-    const customUse = items[item].getCustomUse({
+    const customInteraction = items[item].getCustomUse({
       playerLocation: playerLocation,
       gameState: gameState,
       itemLocations: itemLocations,
     });
 
     const description =
-      customUse.description ||
+      customInteraction.description ||
       `You use the ${items[item].displayName.toLowerCase()}.`;
     setConsequenceText(description);
 
-    const endItemLocation = customUse.targetItemLocation || "inventory";
+    const endItemLocation = customInteraction.targetItemLocation || "inventory";
     moveItem({
       item: item,
       oldLocation: "inventory",
       newLocation: endItemLocation,
     });
 
-    if (customUse.gameEffect) {
+    if (customInteraction.gameEffect) {
       console.log(
-        `updating game state: ${JSON.stringify(customUse.gameEffect)}`
+        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
       );
-      setGameState({ ...gameState, ...customUse.gameEffect });
+      setGameState({ ...gameState, ...customInteraction.gameEffect });
     }
 
-    if (customUse.otherItemLocations) {
-      moveItem(customUse.otherItemLocations);
+    if (customInteraction.otherItemLocations) {
+      moveItem(customInteraction.otherItemLocations);
     }
 
     setCurrentDisplay("consequence");
@@ -218,7 +218,7 @@ function App() {
   function handleDrop(item) {
     console.log(`dropping ${item} at ${playerLocation}`);
 
-    const customDrop = items[item].getCustomDrop({
+    const customInteraction = items[item].getCustomDrop({
       dropPreposition: locations[playerLocation].dropPreposition,
       playerLocation: playerLocation,
       gameState: gameState,
@@ -226,26 +226,26 @@ function App() {
     });
 
     const description =
-      customDrop.description ||
+      customInteraction.description ||
       `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
     setConsequenceText(description);
 
-    const endItemLocation = customDrop.targetItemLocation || playerLocation;
+    const endItemLocation = customInteraction.targetItemLocation || playerLocation;
     moveItem({
       item: item,
       oldLocation: "inventory",
       newLocation: endItemLocation,
     });
 
-    if (customDrop.gameEffect) {
+    if (customInteraction.gameEffect) {
       console.log(
-        `updating game state: ${JSON.stringify(customDrop.gameEffect)}`
+        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
       );
-      setGameState({ ...gameState, ...customDrop.gameEffect });
+      setGameState({ ...gameState, ...customInteraction.gameEffect });
     }
 
-    if (customDrop.otherItemLocations) {
-      moveItem(customDrop.otherItemLocations);
+    if (customInteraction.otherItemLocations) {
+      moveItem(customInteraction.otherItemLocations);
     }
 
     setCurrentDisplay("consequence");
@@ -255,102 +255,66 @@ function App() {
     console.log(`paying ${playerLocation}`);
 
     // todo not checking yet if you have enough gold to buy
-    if (
-      (locations[playerLocation].payDescription &&
-        locations[playerLocation].payDescription({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })) ||
-      (locations[playerLocation].payGameStateEffect &&
-        locations[playerLocation].payGameStateEffect({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })) ||
-      (locations[playerLocation].payItemLocationEffect &&
-        locations[playerLocation].payItemLocationEffect({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        }))
-    ) {
-      handleAcceptedPay();
-    } else {
-      handleUnwantedPay();
-    }
-  }
 
-  function handleUnwantedPay() {
-    // set the consequence text to the give description text
-    setConsequenceText(`The ${playerLocation} is not interested in your gold.`);
-
-    // set show consequence to true
-    setCurrentDisplay("consequence");
-  }
-
-  function handleAcceptedPay() {
-    // Get the "give" description for the item -- this will be the consequence text
-    const customDescription =
-      locations[playerLocation].payDescription &&
-      locations[playerLocation].payDescription({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    const description = customDescription || `You pay the ${playerLocation}.`;
-
-    // Get any effect on the game state
-    const customGameEffect =
-      locations[playerLocation].payGameStateEffect &&
-      locations[playerLocation].payGameStateEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    console.log(`updating game state: ${customGameEffect}`);
-    if (customGameEffect) {
-      setGameState({ ...gameState, ...customGameEffect });
-    }
-
-    const locationEffect =
-      locations[playerLocation].payItemLocationEffect &&
-      locations[playerLocation].payItemLocationEffect({
-        playerLocation: playerLocation,
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
-    if (locationEffect) {
-      moveItem(locationEffect);
-    }
-
-    // set the consequence text to the give description text
-    setConsequenceText(description);
-
-    // set show consequence to true
-    setCurrentDisplay("consequence");
-  }
-
-  function handleGive(item) {
-    console.log(`giving ${item} to ${playerLocation}`);
-
-    const customGive = items[item].getCustomGive({
-      dropPreposition: locations[playerLocation].dropPreposition,
+    const customInteraction = locations[playerLocation].getCustomPay({
       playerLocation: playerLocation,
       gameState: gameState,
       itemLocations: itemLocations,
     });
 
     if (
-      customGive.description ||
-      customGive.gameEffect ||
-      customGive.targetItemLocation ||
-      customGive.otherItemLocations
+      customInteraction.description ||
+      customInteraction.gameEffect ||
+      customInteraction.otherItemLocations
     ) {
-      handleAcceptedGive(item, customGive);
+      handleAcceptedPay(customInteraction);
+    } else {
+      handleUnwantedPay();
+    }
+
+  }
+
+  function handleUnwantedPay() {
+    setConsequenceText(`The ${playerLocation} is not interested in your gold.`);
+    setCurrentDisplay("consequence");
+  }
+
+  function handleAcceptedPay(customInteraction) {
+    const description =
+      customInteraction.description ||
+      `You pay the ${playerLocation}.`;
+    setConsequenceText(description);
+
+    if (customInteraction.gameEffect) {
+      console.log(
+        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
+      );
+      setGameState({ ...gameState, ...customInteraction.gameEffect });
+    }
+
+    if (customInteraction.otherItemLocations) {
+      moveItem(customInteraction.otherItemLocations);
+    }
+
+    setCurrentDisplay("consequence");
+  }
+
+  function handleGive(item) {
+    console.log(`giving ${item} to ${playerLocation}`);
+
+    const customInteraction = items[item].getCustomGive({
+      playerLocation: playerLocation,
+      gameState: gameState,
+      itemLocations: itemLocations,
+    });
+
+    if (
+      customInteraction.description ||
+      customInteraction.gameEffect ||
+      customInteraction.targetItemLocation ||
+      customInteraction.otherItemLocations
+    ) {
+      handleAcceptedGive(item, customInteraction);
     } else {
       handleUnwantedGive(item);
     }
@@ -376,33 +340,32 @@ function App() {
       setConsequenceText(`The ${playerLocation} does not want this item.`);
     }
 
-    // set show consequence to true
     setCurrentDisplay("consequence");
   }
 
-  function handleAcceptedGive(item, customGive) {
+  function handleAcceptedGive(item, customInteraction) {
     // todo could consolidate item interactions to single function (give, drop...)
     const description =
-      customGive.description ||
+      customInteraction.description ||
       `You give the ${item} to the ${playerLocation}.`;
     setConsequenceText(description);
 
-    const endItemLocation = customGive.targetItemLocation || "outOfPlay";
+    const endItemLocation = customInteraction.targetItemLocation || "outOfPlay";
     moveItem({
       item: item,
       oldLocation: "inventory",
       newLocation: endItemLocation,
     });
 
-    if (customGive.gameEffect) {
+    if (customInteraction.gameEffect) {
       console.log(
-        `updating game state: ${JSON.stringify(customGive.gameEffect)}`
+        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
       );
-      setGameState({ ...gameState, ...customGive.gameEffect });
+      setGameState({ ...gameState, ...customInteraction.gameEffect });
     }
 
-    if (customGive.otherItemLocations) {
-      moveItem(customGive.otherItemLocations);
+    if (customInteraction.otherItemLocations) {
+      moveItem(customInteraction.otherItemLocations);
     }
 
     setCurrentDisplay("consequence");

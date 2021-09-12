@@ -1,4 +1,4 @@
-class ItemInteraction {
+export class ItemInteraction {
   constructor({
     gameEffect,
     description,
@@ -1159,4 +1159,5 @@ export const items = {
 };
 export default {
   items,
+  ItemInteraction
 };
