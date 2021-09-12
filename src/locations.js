@@ -732,9 +732,6 @@ const cliff = new Location({
     let text = "";
     if (props.itemLocations.inventory.has("horse")) {
       text += `The horse cannot make it up the rocky cliff. You must return to the clearing. `;
-      if (!props.gameState.cursed) {
-        text += `\n\nThe wizard calls out, "I do not think your horse can go higher, nor would they like what they find there. Would you like to give me your horse in exchange for peace of mind?"`;
-      }
     } else {
       text += `You scramble on the rocky cliff. Above you is the entrance to a cave. Below you is a clearing next to a stream. `;
     }
