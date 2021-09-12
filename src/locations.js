@@ -11,6 +11,9 @@ class Location {
     getSentient = function () {
       return false;
     },
+    getHuman = function () {
+      return false;
+    },
     getDescription,
     onEnterGameStateEffect,
     onExitGameStateEffect,
@@ -23,6 +26,7 @@ class Location {
     this.id = id;
     this.getDisplayName = getDisplayName;
     this.getSentient = getSentient;
+    this.getHuman = getHuman;
     this.dropPreposition = dropPreposition;
     this.getConnections = getConnections;
     this.getDescription = getDescription;
@@ -334,6 +338,9 @@ const blacksmith = new Location({
   getSentient: function () {
     return true;
   },
+  getHuman: function () {
+    return true;
+  },
   getConnections: function () {
     return ["smithy"];
   },
@@ -438,6 +445,9 @@ const gate = new Location({
 const adolescent = new Location({
   id: "adolescent", // todo decide what to call
   getSentient: function () {
+    return true;
+  },
+  getHuman: function () {
     return true;
   },
   dropPreposition: "by",
@@ -624,6 +634,9 @@ const squirrel = new Location({
 const wizard = new Location({
   id: "wizard",
   getSentient: function () {
+    return true;
+  },
+  getHuman: function () {
     return true;
   },
   dropPreposition: "by",

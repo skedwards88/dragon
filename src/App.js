@@ -420,13 +420,21 @@ function App() {
     ) {
       handleAcceptedGive(item);
     } else {
-      handleUnwantedGive();
+      handleUnwantedGive(item);
     }
   }
 
-  function handleUnwantedGive() {
-    // set the consequence text to the give description text
-    setConsequenceText(`The ${playerLocation} does not want this item.`);
+  function handleUnwantedGive(item) {
+    if (locations[playerLocation].getHuman({
+      gameState: gameState,
+      playerLocation: playerLocation,
+      itemLocations: itemLocations,
+    })) {
+      setConsequenceText(`The ${playerLocation} does not want this item but agrees to hold it for you.`);
+      moveItem({item: item, oldLocation: "inventory", newLocation: playerLocation})
+    } else {
+      setConsequenceText(`The ${playerLocation} does not want this item.`);
+    }
 
     // set show consequence to true
     setCurrentDisplay("consequence");
