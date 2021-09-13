@@ -250,7 +250,7 @@ const apple = new Item({
         props.itemLocations.pasture.has("horse") &&
         props.playerLocation === "pasture"
       ) {
-        return "This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you tie the reins back to the post. ";
+        return "This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse.";
       }
     }
 
@@ -260,7 +260,12 @@ const apple = new Item({
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
-        targetItemLocation: "outOfPlay",
+        targetItemLocation: "inn",
+        otherItemLocations: {
+          item: "horse",
+          oldLocation: "pasture",
+          newLocation: "inventory",
+        },
         description: writeDescription(props),
       });
     }
@@ -278,38 +283,28 @@ const apple = new Item({
         props.itemLocations.pasture.has("horse") &&
         props.playerLocation === "pasture"
       ) {
-        return "This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you tie the reins back to the post. ";
+        return "This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."
       }
     }
 
-    function getGameEffect(props) {
-      let gameEffect = {};
-
-      if (
-        props.itemLocations.pasture.has("horse") &&
-        props.playerLocation === "pasture"
-      ) {
-        gameEffect = { ...gameEffect, horseTethered: true };
-      }
-
-      if (Object.keys(gameEffect).length) return gameEffect;
-    }
-
-    function getTargetItemLocation(props) {
-      if (
-        props.itemLocations.pasture.has("horse") &&
-        props.playerLocation === "pasture"
-      ) {
-        return "outOfPlay";
-      }
-    }
-
-    return new ItemInteraction({
-      gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+    if (
+      props.itemLocations.pasture.has("horse") &&
+      props.playerLocation === "pasture"
+    ) {
+      return new ItemInteraction({
+        gameEffect: { horseTethered: true },
+        targetItemLocation: "inn",
+        otherItemLocations: {
+          item: "horse",
+          oldLocation: "pasture",
+          newLocation: "inventory",
+        },
+        description: writeDescription(props),
+      });
+    } else {
+      return new ItemInteraction({
       description: writeDescription(props),
-      // todo could use otherItemLocations to make horse go it inventory instead of being tied up. would also want to add for drop.
-    });
+    });}
   },
 });
 
@@ -703,7 +698,7 @@ const horse = new Item({
       if (props.gameState.horseMounted) {
         text += "You unmount the horse and let go of the horse's reins. ";
       } else {
-        text += "You drop the horse's reins. ";
+        text += "You let go of the horse's reins. ";
       }
 
       if (props.playerLocation === "clearing") {
@@ -711,7 +706,7 @@ const horse = new Item({
           "The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. ";
       } else {
         text +=
-          "You let go of the horse's reins. The horse trots away, probably in search of grass to munch. ";
+          "The horse shakes its mane, glad to have a free head and starts nosing around for food to munch. ";
       }
 
       return text;
