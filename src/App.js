@@ -267,6 +267,7 @@ function App() {
     setCurrentDisplay("consequence");
   }
 
+
   function handlePay() {
     console.log(`paying ${playerLocation}`);
 
@@ -278,25 +279,17 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    if (
-      customInteraction.description ||
+    let description;
+    if (customInteraction.description) {
+      description = customInteraction.description;
+    } else if (
       customInteraction.gameEffect ||
       customInteraction.otherItemLocations
     ) {
-      handleAcceptedPay(customInteraction);
+      description = `You pay the ${playerLocation}.`;
     } else {
-      handleUnwantedPay();
+      `The ${playerLocation} is not interested in your gold.`;
     }
-  }
-
-  function handleUnwantedPay() {
-    setConsequenceText(`The ${playerLocation} is not interested in your gold.`);
-    setCurrentDisplay("consequence");
-  }
-
-  function handleAcceptedPay(customInteraction) {
-    const description =
-      customInteraction.description || `You pay the ${playerLocation}.`;
     setConsequenceText(description);
 
     if (customInteraction.gameEffect) {
@@ -312,6 +305,7 @@ function App() {
 
     setCurrentDisplay("consequence");
   }
+
   //todo add reputation/gold change to description (pull from state change)
   function handleGive(item) {
     console.log(`giving ${item} to ${playerLocation}`);
