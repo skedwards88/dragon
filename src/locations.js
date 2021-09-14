@@ -94,7 +94,6 @@ const mirror = new Location({
   },
   dropPreposition: "at",
   getDescription: function (props) {
-    // todo could also handle poopy, singed
     return `${
       props.gameState.naked
         ? "You're naked!"
@@ -412,14 +411,8 @@ const pasture = new Location({
     let text =
       "You are standing in a wide field. There is no road in sight. To the north, you hear sounds of the blacksmith shop. ";
 
-    if (props.itemLocations.pasture.has("horse")) {
-      text += "\n\nA horse is grazing in the field. ";
-      if (props.gameState.horseTethered) {
-        text += "Its reins are tied to a post. ";
-      } else {
-        text += "Its reins have come untied from the post. ";
-      }
-      text += `A sign reads: "Free horse (if you can catch it)." `;
+    if (props.itemLocations.pasture.has("horse") && !props.gameState.horseDead && !props.gameState.tethered) {
+      text += `\n\nA horse is grazing in the field. A sign reads: "Free horse (if you can catch it)." `;
     }
 
     return text;
@@ -720,7 +713,7 @@ const wizard = new Location({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      otherItemLocations: getOtherItemLocation(props), //todo could make list to handle multiples
+      otherItemLocations: getOtherItemLocation(props),
       description: writeDescription(props),
     });
   },

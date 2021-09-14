@@ -45,7 +45,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set([]),
+      inventory: new Set(["berries"]),
       outOfPlay: new Set([]),
     };
 
@@ -63,7 +63,7 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("room");
+  const [playerLocation, setPlayerLocation] = useState("gate");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
@@ -312,7 +312,7 @@ function App() {
 
     setCurrentDisplay("consequence");
   }
-
+//todo add reputation/gold change to description (pull from state change)
   function handleGive(item) {
     console.log(`giving ${item} to ${playerLocation}`);
 
@@ -322,54 +322,34 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    if (
-      customInteraction.description ||
-      customInteraction.gameEffect ||
-      customInteraction.targetItemLocation ||
-      customInteraction.otherItemLocations
-    ) {
-      handleAcceptedGive(item, customInteraction);
-    } else {
-      handleUnwantedGive(item);
-    }
-  }
+    const endItemLocation =
+      customInteraction.targetItemLocation || playerLocation;
+    moveItem({
+      item: item,
+      oldLocation: "inventory",
+      newLocation: endItemLocation,
+    });
 
-  function handleUnwantedGive(item) {
-    if (
+    let description;
+    if (customInteraction.description) {
+      // use custom description if available
+      description = customInteraction.description;
+    } else if (endItemLocation === "outOfPlay") {
+      // if item goes out of play
+      description = `You give the ${item} to the ${playerLocation}.`;
+    } else if (
       locations[playerLocation].getHuman({
         gameState: gameState,
         playerLocation: playerLocation,
         itemLocations: itemLocations,
       })
     ) {
-      setConsequenceText(
-        `The ${playerLocation} does not want this item but agrees to hold it for you.`
-      );
-      moveItem({
-        item: item,
-        oldLocation: "inventory",
-        newLocation: playerLocation,
-      });
+      // if giving to human
+      description = `The ${playerLocation} does not want this item but agrees to hold it for you.`;
     } else {
-      setConsequenceText(`The ${playerLocation} does not want this item.`);
+      description = `The ${playerLocation} does not want this item.`;
     }
-
-    setCurrentDisplay("consequence");
-  }
-
-  function handleAcceptedGive(item, customInteraction) {
-    // todo could consolidate item interactions to single function (give, drop...)
-    const description =
-      customInteraction.description ||
-      `You give the ${item} to the ${playerLocation}.`;
     setConsequenceText(description);
-
-    const endItemLocation = customInteraction.targetItemLocation || "outOfPlay";
-    moveItem({
-      item: item,
-      oldLocation: "inventory",
-      newLocation: endItemLocation,
-    });
 
     if (customInteraction.gameEffect) {
       console.log(

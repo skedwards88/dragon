@@ -115,39 +115,26 @@ const lute = new Item({
       }
     }
 
-    function getGameEffect(props) {
-      let gameEffect = {};
-
-      if (
-        !props.gameState.ownSword &&
-        props.itemLocations.smithy.has("sword") &&
-        props.playerLocation === "blacksmith"
-      ) {
-        gameEffect = { ...gameEffect, ownSword: true };
-      }
-
-      if (Object.keys(gameEffect).length) return gameEffect;
-    }
-
-    function getOtherItemLocation(props) {
-      if (
-        !props.gameState.ownSword &&
-        props.itemLocations.smithy.has("sword") &&
-        props.playerLocation === "blacksmith"
-      ) {
-        return {
+    if (
+      !props.gameState.ownSword &&
+      props.itemLocations.smithy.has("sword") &&
+      props.playerLocation === "blacksmith"
+    ) {
+      return new ItemInteraction({
+        gameEffect: { ownSword: true },
+        targetItemLocation: "outOfPlay",
+        otherItemLocations: {
           item: "sword",
           oldLocation: "smithy",
           newLocation: "inventory",
-        };
-      }
+        },
+        description: writeDescription(props),
+      });
+    } else {
+      return new ItemInteraction({
+        description: writeDescription(props),
+      });
     }
-
-    return new ItemInteraction({
-      gameEffect: getGameEffect(props),
-      otherItemLocations: getOtherItemLocation(props), //todo could make list to handle multiples
-      description: writeDescription(props),
-    });
   },
 });
 
@@ -228,7 +215,6 @@ const apple = new Item({
   getDescription: function () {
     return "fresh apple";
   },
-  // todo when you eat the apple, it remains in inventory; it should not. also, if apple is not in inventory, it should be in inn so you can get another one
 
   getUseVerb: function () {
     return "Eat";
@@ -240,30 +226,38 @@ const apple = new Item({
 
     return new ItemInteraction({
       description: writeDescription(props),
+      targetItemLocation: "inn",
     });
   },
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
-      // todo should you be able to drop/give to squirrel also?
       if (
-        props.itemLocations.pasture.has("horse") &&
-        props.playerLocation === "pasture"
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
       ) {
         return "This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse.";
+      }
+
+      if (
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
+      ) {
+        return "The squirrel sniffs at the apple but doesn't bite. Perhaps it needs something smaller. ";
       }
     }
 
     if (
-      props.itemLocations.pasture.has("horse") &&
-      props.playerLocation === "pasture"
+      props.itemLocations[props.playerLocation].has("horse") &&
+      !props.gameState.horseTethered
     ) {
+
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
         targetItemLocation: "inn",
         otherItemLocations: {
           item: "horse",
-          oldLocation: "pasture",
+          oldLocation: props.playerLocation,
           newLocation: "inventory",
         },
         description: writeDescription(props),
@@ -277,40 +271,42 @@ const apple = new Item({
 
   getCustomGive: function (props) {
     function writeDescription(props) {
-      // todo should you also be able to give to squirrel?
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
+      ) {
+        return "This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse.";
+      }
 
       if (
-        props.itemLocations.pasture.has("horse") &&
-        props.playerLocation === "pasture"
+        props.playerLocation === "squirrel" &&
+        !props.gameState.squirrelDead
       ) {
-        return "This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."
+        return "The squirrel sniffs at the apple but doesn't bite. Perhaps it needs something smaller. ";
       }
     }
 
     if (
-      props.itemLocations.pasture.has("horse") &&
-      props.playerLocation === "pasture"
+      props.itemLocations[props.playerLocation].has("horse") &&
+      !props.gameState.horseTethered
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
         targetItemLocation: "inn",
         otherItemLocations: {
           item: "horse",
-          oldLocation: "pasture",
+          oldLocation: props.playerLocation,
           newLocation: "inventory",
         },
         description: writeDescription(props),
       });
     } else {
-      return new ItemInteraction({
-      description: writeDescription(props),
-    });}
+      return new ItemInteraction({});
+    }
   },
 });
 
 const handkerchief = new Item({
-  // todo when you drop the handkerchief but are wearing it, you should also stop wearingit
-
   id: "handkerchief",
   spawnLocation: "courtyard",
   getDescription: function (props) {
@@ -706,7 +702,7 @@ const horse = new Item({
           "The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. ";
       } else {
         text +=
-          "The horse shakes its mane, glad to have a free head and starts nosing around for food to munch. ";
+          "The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. ";
       }
 
       return text;
@@ -741,6 +737,11 @@ const horse = new Item({
       if (!props.gameState.horseTethered) {
         return "You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. ";
       }
+
+      if (props.gameState.horseTethered) {
+        return "You take back the horse's reins. ";
+      }
+
     }
 
     function getTargetItemLocation(props) {
@@ -783,22 +784,14 @@ const berries = new Item({
     return "Eat";
   },
   getCustomUse: function (props) {
-    function writeDescription() {
-      return "You pop the berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ";
-    }
-
-    function getGameEffect(props) {
-      return {
-        playerPoisoned: true,
-        reputation: props.gameState.reputation - 1,
-      };
-    }
-
-    // todo where do the berries go when you eat them?
 
     return new ItemInteraction({
-      gameEffect: getGameEffect(props),
-      description: writeDescription(props),
+      gameEffect: {
+        playerPoisoned: true,
+        reputation: props.gameState.reputation - 1,
+      },
+      description: "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ",
+      targetItemLocation: "clearing",
     });
   },
 
@@ -809,6 +802,12 @@ const berries = new Item({
         !props.gameState.squirrelDead
       ) {
         return "The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
+      }
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
+      ) {
+        return "The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
     }
 
@@ -822,14 +821,27 @@ const berries = new Item({
         gameEffect = { ...gameEffect, squirrelDead: true };
       }
 
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
+      ) {
+        gameEffect = { ...gameEffect, horseDead: true };
+      }
+
       if (Object.keys(gameEffect).length) return gameEffect;
     }
 
     function getTargetItemLocation(props) {
-      // todo is this wht I want?
       if (
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
+      ) {
+        return "clearing";
+      }
+      
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
       ) {
         return "clearing";
       }
@@ -850,7 +862,13 @@ const berries = new Item({
       ) {
         return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
-      // todo also give to horse
+      
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
+      ) {
+        return "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
+      }
       if (props.playerLocation === "wizard") {
         return `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
       }
@@ -863,6 +881,12 @@ const berries = new Item({
       ) {
         return { squirrelDead: true };
       }
+        if (
+          props.itemLocations[props.playerLocation].has("horse") &&
+          !props.gameState.horseTethered
+        ) {
+        return { squirrelDead: true };
+      }
     }
 
     function getTargetItemLocation(props) {
@@ -870,7 +894,13 @@ const berries = new Item({
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
       ) {
-        return "clearing"; // todo is this right?
+        return "clearing";
+      }
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
+      ) {
+        return "clearing";
       }
 
       if (props.playerLocation === "wizard") {
