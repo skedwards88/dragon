@@ -2,13 +2,13 @@ export class ItemInteraction {
   constructor({
     gameEffect,
     description,
-    targetItemLocation,
-    otherItemLocations,
+    targetItemDestination,
+    itemMovements = [],
   }) {
     this.description = description;
     this.gameEffect = gameEffect;
-    this.targetItemLocation = targetItemLocation;
-    this.otherItemLocations = otherItemLocations;
+    this.targetItemDestination = targetItemDestination;
+    this.itemMovements = itemMovements;
   }
 }
 
@@ -122,12 +122,14 @@ const lute = new Item({
     ) {
       return new ItemInteraction({
         gameEffect: { ownSword: true },
-        targetItemLocation: "outOfPlay",
-        otherItemLocations: {
-          item: "sword",
-          oldLocation: "smithy",
-          newLocation: "inventory",
-        },
+        targetItemDestination: "outOfPlay",
+        itemMovements: [
+          {
+            item: "sword",
+            oldLocation: "smithy",
+            newLocation: "inventory",
+          },
+        ],
         description: writeDescription(props),
       });
     } else {
@@ -226,7 +228,7 @@ const apple = new Item({
 
     return new ItemInteraction({
       description: writeDescription(props),
-      targetItemLocation: "inn",
+      targetItemDestination: "inn",
     });
   },
 
@@ -253,12 +255,14 @@ const apple = new Item({
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
-        targetItemLocation: "inn",
-        otherItemLocations: {
-          item: "horse",
-          oldLocation: props.playerLocation,
-          newLocation: "inventory",
-        },
+        targetItemDestination: "inn",
+        itemMovements: [
+          {
+            item: "horse",
+            oldLocation: props.playerLocation,
+            newLocation: "inventory",
+          },
+        ],
         description: writeDescription(props),
       });
     }
@@ -291,12 +295,14 @@ const apple = new Item({
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
-        targetItemLocation: "inn",
-        otherItemLocations: {
-          item: "horse",
-          oldLocation: props.playerLocation,
-          newLocation: "inventory",
-        },
+        targetItemDestination: "inn",
+        itemMovements: [
+          {
+            item: "horse",
+            oldLocation: props.playerLocation,
+            newLocation: "inventory",
+          },
+        ],
         description: writeDescription(props),
       });
     } else {
@@ -409,7 +415,7 @@ const handkerchief = new Item({
       if (Object.keys(gameEffect).length) return gameEffect;
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (props.playerLocation === "youth") {
         return "outOfPlay";
       }
@@ -417,7 +423,7 @@ const handkerchief = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -463,7 +469,7 @@ const baby = new Item({
       if (Object.keys(gameEffect).length) return gameEffect;
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (props.playerLocation === "nurseryWindow") {
         return "outOfPlay";
       }
@@ -471,7 +477,7 @@ const baby = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -575,7 +581,7 @@ const sword = new Item({
         };
       }
     }
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
         return "smithy";
       }
@@ -590,7 +596,7 @@ const sword = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -622,7 +628,7 @@ const sword = new Item({
       if (Object.keys(gameEffect).length) return gameEffect;
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
@@ -633,26 +639,28 @@ const sword = new Item({
       }
     }
 
-    function getOtherItemLocation(props) {
+    function getItemMovements(props) {
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
         props.playerLocation === "wizard" &&
         !props.gameState.earnedTreasureAmount
       ) {
-        return {
-          item: "score",
-          oldLocation: "wizard",
-          newLocation: "inventory",
-        };
+        return [
+          {
+            item: "score",
+            oldLocation: "wizard",
+            newLocation: "inventory",
+          },
+        ];
       }
     }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
-      otherItemLocations: getOtherItemLocation(props),
+      itemMovements: getItemMovements(props),
     });
   },
 });
@@ -742,7 +750,7 @@ const horse = new Item({
       }
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (props.gameState.horseDead) {
         return props.playerLocation;
       }
@@ -753,7 +761,7 @@ const horse = new Item({
     }
 
     return new ItemInteraction({
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -789,7 +797,7 @@ const berries = new Item({
       },
       description:
         "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ",
-      targetItemLocation: "clearing",
+      targetItemDestination: "clearing",
     });
   },
 
@@ -829,7 +837,7 @@ const berries = new Item({
       if (Object.keys(gameEffect).length) return gameEffect;
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
@@ -847,7 +855,7 @@ const berries = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -887,7 +895,7 @@ const berries = new Item({
       }
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
@@ -908,7 +916,7 @@ const berries = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -978,7 +986,7 @@ const treasure = new Item({
       }
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (
         props.gameState.dragonPoisoned ||
         props.gameState.dragonAsleep ||
@@ -998,7 +1006,7 @@ const treasure = new Item({
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -1086,14 +1094,14 @@ const score = new Item({
       }
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (!props.gameState.ownScore) {
         return "wizard";
       }
     }
 
     return new ItemInteraction({
-      targetItemLocation: getTargetItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
       description: writeDescription(props),
     });
   },
@@ -1127,7 +1135,7 @@ const score = new Item({
       }
     }
 
-    function getTargetItemLocation(props) {
+    function getTargetItemDestination(props) {
       if (
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score") &&
@@ -1145,24 +1153,26 @@ const score = new Item({
       }
     }
 
-    function getOtherItemLocation(props) {
+    function getItemMovements(props) {
       if (
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score") &&
         props.itemLocations.wizard.has("sword")
       ) {
-        return {
-          item: "sword",
-          oldLocation: "wizard",
-          newLocation: "inventory",
-        };
+        return [
+          {
+            item: "sword",
+            oldLocation: "wizard",
+            newLocation: "inventory",
+          },
+        ];
       }
     }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      targetItemLocation: getTargetItemLocation(props),
-      otherItemLocations: getOtherItemLocation(props),
+      targetItemDestination: getTargetItemDestination(props),
+      itemMovements: getItemMovements(props),
       description: writeDescription(props),
     });
   },

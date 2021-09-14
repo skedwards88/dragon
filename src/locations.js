@@ -377,22 +377,24 @@ const blacksmith = new Location({
       }
     }
 
-    function getOtherItemLocation(props) {
+    function getItemMovements(props) {
       if (
         !props.gameState.ownSword &&
         props.itemLocations.smithy.has("sword")
       ) {
-        return {
-          item: "sword",
-          oldLocation: "smithy",
-          newLocation: "inventory",
-        };
+        return [
+          {
+            item: "sword",
+            oldLocation: "smithy",
+            newLocation: "inventory",
+          },
+        ];
       }
     }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      otherItemLocations: getOtherItemLocation(props), //todo could make list to handle multiples
+      itemMovements: getItemMovements(props),
       description: writeDescription(props),
     });
   },
@@ -701,23 +703,25 @@ const wizard = new Location({
       }
     }
 
-    function getOtherItemLocation(props) {
+    function getItemMovements(props) {
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
         !props.gameState.earnedTreasureAmount
       ) {
-        return {
-          item: "score",
-          oldLocation: "wizard",
-          newLocation: "inventory",
-        };
+        return [
+          {
+            item: "score",
+            oldLocation: "wizard",
+            newLocation: "inventory",
+          },
+        ];
       }
     }
 
     return new ItemInteraction({
       gameEffect: getGameEffect(props),
-      otherItemLocations: getOtherItemLocation(props),
+      itemMovements: getItemMovements(props),
       description: writeDescription(props),
     });
   },

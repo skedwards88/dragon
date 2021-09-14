@@ -45,7 +45,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["berries"]),
+      inventory: new Set(["clothes"]),
       outOfPlay: new Set([]),
     };
 
@@ -144,6 +144,31 @@ function App() {
     setPlayerLocation(newLocation);
   }
 
+  function handleItemInteraction({ gameEffect, description, itemMovements }) {
+    if (gameEffect && gameEffect.reputation) {
+      const reputationDiff = gameEffect.reputation - gameState.reputation;
+      description += `\n\nReputation ${
+        reputationDiff > 0 ? "+" : ""
+      }${reputationDiff}`;
+    }
+    if (gameEffect && gameEffect.gold) {
+      const goldDiff = gameEffect.gold - gameState.gold;
+      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
+    }
+    setConsequenceText(description);
+
+    if (gameEffect) {
+      console.log(`updating game state: ${JSON.stringify(gameEffect)}`);
+      setGameState({ ...gameState, ...gameEffect });
+    }
+
+    if (itemMovements) {
+      itemMovements.forEach((itemMovement) => moveItem(itemMovement));
+    }
+
+    setCurrentDisplay("consequence");
+  }
+
   function handleTake(item) {
     console.log(`taking ${item} at ${playerLocation}`);
 
@@ -153,9 +178,14 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    const description =
-      customInteraction.description ||
-      `You now have ${
+    customInteraction.itemMovements.push({
+      item: item,
+      oldLocation: playerLocation,
+      newLocation: customInteraction.targetItemDestination || "inventory",
+    });
+
+    if (!customInteraction.description) {
+      customInteraction.description = `You now have ${
         ["a", "e", "i", "o", "u"].includes(
           items[item]
             .getDescription({
@@ -172,27 +202,9 @@ function App() {
         gameState: gameState,
         itemLocations: itemLocations,
       })}.`;
-    setConsequenceText(description);
-
-    const endItemLocation = customInteraction.targetItemLocation || "inventory";
-    moveItem({
-      item: item,
-      oldLocation: playerLocation,
-      newLocation: endItemLocation,
-    });
-
-    if (customInteraction.gameEffect) {
-      console.log(
-        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
-      );
-      setGameState({ ...gameState, ...customInteraction.gameEffect });
     }
 
-    if (customInteraction.otherItemLocations) {
-      moveItem(customInteraction.otherItemLocations);
-    }
-
-    setCurrentDisplay("consequence");
+    handleItemInteraction(customInteraction);
   }
 
   function handleUse(item) {
@@ -204,30 +216,19 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    const description =
-      customInteraction.description ||
-      `You use the ${items[item].displayName.toLowerCase()}.`;
-    setConsequenceText(description);
-
-    const endItemLocation = customInteraction.targetItemLocation || "inventory";
-    moveItem({
+    customInteraction.itemMovements.push({
       item: item,
       oldLocation: "inventory",
-      newLocation: endItemLocation,
+      newLocation: customInteraction.targetItemDestination || "inventory",
     });
 
-    if (customInteraction.gameEffect) {
-      console.log(
-        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
-      );
-      setGameState({ ...gameState, ...customInteraction.gameEffect });
+    if (!customInteraction.description) {
+      customInteraction.description = `You use the ${items[
+        item
+      ].displayName.toLowerCase()}.`;
     }
 
-    if (customInteraction.otherItemLocations) {
-      moveItem(customInteraction.otherItemLocations);
-    }
-
-    setCurrentDisplay("consequence");
+    handleItemInteraction(customInteraction);
   }
 
   function handleDrop(item) {
@@ -240,33 +241,18 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    const description =
-      customInteraction.description ||
-      `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
-    setConsequenceText(description);
-
-    const endItemLocation =
-      customInteraction.targetItemLocation || playerLocation;
-    moveItem({
+    customInteraction.itemMovements.push({
       item: item,
       oldLocation: "inventory",
-      newLocation: endItemLocation,
+      newLocation: customInteraction.targetItemDestination || playerLocation,
     });
 
-    if (customInteraction.gameEffect) {
-      console.log(
-        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
-      );
-      setGameState({ ...gameState, ...customInteraction.gameEffect });
+    if (!customInteraction.description) {
+      customInteraction.description = `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
     }
 
-    if (customInteraction.otherItemLocations) {
-      moveItem(customInteraction.otherItemLocations);
-    }
-
-    setCurrentDisplay("consequence");
+    handleItemInteraction(customInteraction);
   }
-
 
   function handlePay() {
     console.log(`paying ${playerLocation}`);
@@ -279,34 +265,20 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    let description;
     if (customInteraction.description) {
-      description = customInteraction.description;
+      // no change if we already have a description
     } else if (
       customInteraction.gameEffect ||
-      customInteraction.otherItemLocations
+      customInteraction.itemMovements
     ) {
-      description = `You pay the ${playerLocation}.`;
+      customInteraction.description = `You pay the ${playerLocation}.`;
     } else {
-      `The ${playerLocation} is not interested in your gold.`;
-    }
-    setConsequenceText(description);
-
-    if (customInteraction.gameEffect) {
-      console.log(
-        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
-      );
-      setGameState({ ...gameState, ...customInteraction.gameEffect });
+      customInteraction.description = `The ${playerLocation} is not interested in your gold.`;
     }
 
-    if (customInteraction.otherItemLocations) {
-      moveItem(customInteraction.otherItemLocations);
-    }
-
-    setCurrentDisplay("consequence");
+    handleItemInteraction(customInteraction);
   }
 
-  //todo add reputation/gold change to description (pull from state change)
   function handleGive(item) {
     console.log(`giving ${item} to ${playerLocation}`);
 
@@ -316,21 +288,17 @@ function App() {
       itemLocations: itemLocations,
     });
 
-    const endItemLocation =
-      customInteraction.targetItemLocation || playerLocation;
-    moveItem({
+    customInteraction.itemMovements.push({
       item: item,
       oldLocation: "inventory",
-      newLocation: endItemLocation,
+      newLocation: customInteraction.targetItemDestination || playerLocation,
     });
 
-    let description;
     if (customInteraction.description) {
-      // use custom description if available
-      description = customInteraction.description;
-    } else if (endItemLocation === "outOfPlay") {
+      // no change if we already have a description
+    } else if (customInteraction.targetItemDestination === "outOfPlay") {
       // if item goes out of play
-      description = `You give the ${item} to the ${playerLocation}.`;
+      customInteraction.description = `You give the ${item} to the ${playerLocation}.`;
     } else if (
       locations[playerLocation].getHuman({
         gameState: gameState,
@@ -339,24 +307,12 @@ function App() {
       })
     ) {
       // if giving to human
-      description = `The ${playerLocation} does not want this item but agrees to hold it for you.`;
+      customInteraction.description = `The ${playerLocation} does not want this item but agrees to hold it for you.`;
     } else {
-      description = `The ${playerLocation} does not want this item.`;
-    }
-    setConsequenceText(description);
-
-    if (customInteraction.gameEffect) {
-      console.log(
-        `updating game state: ${JSON.stringify(customInteraction.gameEffect)}`
-      );
-      setGameState({ ...gameState, ...customInteraction.gameEffect });
+      customInteraction.description = `The ${playerLocation} does not want this item.`;
     }
 
-    if (customInteraction.otherItemLocations) {
-      moveItem(customInteraction.otherItemLocations);
-    }
-
-    setCurrentDisplay("consequence");
+    handleItemInteraction(customInteraction);
   }
 
   if (gameState.reputation <= 0) {
