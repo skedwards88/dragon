@@ -257,8 +257,6 @@ function App() {
   function handlePay() {
     console.log(`paying ${playerLocation}`);
 
-    // todo not checking yet if you have enough gold to buy
-
     const customInteraction = locations[playerLocation].getCustomPay({
       playerLocation: playerLocation,
       gameState: gameState,
