@@ -411,7 +411,11 @@ const pasture = new Location({
     let text =
       "You are standing in a wide field. There is no road in sight. To the north, you hear sounds of the blacksmith shop. ";
 
-    if (props.itemLocations.pasture.has("horse") && !props.gameState.horseDead && !props.gameState.tethered) {
+    if (
+      props.itemLocations.pasture.has("horse") &&
+      !props.gameState.horseDead &&
+      !props.gameState.tethered
+    ) {
       text += `\n\nA horse is grazing in the field. A sign reads: "Free horse (if you can catch it)." `;
     }
 

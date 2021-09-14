@@ -312,7 +312,7 @@ function App() {
 
     setCurrentDisplay("consequence");
   }
-//todo add reputation/gold change to description (pull from state change)
+  //todo add reputation/gold change to description (pull from state change)
   function handleGive(item) {
     console.log(`giving ${item} to ${playerLocation}`);
 

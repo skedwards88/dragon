@@ -251,7 +251,6 @@ const apple = new Item({
       props.itemLocations[props.playerLocation].has("horse") &&
       !props.gameState.horseTethered
     ) {
-
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
         targetItemLocation: "inn",
@@ -741,7 +740,6 @@ const horse = new Item({
       if (props.gameState.horseTethered) {
         return "You take back the horse's reins. ";
       }
-
     }
 
     function getTargetItemLocation(props) {
@@ -784,13 +782,13 @@ const berries = new Item({
     return "Eat";
   },
   getCustomUse: function (props) {
-
     return new ItemInteraction({
       gameEffect: {
         playerPoisoned: true,
         reputation: props.gameState.reputation - 1,
       },
-      description: "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ",
+      description:
+        "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ",
       targetItemLocation: "clearing",
     });
   },
@@ -838,7 +836,7 @@ const berries = new Item({
       ) {
         return "clearing";
       }
-      
+
       if (
         props.itemLocations[props.playerLocation].has("horse") &&
         !props.gameState.horseTethered
@@ -862,7 +860,7 @@ const berries = new Item({
       ) {
         return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
-      
+
       if (
         props.itemLocations[props.playerLocation].has("horse") &&
         !props.gameState.horseTethered
@@ -881,10 +879,10 @@ const berries = new Item({
       ) {
         return { squirrelDead: true };
       }
-        if (
-          props.itemLocations[props.playerLocation].has("horse") &&
-          !props.gameState.horseTethered
-        ) {
+      if (
+        props.itemLocations[props.playerLocation].has("horse") &&
+        !props.gameState.horseTethered
+      ) {
         return { squirrelDead: true };
       }
     }
