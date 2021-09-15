@@ -45,7 +45,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["sword","lute","score"]),
+      inventory: new Set(["sword", "lute", "score"]),
       outOfPlay: new Set([]),
     };
 
@@ -323,7 +323,9 @@ function App() {
     );
   }
 
-  if (playerLocation === "gate" && (gameState.treasureAmount - gameState.remainingTreasureAmount)
+  if (
+    playerLocation === "gate" &&
+    gameState.treasureAmount - gameState.remainingTreasureAmount
   ) {
     return (
       <GameOver
