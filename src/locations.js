@@ -340,11 +340,7 @@ const blacksmith = new Location({
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
       text += `\n\n"Are you interested in buying that sword?" they ask. It costs ${
         props.gameState.swordCost
-      } gold${
-        props.itemLocations.inventory.has("lute")
-          ? " or I would trade it for your lute"
-          : ""
-      }. " `;
+      } gold. " `;
     }
     return text;
   },
@@ -364,11 +360,7 @@ const blacksmith = new Location({
         if (props.gameState.gold >= props.gameState.swordCost) {
           return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `;
         } else {
-          return `"It looks like you don't have enough gold to buy this sword. Come back once you have enough gold${
-            props.itemLocations.inventory.has("lute")
-              ? ", or I would trade it for your lute instead"
-              : ""
-          }."`;
+          return `"It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." `;
         }
       }
     }

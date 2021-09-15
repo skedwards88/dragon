@@ -103,41 +103,6 @@ const lute = new Item({
       description: writeDescription(props),
     });
   },
-
-  getCustomGive: function (props) {
-    function writeDescription(props) {
-      if (
-        !props.gameState.ownSword &&
-        props.itemLocations.smithy.has("sword") &&
-        props.playerLocation === "blacksmith"
-      ) {
-        return "You give your lute to the blacksmith. In exchange, they give you the sword. ";
-      }
-    }
-
-    if (
-      !props.gameState.ownSword &&
-      props.itemLocations.smithy.has("sword") &&
-      props.playerLocation === "blacksmith"
-    ) {
-      return new ItemInteraction({
-        gameEffect: { ownSword: true },
-        targetItemDestination: "outOfPlay",
-        itemMovements: [
-          {
-            item: "sword",
-            oldLocation: "smithy",
-            newLocation: "inventory",
-          },
-        ],
-        description: writeDescription(props),
-      });
-    } else {
-      return new ItemInteraction({
-        description: writeDescription(props),
-      });
-    }
-  },
 });
 
 const clothes = new Item({
@@ -952,7 +917,8 @@ const treasure = new Item({
         return "You try to steal the treasure, but the dragon singes you before you can get close. ";
       }
     }
-
+// todo can't earn full treasure if didn't kill dragon. also change text to mention snoring flames.
+// todo make it so treasure remains until all taken.
     function getGameEffect(props) {
       if (props.gameState.dragonDead || props.gameState.dragonAsleep) {
         return {
