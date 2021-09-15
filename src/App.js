@@ -32,20 +32,20 @@ function App() {
     promisedTreasure: false,
     cursed: false,
     firstCourtyardEntry: true,
-    dragonPoisoned: false,
+    dragonPoisoned: true,
     dragonAsleep: false,
     dragonDead: false,
-    treasureAmount: 200,
-    earnedTreasureAmount: 0,
+    treasureAmount: 300,
+    remainingTreasureAmount: 300,
     singeCount: 0,
     ownScore: false,
-    maxReputation: "todo",
-    maxGold: "todo",
+    maxReputation: 17,
+    maxGold: 310,
   };
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["clothes"]),
+      inventory: new Set(["sword","lute","score"]),
       outOfPlay: new Set([]),
     };
 
@@ -63,7 +63,7 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("gate");
+  const [playerLocation, setPlayerLocation] = useState("caveEntrance");
   const [consequenceText, setConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
@@ -323,7 +323,8 @@ function App() {
     );
   }
 
-  if (playerLocation === "gate" && gameState.earnedTreasureAmount) {
+  if (playerLocation === "gate" && (props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
+  ) {
     return (
       <GameOver
         result="win"

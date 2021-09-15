@@ -338,9 +338,7 @@ const blacksmith = new Location({
     }`;
 
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      text += `\n\n"Are you interested in buying that sword?" they ask. It costs ${
-        props.gameState.swordCost
-      } gold. " `;
+      text += `\n\n"Are you interested in buying that sword?" they ask. It costs ${props.gameState.swordCost} gold. " `;
     }
     return text;
   },
@@ -532,7 +530,7 @@ const road3 = new Location({
   getDescription: function (props) {
     if (
       props.gameState.promisedTreasure &&
-      props.gameState.earnedTreasureAmount
+      props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
     ) {
       return 'As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke.';
     } else {
@@ -548,11 +546,14 @@ const road3 = new Location({
   onEnterGameStateEffect: function (props) {
     if (
       props.gameState.promisedTreasure &&
-      props.gameState.earnedTreasureAmount
+      props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
     ) {
       return {
         cursed: true,
-        gold: props.gameState.gold - props.gameState.earnedTreasureAmount,
+        gold:
+          props.gameState.gold -
+          (props.gameState.treasureAmount -
+            props.gameState.remainingTreasureAmount),
       };
     }
   },
@@ -634,7 +635,9 @@ const wizard = new Location({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      !props.gameState.earnedTreasureAmount
+      !(
+        props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
+      )
     ) {
       text += `"I have a musical score that will be useful. I would trade it for ${
         props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
@@ -643,7 +646,7 @@ const wizard = new Location({
 
     if (
       props.gameState.promisedTreasure &&
-      props.gameState.earnedTreasureAmount
+      props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
     ) {
       text += `"Are you here to give me my share of the treasure? "`;
     }
@@ -655,24 +658,30 @@ const wizard = new Location({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
       }
 
       if (
         props.gameState.promisedTreasure &&
-        props.gameState.earnedTreasureAmount
+        props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
       ) {
         let text = "";
         if (
-          props.gameState.earnedTreasureAmount ===
+          props.gameState.treasureAmount -
+            props.gameState.remainingTreasureAmount ===
           props.gameState.treasureAmount
         ) {
           text += `"It looks like you succeeded nicely." `;
         }
         if (
-          props.gameState.earnedTreasureAmount < props.gameState.treasureAmount
+          props.gameState.treasureAmount -
+            props.gameState.remainingTreasureAmount <
+          props.gameState.treasureAmount
         ) {
           text += `"It looks like you succeeded, though not as well as I hoped." `;
         }
@@ -686,7 +695,10 @@ const wizard = new Location({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         return {
           ownScore: true,
@@ -696,7 +708,7 @@ const wizard = new Location({
 
       if (
         props.gameState.promisedTreasure &&
-        props.gameState.earnedTreasureAmount
+        props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
       ) {
         return {
           promisedTreasure: false,
@@ -709,7 +721,10 @@ const wizard = new Location({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         return [
           {
@@ -909,17 +924,17 @@ const lair = new Location({
       !props.gameState.dragonPoisoned
     ) {
       text +=
-        "\n\nA dragon sits atop the pile of treasure. It shoots fire as you approach, singing you. You cannot go closer without getting burnt further. ";
+        "\n\nA dragon sits atop the pile of treasure. It shoots fire as you approach. You cannot go closer without getting burnt. ";
     }
 
     if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
       text +=
-        "\n\nThe dragon lies in a deep slumber atop the pile of treasure. ";
+        "\n\nThe dragon lies in a deep slumber atop the pile of treasure, periodically snoring flames of fire. ";
     }
 
     if (props.gameState.dragonDead) {
       text +=
-        "\n\nThe dragon's body lies top the pile of treasure, its head severed. ";
+        "\n\nThe dragon's body lies severed from its head. The treasure it was guarding is now accessible. ";
     }
 
     if (
@@ -928,12 +943,13 @@ const lair = new Location({
       props.gameState.dragonPoisoned
     ) {
       text +=
-        "\n\nThe dragon looks half dead from the poison but still shoots flame as you approach it and its pile of treasure. The flame is no longer strong enough to harm you from the entrance to the lair, but it will surely singe you if you get closer. ";
+        "\n\nThe dragon looks half dead from the poison but still shoots flame as you approach it and its pile of treasure. \n\nThe flame is no longer strong enough to harm you from the entrance to the lair, but it will surely singe you if you get closer. ";
     }
 
     return text;
   },
   onEnterGameStateEffect: function (props) {
+    // todo maybe shouldn't get singed when enter...but then would need to get singed any time you try to do something at this location
     if (
       !props.gameState.dragonAsleep &&
       !props.gameState.dragonDead &&

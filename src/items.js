@@ -572,7 +572,10 @@ const sword = new Item({
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
         props.playerLocation === "wizard" &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         return "You give your sword to the wizard. In exchange, they give you the musical score. ";
       }
@@ -585,7 +588,10 @@ const sword = new Item({
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
         props.playerLocation === "wizard" &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         gameEffect = { ...gameEffect, ownScore: true };
       }
@@ -598,7 +604,10 @@ const sword = new Item({
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
         props.playerLocation === "wizard" &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         return "wizard";
       }
@@ -609,7 +618,10 @@ const sword = new Item({
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
         props.playerLocation === "wizard" &&
-        !props.gameState.earnedTreasureAmount
+        !(
+          props.gameState.treasureAmount -
+          props.gameState.remainingTreasureAmount
+        )
       ) {
         return [
           {
@@ -894,11 +906,11 @@ const treasure = new Item({
   getCustomTake: function (props) {
     function writeDescription(props) {
       if (props.gameState.dragonDead) {
-        return "You scoop as much treasure as possible into your bag, avoiding the gore from the severed dragon head. ";
+        return "You scoop all of the treasure into your bag, avoiding the gore from the severed dragon head. ";
       }
 
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
-        return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. ";
+        return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. ";
       }
 
       if (
@@ -906,7 +918,7 @@ const treasure = new Item({
         !props.gameState.dragonAsleep &&
         !props.gameState.dragonDead
       ) {
-        return "With the dragon slower from the poison, you can now reach the treasure. You scoop as much treasure as possible into your bag before the dragon singes you. ";
+        return "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. ";
       }
 
       if (
@@ -917,13 +929,28 @@ const treasure = new Item({
         return "You try to steal the treasure, but the dragon singes you before you can get close. ";
       }
     }
-// todo can't earn full treasure if didn't kill dragon. also change text to mention snoring flames.
-// todo make it so treasure remains until all taken.
+    // todo can't earn full treasure if didn't kill dragon. also change text to mention snoring flames.
+    // todo make it so treasure remains until all taken.
     function getGameEffect(props) {
-      if (props.gameState.dragonDead || props.gameState.dragonAsleep) {
+      if (props.gameState.dragonDead) {
         return {
-          gold: props.gameState.gold + props.gameState.treasureAmount,
-          earnedTreasureAmount: props.gameState.treasureAmount,
+          gold: props.gameState.gold + props.gameState.remainingTreasureAmount,
+          remainingTreasureAmount: 0,
+        };
+      }
+
+      if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
+        const treasureTaken =
+          props.gameState.treasureAmount * (2 / 3) -
+          (props.gameState.treasureAmount -
+            props.gameState.remainingTreasureAmount);
+
+        return {
+          gold: props.gameState.gold + treasureTaken,
+          remainingTreasureAmount:
+            props.gameState.remainingTreasureAmount - treasureTaken,
+          singeCount: props.gameState.singeCount + 1,
+          reputation: props.gameState.reputation - 1,
         };
       }
 
@@ -932,11 +959,13 @@ const treasure = new Item({
         !props.gameState.dragonAsleep &&
         !props.gameState.dragonDead
       ) {
+        const treasureTaken = props.gameState.treasureAmount / 3;
         return {
-          gold: props.gameState.gold + props.gameState.treasureAmount / 2,
-          earnedTreasureAmount: props.gameState.treasureAmount / 2,
-          singeCount: props.gameState.singeCount + 1,
-          reputation: props.gameState.reputation - 1,
+          gold: props.gameState.gold + treasureTaken,
+          remainingTreasureAmount:
+            props.gameState.remainingTreasureAmount - treasureTaken,
+          singeCount: props.gameState.singeCount + 2,
+          reputation: props.gameState.reputation - 2,
         };
       }
 
@@ -953,19 +982,9 @@ const treasure = new Item({
     }
 
     function getTargetItemDestination(props) {
-      if (
-        props.gameState.dragonPoisoned ||
-        props.gameState.dragonAsleep ||
-        props.gameState.dragonDead
-      ) {
+      if (props.gameState.dragonDead) {
         return "outOfPlay";
-      }
-
-      if (
-        !props.gameState.dragonPoisoned &&
-        !props.gameState.dragonAsleep &&
-        !props.gameState.dragonDead
-      ) {
+      } else {
         return "lair";
       }
     }
