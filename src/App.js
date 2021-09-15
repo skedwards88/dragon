@@ -323,7 +323,7 @@ function App() {
     );
   }
 
-  if (playerLocation === "gate" && (props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
+  if (playerLocation === "gate" && (gameState.treasureAmount - gameState.remainingTreasureAmount)
   ) {
     return (
       <GameOver
