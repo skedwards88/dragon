@@ -10,7 +10,7 @@ import GameOver from "./components/gameOver";
 function App() {
   const startingState = {
     reputation: 10,
-    gold: 0,
+    gold: 10,
     timeInCave: 0,
     swordCost: 40,
     maxSwordCost: 50,
@@ -45,7 +45,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["sword", "lute", "score"]),
+      inventory: new Set(["sword", "lute"]),
       outOfPlay: new Set([]),
     };
 

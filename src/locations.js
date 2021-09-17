@@ -641,7 +641,7 @@ const wizard = new Location({
     ) {
       text += `"I have a musical score that will be useful. I would trade it for ${
         props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
-      }gold. \n\nI see your gold pouch is light, but I believe this score will lead to treasure if you combine it with your wit. I would accept gold on credit, and will take half the treasure that you earn. \n\nAll sales on credit are final. All sales completed at time of purchase are refundable."`;
+      }gold. \n\nI see your gold pouch is light, but I believe this score will lead to treasure if you combine it with your wit. I would accept gold on credit, and will take half the treasure that you earn. \n\nAll sales on credit are final. All sales completed at time of purchase are refundable." `;
     }
 
     if (
@@ -663,7 +663,7 @@ const wizard = new Location({
           props.gameState.remainingTreasureAmount
         )
       ) {
-        return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. `;
+        return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then vanishes. `;
       }
 
       if (
