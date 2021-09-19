@@ -41,7 +41,7 @@ export default function GameOver({
     }`;
   } else {
     gameEndText =
-      "Even your pride has its limits. With what little reputation you have left, you flee the town.";
+      "Repuation: 0\n\nEven your pride has its limits. With what little reputation you have left, you flee the town.";
   }
 
   let finalReputation = gameState.reputation;
