@@ -44,16 +44,13 @@ export default function Location({
   gameState,
   playerLocation,
   setCurrentDisplay,
+  locationText,
 }) {
   console.log(`in loc ${playerLocation}`);
   return (
     <div className="App">
       <div className="description">
-        {locations[playerLocation].getDescription({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })}
+        {locationText}
       </div>
       <div className="buttons">
         <LocationItems

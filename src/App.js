@@ -32,7 +32,7 @@ function App() {
     promisedTreasure: false,
     cursed: false,
     firstCourtyardEntry: true,
-    dragonPoisoned: true,
+    dragonPoisoned: false,
     dragonAsleep: false,
     dragonDead: false,
     treasureAmount: 300,
@@ -60,18 +60,27 @@ function App() {
     return startingItemLocations;
   }
 
+  const startingLocation = "caveEntrance"
+
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const [playerLocation, setPlayerLocation] = useState("caveEntrance");
+  const startingLocationDescription = locations[startingLocation].getDescription({
+    playerLocation: startingLocation,
+    gameState: gameState,
+    itemLocations: itemLocations,
+  })
+  const [playerLocation, setPlayerLocation] = useState(startingLocation);
   const [consequenceText, setConsequenceText] = useState("");
+  const [locationText, setLocationText] = useState(startingLocationDescription);
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
   function handleNewGame() {
     console.log("new game");
     setItemLocations(startingItemLocations);
     setGameState(startingState);
-    setPlayerLocation("room");
+    setPlayerLocation(startingLocation);
+    setLocationText(startingLocationDescription);
     setConsequenceText("");
     setCurrentDisplay("location");
   }
@@ -86,10 +95,13 @@ function App() {
   }
 
   function handleMovePlayer(newLocation) {
-    let gameStateChanges = {};
 
     const oldLocation = playerLocation;
     console.log(`moving player from ${oldLocation} to ${newLocation}`);
+
+    // update game state
+
+    let gameStateChanges = {};
 
     const customExitStateEffect =
       locations[oldLocation].onExitGameStateEffect &&
@@ -117,6 +129,28 @@ function App() {
       });
     }
 
+    // update description
+
+    let description = locations[newLocation].getDescription({
+      playerLocation: newLocation,
+      gameState: gameState,
+      itemLocations: itemLocations,
+    })
+
+    if (gameStateChanges && gameStateChanges.reputation) {
+      const reputationDiff = gameStateChanges.reputation - gameState.reputation;
+      description += `\n\nReputation ${
+        reputationDiff > 0 ? "+" : ""
+      }${reputationDiff}`;
+    }
+    if (gameStateChanges && gameStateChanges.gold) {
+      const goldDiff = gameStateChanges.gold - gameState.gold;
+      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
+    }
+    setLocationText(description)
+
+    // update item locations
+
     const customEnterItemLocationEffect =
       locations[newLocation].onEnterItemLocationEffect &&
       locations[newLocation].onEnterItemLocationEffect({
@@ -140,6 +174,8 @@ function App() {
     if (customExitItemLocationEffect) {
       moveItem(customExitItemLocationEffect);
     }
+
+    // update player location
 
     setPlayerLocation(newLocation);
   }
@@ -373,6 +409,7 @@ function App() {
           handleTake={handleTake}
           handleMovePlayer={handleMovePlayer}
           setCurrentDisplay={setCurrentDisplay}
+          locationText={locationText}
         />
       );
   }
