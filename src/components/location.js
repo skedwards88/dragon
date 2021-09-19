@@ -49,9 +49,7 @@ export default function Location({
   console.log(`in loc ${playerLocation}`);
   return (
     <div className="App">
-      <div className="description">
-        {locationText}
-      </div>
+      <div className="description">{locationText}</div>
       <div className="buttons">
         <LocationItems
           itemsAtLocation={itemLocations[playerLocation]}

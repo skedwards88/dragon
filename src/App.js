@@ -60,16 +60,18 @@ function App() {
     return startingItemLocations;
   }
 
-  const startingLocation = "caveEntrance"
+  const startingLocation = "caveEntrance";
 
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const startingLocationDescription = locations[startingLocation].getDescription({
+  const startingLocationDescription = locations[
+    startingLocation
+  ].getDescription({
     playerLocation: startingLocation,
     gameState: gameState,
     itemLocations: itemLocations,
-  })
+  });
   const [playerLocation, setPlayerLocation] = useState(startingLocation);
   const [consequenceText, setConsequenceText] = useState("");
   const [locationText, setLocationText] = useState(startingLocationDescription);
@@ -95,7 +97,6 @@ function App() {
   }
 
   function handleMovePlayer(newLocation) {
-
     const oldLocation = playerLocation;
     console.log(`moving player from ${oldLocation} to ${newLocation}`);
 
@@ -135,7 +136,7 @@ function App() {
       playerLocation: newLocation,
       gameState: gameState,
       itemLocations: itemLocations,
-    })
+    });
 
     if (gameStateChanges && gameStateChanges.reputation) {
       const reputationDiff = gameStateChanges.reputation - gameState.reputation;
@@ -147,7 +148,7 @@ function App() {
       const goldDiff = gameStateChanges.gold - gameState.gold;
       description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
     }
-    setLocationText(description)
+    setLocationText(description);
 
     // update item locations
 
