@@ -571,11 +571,7 @@ const sword = new Item({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        props.playerLocation === "wizard" &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        props.playerLocation === "wizard"
       ) {
         return "You give your sword to the wizard. In exchange, they give you the musical score. ";
       }
@@ -587,11 +583,7 @@ const sword = new Item({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        props.playerLocation === "wizard" &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        props.playerLocation === "wizard"
       ) {
         gameEffect = { ...gameEffect, ownScore: true };
       }
@@ -603,11 +595,7 @@ const sword = new Item({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        props.playerLocation === "wizard" &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        props.playerLocation === "wizard"
       ) {
         return "wizard";
       }
@@ -617,11 +605,7 @@ const sword = new Item({
       if (
         props.itemLocations.wizard.has("score") &&
         !props.gameState.ownScore &&
-        props.playerLocation === "wizard" &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        props.playerLocation === "wizard"
       ) {
         return [
           {
@@ -929,8 +913,6 @@ const treasure = new Item({
         return "You try to steal the treasure, but the dragon singes you before you can get close. ";
       }
     }
-    // todo can't earn full treasure if didn't kill dragon. also change text to mention snoring flames.
-    // todo make it so treasure remains until all taken.
     function getGameEffect(props) {
       if (props.gameState.dragonDead) {
         return {
@@ -1071,11 +1053,11 @@ const score = new Item({
   getCustomTake: function (props) {
     function writeDescription(props) {
       if (!props.gameState.ownScore) {
-        return `"Ah ah!" The wizard shakes a finger at you. Not for free. I would trade it for ${
+        return `"Ah ah!" The wizard shakes a finger at you. "Not for free. I would trade it for ${
           props.itemLocations.inventory.has("sword")
             ? "your fine sword or "
             : ""
-        }gold.`;
+        }gold." `;
       }
     }
 

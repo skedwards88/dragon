@@ -530,7 +530,7 @@ const road3 = new Location({
   getDescription: function (props) {
     if (
       props.gameState.promisedTreasure &&
-      props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
+      !(props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
     ) {
       return 'As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke.';
     } else {
@@ -546,7 +546,7 @@ const road3 = new Location({
   onEnterGameStateEffect: function (props) {
     if (
       props.gameState.promisedTreasure &&
-      props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
+      !(props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
     ) {
       return {
         cursed: true,
@@ -635,7 +635,7 @@ const wizard = new Location({
     if (
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore &&
-      !(
+      (
         props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
       )
     ) {
@@ -646,7 +646,7 @@ const wizard = new Location({
 
     if (
       props.gameState.promisedTreasure &&
-      props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
+      !(props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
     ) {
       text += `"Are you here to give me my share of the treasure? "`;
     }
@@ -657,18 +657,14 @@ const wizard = new Location({
     function writeDescription(props) {
       if (
         props.itemLocations.wizard.has("score") &&
-        !props.gameState.ownScore &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        !props.gameState.ownScore
       ) {
         return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then vanishes. `;
       }
 
       if (
         props.gameState.promisedTreasure &&
-        props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
+        (props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
       ) {
         let text = "";
         if (
@@ -689,16 +685,19 @@ const wizard = new Location({
 
         return text;
       }
+
+      if (
+        props.gameState.promisedTreasure &&
+        !(props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
+      ) {
+        return "Hmm...You have not earned any treasure. Use your wits!"
+      }
     }
 
     function getGameEffect(props) {
       if (
         props.itemLocations.wizard.has("score") &&
-        !props.gameState.ownScore &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        !props.gameState.ownScore
       ) {
         return {
           ownScore: true,
@@ -708,7 +707,7 @@ const wizard = new Location({
 
       if (
         props.gameState.promisedTreasure &&
-        props.gameState.treasureAmount - props.gameState.remainingTreasureAmount
+        (props.gameState.treasureAmount - props.gameState.remainingTreasureAmount)
       ) {
         return {
           promisedTreasure: false,
@@ -720,11 +719,7 @@ const wizard = new Location({
     function getItemMovements(props) {
       if (
         props.itemLocations.wizard.has("score") &&
-        !props.gameState.ownScore &&
-        !(
-          props.gameState.treasureAmount -
-          props.gameState.remainingTreasureAmount
-        )
+        !props.gameState.ownScore
       ) {
         return [
           {

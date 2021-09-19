@@ -22,7 +22,7 @@ function App() {
     horseTethered: false,
     horseMounted: false,
     playerPoisoned: false,
-    clothesPoopy: false,
+    clothesPoopy: true,
     handkerchiefDamp: false,
     playerMasked: false,
     babyCough: false,
@@ -45,7 +45,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["sword", "lute"]),
+      inventory: new Set(["sword", "lute", "berries", "clothes"]),
       outOfPlay: new Set([]),
     };
 
