@@ -36,7 +36,7 @@ function App() {
     dragonAsleep: false,
     dragonDead: false,
     treasureAmount: 300,
-    remainingTreasureAmount: 300,
+    earnedTreasureAmount: 0,
     singeCount: 0,
     ownScore: false,
     maxReputation: 17,
@@ -60,7 +60,7 @@ function App() {
     return startingItemLocations;
   }
 
-  const startingLocation = "caveEntrance";
+  const startingLocation = "wizard";
 
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
@@ -362,7 +362,7 @@ function App() {
 
   if (
     playerLocation === "gate" &&
-    gameState.treasureAmount - gameState.remainingTreasureAmount
+    gameState.earnedTreasureAmount
   ) {
     return (
       <GameOver

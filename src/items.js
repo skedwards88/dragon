@@ -915,22 +915,24 @@ const treasure = new Item({
     }
     function getGameEffect(props) {
       if (props.gameState.dragonDead) {
+        const remainingTreasureAmount = props.gameState.treasureAmount - props.gameState.earnedTreasureAmount;
         return {
-          gold: props.gameState.gold + props.gameState.remainingTreasureAmount,
-          remainingTreasureAmount: 0,
+          gold: props.gameState.gold + remainingTreasureAmount,
+          earnedTreasureAmount: props.gameState.earnedTreasureAmount + remainingTreasureAmount,
         };
       }
 
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
+        const remainingTreasureAmount = props.gameState.treasureAmount - props.gameState.earnedTreasureAmount;
+
         const treasureTaken =
           props.gameState.treasureAmount * (2 / 3) -
           (props.gameState.treasureAmount -
-            props.gameState.remainingTreasureAmount);
+            remainingTreasureAmount);
 
         return {
           gold: props.gameState.gold + treasureTaken,
-          remainingTreasureAmount:
-            props.gameState.remainingTreasureAmount - treasureTaken,
+          earnedTreasureAmount: props.gameState.earnedTreasureAmount + treasureTaken,
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         };
@@ -944,8 +946,8 @@ const treasure = new Item({
         const treasureTaken = props.gameState.treasureAmount / 3;
         return {
           gold: props.gameState.gold + treasureTaken,
-          remainingTreasureAmount:
-            props.gameState.remainingTreasureAmount - treasureTaken,
+          earnedTreasureAmount:
+            props.gameState.earnedTreasureAmount + treasureTaken,
           singeCount: props.gameState.singeCount + 2,
           reputation: props.gameState.reputation - 2,
         };
