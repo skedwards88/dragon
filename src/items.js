@@ -895,11 +895,11 @@ const treasure = new Item({
 
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
         if (props.gameState.treasureLevel === 2) {
-return "TODO if take again"
+          return "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon snores, releasing a burst of flame that singes your eyebrows. ";
         } else {
-        return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. ";
+          return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. ";
+        }
       }
-    }
 
       if (
         props.gameState.dragonPoisoned &&
@@ -907,12 +907,11 @@ return "TODO if take again"
         !props.gameState.dragonDead
       ) {
         if (props.gameState.treasureLevel) {
-        return "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. ";
-
-      } else {
-        return "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. ";
+          return "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. ";
+        } else {
+          return "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. ";
+        }
       }
-    }
 
       if (
         !props.gameState.dragonPoisoned &&
@@ -924,9 +923,11 @@ return "TODO if take again"
     }
     function getGameEffect(props) {
       if (props.gameState.dragonDead) {
-        const newTreasureLevel = 3
-        const treasureLevelDiff = newTreasureLevel - props.gameState.treasureLevel;
-        const treasureTaken = props.gameState.treasureAmount * (treasureLevelDiff/3)
+        const newTreasureLevel = 3;
+        const treasureLevelDiff =
+          newTreasureLevel - props.gameState.treasureLevel;
+        const treasureTaken =
+          props.gameState.treasureAmount * (treasureLevelDiff / 3);
 
         return {
           gold: props.gameState.gold + treasureTaken,
@@ -935,9 +936,11 @@ return "TODO if take again"
       }
 
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
-        const newTreasureLevel = 2
-        const treasureLevelDiff = newTreasureLevel - props.gameState.treasureLevel;
-        const treasureTaken = props.gameState.treasureAmount * (treasureLevelDiff/3)
+        const newTreasureLevel = 2;
+        const treasureLevelDiff =
+          newTreasureLevel - props.gameState.treasureLevel;
+        const treasureTaken =
+          props.gameState.treasureAmount * (treasureLevelDiff / 3);
 
         return {
           gold: props.gameState.gold + treasureTaken,
@@ -952,9 +955,11 @@ return "TODO if take again"
         !props.gameState.dragonAsleep &&
         !props.gameState.dragonDead
       ) {
-        const newTreasureLevel = 1
-        const treasureLevelDiff = newTreasureLevel - props.gameState.treasureLevel;
-        const treasureTaken = props.gameState.treasureAmount * (treasureLevelDiff/3)
+        const newTreasureLevel = 1;
+        const treasureLevelDiff =
+          newTreasureLevel - props.gameState.treasureLevel;
+        const treasureTaken =
+          props.gameState.treasureAmount * (treasureLevelDiff / 3);
 
         return {
           gold: props.gameState.gold + treasureTaken,

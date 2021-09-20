@@ -32,8 +32,8 @@ function App() {
     promisedTreasure: false,
     cursed: false,
     firstCourtyardEntry: true,
-    dragonPoisoned: false,
-    dragonAsleep: false,
+    dragonPoisoned: true,
+    dragonAsleep: true,
     dragonDead: false,
     treasureAmount: 300,
     treasureLevel: 0,
@@ -125,10 +125,10 @@ function App() {
 
     // update location consequence text
 
-    let consequence = ""
+    let consequence = "";
 
     if (gameStateChanges && gameStateChanges.reputation) {
-      console.log("REP")
+      console.log("REP");
       const reputationDiff = gameStateChanges.reputation - gameState.reputation;
       consequence += `\n\nReputation ${
         reputationDiff > 0 ? "+" : ""
@@ -138,7 +138,7 @@ function App() {
       const goldDiff = gameStateChanges.gold - gameState.gold;
       consequence += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
     }
-    console.log(consequence)
+    console.log(consequence);
     setLocationConsequenceText(consequence);
 
     // update item locations
@@ -351,10 +351,7 @@ function App() {
     );
   }
 
-  if (
-    playerLocation === "gate" &&
-    gameState.treasureLevel
-  ) {
+  if (playerLocation === "gate" && gameState.treasureLevel) {
     return (
       <GameOver
         result="win"
