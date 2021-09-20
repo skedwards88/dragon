@@ -529,7 +529,7 @@ const road3 = new Location({
   },
   getDescription: function (props) {
     if (
-      props.gameState.promisedTreasure && props.gameState.earnedTreasureAmount
+      props.gameState.promisedTreasure && props.gameState.treasureLevel && !props.gameState.cursed
     ) {
       return 'As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke.';
     } else {
@@ -544,13 +544,15 @@ const road3 = new Location({
 
   onEnterGameStateEffect: function (props) {
     if (
-      props.gameState.promisedTreasure && props.gameState.earnedTreasureAmount
+      props.gameState.promisedTreasure && props.gameState.treasureLevel
     ) {
+      const treasureTaken = props.gameState.treasureAmount * (treasureLevel/3)
+
       return {
         cursed: true,
         gold:
           props.gameState.gold -
-          props.gameState.earnedTreasureAmount,
+          treasureTaken,
       };
     }
   },
@@ -633,14 +635,13 @@ const wizard = new Location({
       props.itemLocations.wizard.has("score") &&
       !props.gameState.ownScore
     ) {
-      text += `${props.itemLocations.wizard.has("score")} ${!props.gameState.ownScore} ${props.itemLocations.wizard.has("score") &&
-      !props.gameState.ownScore}\n\n"I have a musical score that will be useful. I would trade it for ${
+      text += `\n\n"I have a musical score that will be useful. I would trade it for ${
         props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
       }gold. \n\nI see your gold pouch is not as heavy as it could be--it is certainly not enough to buy this score. However, I believe this score will lead to treasure if you combine it with your wit. I would accept gold on credit, and will take half the treasure that you earn from the dragon's lair. \n\nAll sales on credit are final. All sales completed at time of purchase are refundable." `;
     }
 
     if (
-      props.gameState.promisedTreasure && props.gameState.earnedTreasureAmount
+      props.gameState.promisedTreasure && props.gameState.treasureLevel
     ) {
       text += `"Are you here to give me my share of the treasure? "`;
     }
@@ -657,18 +658,17 @@ const wizard = new Location({
       }
 
       if (
-        props.gameState.promisedTreasure && props.gameState.earnedTreasureAmount
+        props.gameState.promisedTreasure && props.gameState.treasureLevel
       ) {
         let text = "";
         if (
-          props.gameState.earnedTreasureAmount ===
-          props.gameState.treasureAmount
+          props.gameState.treasureLevel === 3
         ) {
           text += `"It looks like you succeeded nicely." `;
         }
         if (
-          props.gameState.earnedTreasureAmount <
-          props.gameState.treasureAmount
+          props.gameState.treasureLevel <
+          3
         ) {
           text += `"It looks like you succeeded, though not as well as I hoped." `;
         }
@@ -678,7 +678,7 @@ const wizard = new Location({
       }
 
       if (
-        props.gameState.promisedTreasure && !props.gameState.earnedTreasureAmount
+        props.gameState.promisedTreasure && !props.gameState.treasureLevel
       ) {
         return "Hmm...You have not earned any treasure. Use your wits!"
       }
@@ -696,11 +696,13 @@ const wizard = new Location({
       }
 
       if (
-        props.gameState.promisedTreasure && props.gameState.earnedTreasureAmount
+        props.gameState.promisedTreasure && props.gameState.treasureLevel
       ) {
+        const treasureTaken = props.gameState.treasureAmount * (treasureLevel/3)
+
         return {
           promisedTreasure: false,
-          gold: props.gameState.gold - (props.gameState.earnedTreasureAmount / 2),
+          gold: props.gameState.gold - treasureTaken,
         };
       }
     }
@@ -961,7 +963,7 @@ function dragonDescription(props) {
     props.itemLocations.puddle.has("berries")
   ) {
     text +=
-      "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? Perhaps it is suspicious. \n\n";
+      "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? \n\n";
   }
 
   if (

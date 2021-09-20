@@ -16,7 +16,7 @@ function App() {
     maxSwordCost: 50,
     ownSword: false,
     manorFire: true,
-    naked: true,
+    naked: false,
     squirrelDead: false,
     horseDead: false,
     horseTethered: false,
@@ -36,7 +36,7 @@ function App() {
     dragonAsleep: false,
     dragonDead: false,
     treasureAmount: 300,
-    earnedTreasureAmount: 0,
+    treasureLevel: 0,
     singeCount: 0,
     ownScore: false,
     maxReputation: 17,
@@ -65,16 +65,9 @@ function App() {
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
   const [gameState, setGameState] = useState(startingState);
-  const startingLocationDescription = locations[
-    startingLocation
-  ].getDescription({
-    playerLocation: startingLocation,
-    gameState: gameState,
-    itemLocations: itemLocations,
-  });
   const [playerLocation, setPlayerLocation] = useState(startingLocation);
   const [consequenceText, setConsequenceText] = useState("");
-  const [locationText, setLocationText] = useState(startingLocationDescription);
+  const [locationConsequenceText, setLocationConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
 
   function handleNewGame() {
@@ -82,7 +75,7 @@ function App() {
     setItemLocations(startingItemLocations);
     setGameState(startingState);
     setPlayerLocation(startingLocation);
-    setLocationText(startingLocationDescription);
+    setLocationConsequenceText("");
     setConsequenceText("");
     setCurrentDisplay("location");
   }
@@ -130,25 +123,23 @@ function App() {
       });
     }
 
-    // update description
+    // update location consequence text
 
-    let description = locations[newLocation].getDescription({
-      playerLocation: newLocation,
-      gameState: gameState,
-      itemLocations: itemLocations,
-    });
+    let consequence = ""
 
     if (gameStateChanges && gameStateChanges.reputation) {
+      console.log("REP")
       const reputationDiff = gameStateChanges.reputation - gameState.reputation;
-      description += `\n\nReputation ${
+      consequence += `\n\nReputation ${
         reputationDiff > 0 ? "+" : ""
       }${reputationDiff}`;
     }
     if (gameStateChanges && gameStateChanges.gold) {
       const goldDiff = gameStateChanges.gold - gameState.gold;
-      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
+      consequence += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
     }
-    setLocationText(description);
+    console.log(consequence)
+    setLocationConsequenceText(consequence);
 
     // update item locations
 
@@ -362,7 +353,7 @@ function App() {
 
   if (
     playerLocation === "gate" &&
-    gameState.earnedTreasureAmount
+    gameState.treasureLevel
   ) {
     return (
       <GameOver
@@ -410,7 +401,7 @@ function App() {
           handleTake={handleTake}
           handleMovePlayer={handleMovePlayer}
           setCurrentDisplay={setCurrentDisplay}
-          locationText={locationText}
+          locationConsequenceText={locationConsequenceText}
         />
       );
   }

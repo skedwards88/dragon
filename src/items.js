@@ -742,7 +742,7 @@ const horse = new Item({
 
 const berries = new Item({
   id: "berries",
-  spawnLocation: "clearing",
+  spawnLocation: "puddle",
   getDescription: function () {
     return "handful of berries";
   },
@@ -894,16 +894,25 @@ const treasure = new Item({
       }
 
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
+        if (props.gameState.treasureLevel === 2) {
+return "TODO if take again"
+        } else {
         return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. ";
       }
+    }
 
       if (
         props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
         !props.gameState.dragonDead
       ) {
+        if (props.gameState.treasureLevel) {
+        return "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. ";
+
+      } else {
         return "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. ";
       }
+    }
 
       if (
         !props.gameState.dragonPoisoned &&
@@ -915,24 +924,24 @@ const treasure = new Item({
     }
     function getGameEffect(props) {
       if (props.gameState.dragonDead) {
-        const remainingTreasureAmount = props.gameState.treasureAmount - props.gameState.earnedTreasureAmount;
+        const newTreasureLevel = 3
+        const treasureLevelDiff = newTreasureLevel - props.gameState.treasureLevel;
+        const treasureTaken = props.gameState.treasureAmount * (treasureLevelDiff/3)
+
         return {
-          gold: props.gameState.gold + remainingTreasureAmount,
-          earnedTreasureAmount: props.gameState.earnedTreasureAmount + remainingTreasureAmount,
+          gold: props.gameState.gold + treasureTaken,
+          treasureLevel: newTreasureLevel,
         };
       }
 
       if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
-        const remainingTreasureAmount = props.gameState.treasureAmount - props.gameState.earnedTreasureAmount;
-
-        const treasureTaken =
-          props.gameState.treasureAmount * (2 / 3) -
-          (props.gameState.treasureAmount -
-            remainingTreasureAmount);
+        const newTreasureLevel = 2
+        const treasureLevelDiff = newTreasureLevel - props.gameState.treasureLevel;
+        const treasureTaken = props.gameState.treasureAmount * (treasureLevelDiff/3)
 
         return {
           gold: props.gameState.gold + treasureTaken,
-          earnedTreasureAmount: props.gameState.earnedTreasureAmount + treasureTaken,
+          treasureLevel: newTreasureLevel,
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         };
@@ -943,11 +952,13 @@ const treasure = new Item({
         !props.gameState.dragonAsleep &&
         !props.gameState.dragonDead
       ) {
-        const treasureTaken = props.gameState.treasureAmount / 3;
+        const newTreasureLevel = 1
+        const treasureLevelDiff = newTreasureLevel - props.gameState.treasureLevel;
+        const treasureTaken = props.gameState.treasureAmount * (treasureLevelDiff/3)
+
         return {
           gold: props.gameState.gold + treasureTaken,
-          earnedTreasureAmount:
-            props.gameState.earnedTreasureAmount + treasureTaken,
+          treasureLevel: newTreasureLevel,
           singeCount: props.gameState.singeCount + 2,
           reputation: props.gameState.reputation - 2,
         };
