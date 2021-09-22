@@ -17,7 +17,6 @@ function Connections({
   handleMovePlayer,
   itemLocations,
   gameState,
-  playerLocation,
 }) {
   return connections.map((connection) => {
     return (
@@ -27,10 +26,9 @@ function Connections({
         onClick={() => handleMovePlayer(connection)}
       >
         {locations[connection].getDisplayName({
-          playerLocation: playerLocation,
           gameState: gameState,
           itemLocations: itemLocations,
-        }) || connection}
+        })}
       </button>
     );
   });
@@ -73,7 +71,6 @@ export default function Location({
           itemLocations={itemLocations}
           gameState={gameState}
           locations={locations}
-          playerLocation={playerLocation}
         />
         <button
           className="inventory"

@@ -15,10 +15,10 @@ export class ItemInteraction {
 class Item {
   constructor({
     id,
-    displayName = id[0].toUpperCase() + id.slice(1),
+    displayName = id,
     spawnLocation,
     getDescription = function () {
-      return displayName;
+      return id;
     },
 
     getUseVerb = function () {

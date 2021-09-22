@@ -64,6 +64,7 @@ button {
   border: 10px solid;
   font-size: medium;
   margin: 5px;
+  text-transform: capitalize;
 }
 
 button:disabled {

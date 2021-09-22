@@ -17,7 +17,7 @@ function App() {
     ownSword: false,
     manorFire: true,
     naked: false,
-    squirrelDead: false,
+    squirrelDead: true,
     horseDead: false,
     horseTethered: false,
     horseMounted: false,
@@ -276,7 +276,10 @@ function App() {
     });
 
     if (!customInteraction.description) {
-      customInteraction.description = `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${playerLocation}.`;
+      customInteraction.description = `You drop the ${item} ${locations[playerLocation].dropPreposition} the ${locations[playerLocation].getDisplayName({
+        gameState: gameState,
+        itemLocations: itemLocations,
+      }).toLowerCase()}.`;
     }
 
     handleItemInteraction(customInteraction);
@@ -295,11 +298,17 @@ function App() {
       // no change if we already have a description
     } else if (
       customInteraction.gameEffect ||
-      customInteraction.itemMovements
+      customInteraction.itemMovements.length
     ) {
-      customInteraction.description = `You pay the ${playerLocation}.`;
+      customInteraction.description = `You pay the ${locations[playerLocation].getDisplayName({
+        gameState: gameState,
+        itemLocations: itemLocations,
+      }).toLowerCase()}.`;
     } else {
-      customInteraction.description = `The ${playerLocation} is not interested in your gold.`;
+      customInteraction.description = `The ${locations[playerLocation].getDisplayName({
+        gameState: gameState,
+        itemLocations: itemLocations,
+      }).toLowerCase()} is not interested in your gold.`;
     }
 
     handleItemInteraction(customInteraction);
@@ -324,7 +333,10 @@ function App() {
       // no change if we already have a description
     } else if (customInteraction.targetItemDestination === "outOfPlay") {
       // if item goes out of play
-      customInteraction.description = `You give the ${item} to the ${playerLocation}.`;
+      customInteraction.description = `You give the ${item} to the ${locations[playerLocation].getDisplayName({
+        gameState: gameState,
+        itemLocations: itemLocations,
+      }).toLowerCase()}.`;
     } else if (
       locations[playerLocation].getHuman({
         gameState: gameState,
@@ -333,9 +345,15 @@ function App() {
       })
     ) {
       // if giving to human
-      customInteraction.description = `The ${playerLocation} does not want this item but agrees to hold it for you.`;
+      customInteraction.description = `The ${locations[playerLocation].getDisplayName({
+        gameState: gameState,
+        itemLocations: itemLocations,
+      }).toLowerCase()} does not want this item but agrees to hold it for you.`;
     } else {
-      customInteraction.description = `The ${playerLocation} does not want this item.`;
+      customInteraction.description = `The ${locations[playerLocation].getDisplayName({
+        gameState: gameState,
+        itemLocations: itemLocations,
+      }).toLowerCase()} does not want this item.`;
     }
 
     handleItemInteraction(customInteraction);
