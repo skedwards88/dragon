@@ -176,27 +176,32 @@ const fountain = new Location({
 
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
       if (props.gameState.babyCough) {
-        text +=
-          `\n\nYou hear a voice: "My baby! You saved my baby! My dear baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." `;
+        text += `\n\nYou hear a voice: "My baby! You saved my baby! My dear baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." `;
       } else {
         text +=
           '\n\nYou hear a voice: "Thank you for saving my baby! Please take this gold as thanks." ';
       }
       if (props.gameState.playerCough) {
-        text += "\n\nAs they hand you the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to be away before you hack up a lung. "
+        text +=
+          "\n\nAs they hand you the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to be away before you hack up a lung. ";
       }
-      text += '\n\nBehind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. '
+      text +=
+        "\n\nBehind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. ";
     }
     return text;
   },
   onEnterGameStateEffect: function (props) {
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
-      let reputationIncrease = 0
-      if (!props.gameState.playerCough) {reputationIncrease += 1}
-      if (!props.gameState.babyCough) {reputationIncrease += 1}
+      let reputationIncrease = 0;
+      if (!props.gameState.playerCough) {
+        reputationIncrease += 1;
+      }
+      if (!props.gameState.babyCough) {
+        reputationIncrease += 1;
+      }
       return {
         gold: props.gameState.gold + 50,
-        reputation: props.gameState.reputation + reputationIncrease
+        reputation: props.gameState.reputation + reputationIncrease,
       };
     }
   },
@@ -221,9 +226,7 @@ const manor = new Location({
   id: "manor",
   dropPreposition: "in",
   getConnections: function (props) {
-    return props.gameState.manorFire
-      ? ["nursery", "fountain"]
-      : ["fountain"];
+    return props.gameState.manorFire ? ["nursery", "fountain"] : ["fountain"];
   },
   getDescription: function (props) {
     let text = "";
@@ -231,7 +234,8 @@ const manor = new Location({
     if (props.gameState.manorFire) {
       text += "You stand in the entrance of the burning manor. ";
     } else {
-      text += "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. ";
+      text +=
+        "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. ";
     }
 
     if (props.itemLocations.nursery.has("baby")) {
@@ -286,7 +290,6 @@ const nursery = new Location({
       return { playerCough: true };
     }
   },
-
 });
 
 const nurseryWindow = new Location({
@@ -419,8 +422,7 @@ const pasture = new Location({
     return ["gate"];
   },
   getDescription: function (props) {
-    let text =
-      "You are standing in a wide field just outside the city gates. ";
+    let text = "You are standing in a wide field just outside the city gates. ";
 
     if (
       props.itemLocations.pasture.has("horse") &&
@@ -611,9 +613,7 @@ const clearing = new Location({
 const squirrel = new Location({
   id: "squirrel",
   getDisplayName: function (props) {
-    return props.gameState.squirrelDead
-      ? "dead squirrel"
-      : "squirrel";
+    return props.gameState.squirrelDead ? "dead squirrel" : "squirrel";
   },
   getSentient: function () {
     return true;
@@ -955,69 +955,68 @@ function dragonDescription(props) {
   let text = "";
 
   if (!props.gameState.dragonPoisoned) {
-
-  // If the dragon is not due to return yet but the poison conditions are met
-  if (
-    timeInterval < 3 &&
-    props.gameState.clothesPoopy &&
-    !props.gameState.naked &&
-    props.playerLocation === "boulder" &&
-    props.itemLocations.puddle.has("berries")
-  ) {
-    text +=
-      "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? \n\n";
-  }
-
-  if (
-    timeInterval === 3 ||
-    (props.gameState.clothesPoopy &&
+    // If the dragon is not due to return yet but the poison conditions are met
+    if (
+      timeInterval < 3 &&
+      props.gameState.clothesPoopy &&
       !props.gameState.naked &&
       props.playerLocation === "boulder" &&
-      props.itemLocations.puddle.has("berries"))
-  ) {
-    text += "The dragon prowls into the cavern. ";
-    // not poop and not hidden
-    if (
-      (!props.gameState.clothesPoopy || props.gameState.naked) &&
-      props.playerLocation !== "boulder"
+      props.itemLocations.puddle.has("berries")
     ) {
-      text += `"I KNEW I SMELT A HUMAN." The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
-    } // poop and not hidden
-    else if (
-      props.gameState.clothesPoopy &&
-      !props.gameState.naked &&
-      props.playerLocation !== "boulder"
-    ) {
-      text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
-    } // not poop and hidden
-    else if (
-      (!props.gameState.clothesPoopy || props.gameState.naked) &&
-      props.playerLocation === "boulder"
-    ) {
-      text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peaks around the boulder and spots you. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
-    } // poop and hidden
-    else if (
-      props.gameState.clothesPoopy &&
-      !props.gameState.naked &&
-      props.playerLocation === "boulder"
-    ) {
-      text += "It seems unaware of your location. ";
-      // dragon drinks
-      if (props.itemLocations.puddle.has("berries")) {
-        text +=
-          "\n\nThe dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. ";
-      } else {
-        text +=
-          "\n\nThe dragon drinks from the puddle, then returns to the lair to guard its treasure. ";
-      }
+      text +=
+        "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? \n\n";
     }
-  } else if (timeInterval === 2) {
-    text += "You hear the dragon just outside. ";
-  } else if (timeInterval === 1) {
-    text +=
-      "You hear coins clanking from the east room, as if a large beast is rising from a sea of treasure. ";
+
+    if (
+      timeInterval === 3 ||
+      (props.gameState.clothesPoopy &&
+        !props.gameState.naked &&
+        props.playerLocation === "boulder" &&
+        props.itemLocations.puddle.has("berries"))
+    ) {
+      text += "The dragon prowls into the cavern. ";
+      // not poop and not hidden
+      if (
+        (!props.gameState.clothesPoopy || props.gameState.naked) &&
+        props.playerLocation !== "boulder"
+      ) {
+        text += `"I KNEW I SMELT A HUMAN." The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
+      } // poop and not hidden
+      else if (
+        props.gameState.clothesPoopy &&
+        !props.gameState.naked &&
+        props.playerLocation !== "boulder"
+      ) {
+        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
+      } // not poop and hidden
+      else if (
+        (!props.gameState.clothesPoopy || props.gameState.naked) &&
+        props.playerLocation === "boulder"
+      ) {
+        text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peaks around the boulder and spots you. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
+      } // poop and hidden
+      else if (
+        props.gameState.clothesPoopy &&
+        !props.gameState.naked &&
+        props.playerLocation === "boulder"
+      ) {
+        text += "It seems unaware of your location. ";
+        // dragon drinks
+        if (props.itemLocations.puddle.has("berries")) {
+          text +=
+            "\n\nThe dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. ";
+        } else {
+          text +=
+            "\n\nThe dragon drinks from the puddle, then returns to the lair to guard its treasure. ";
+        }
+      }
+    } else if (timeInterval === 2) {
+      text += "You hear the dragon just outside. ";
+    } else if (timeInterval === 1) {
+      text +=
+        "You hear coins clanking from the east room, as if a large beast is rising from a sea of treasure. ";
+    }
   }
-}
 
   return text;
 }

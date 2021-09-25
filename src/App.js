@@ -365,10 +365,10 @@ function App() {
           itemLocations: itemLocations,
         })
         .toLowerCase()} does not want your ${items[item].getDescription({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })} but agrees to hold it for you.`;
+        playerLocation: playerLocation,
+        gameState: gameState,
+        itemLocations: itemLocations,
+      })} but agrees to hold it for you.`;
     } else {
       customInteraction.description = `The ${locations[playerLocation]
         .getDisplayName({
@@ -376,10 +376,10 @@ function App() {
           itemLocations: itemLocations,
         })
         .toLowerCase()} does not want your ${items[item].getDescription({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })} item.`;
+        playerLocation: playerLocation,
+        gameState: gameState,
+        itemLocations: itemLocations,
+      })} item.`;
     }
 
     handleItemInteraction(customInteraction);
