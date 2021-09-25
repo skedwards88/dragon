@@ -4,7 +4,7 @@
   "description": "A text adventure puzzle game",
   "dir": "auto",
   "lang": "en-US",
-  "display": "fullscreen",
+  "display": "standalone",
   "orientation": "any",
   "start_url": "../.",
   "background_color": "#F1F0F0",
