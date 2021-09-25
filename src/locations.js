@@ -520,7 +520,7 @@ const road2 = new Location({
     ${
       props.gameState.horseMounted
         ? "\n\nThankfully, the horse lets you travel faster. "
-        : "\n\nThis would be much easier with a horse. "
+        : "\n\nThis would be much easier if you were riding a horse. "
     }`;
   },
 });

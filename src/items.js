@@ -539,7 +539,7 @@ const sword = new Item({
       if (props.playerLocation === "smithy" && !props.gameState.ownSword) {
         return {
           reputation: props.gameState.reputation - 1,
-          swordCost: Math.max(
+          swordCost: Math.min(
             props.gameState.swordCost + 10,
             props.gameState.maxSwordCost
           ),
