@@ -54,7 +54,7 @@ module.exports = {
         appName: "Dragon Hero",
         short_name: "Dragon Hero",
         start_url: "../.",
-        scope: ".",
+        // scope: ".",
         appDescription: "A text adventure puzzle game",
         display: "standalone",
         developerName: "skedwards88",
