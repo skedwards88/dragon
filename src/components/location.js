@@ -87,9 +87,11 @@ export default function Location({
       />
       <div id="non-game">
         <button id="info" onClick={() => setCurrentDisplay("info")}></button>
-        <button id="restart" onClick={() => setCurrentDisplay("restart")}></button>
+        <button
+          id="restart"
+          onClick={() => setCurrentDisplay("restart")}
+        ></button>
       </div>
     </div>
   );
 }
-

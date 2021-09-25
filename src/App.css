@@ -11,6 +11,7 @@ html {
   white-space: pre-line;
   flex-direction: column;
   max-width: 500px;
+
   /* todo it would be better to use a media query for ><500px and then use max-width:100% for <500px
   @media (max-width: 500px) {
 
@@ -108,14 +109,14 @@ button:disabled {
 }
 
 #restart {
-background-image: url("./images/new_game_icon.svg");
-background-position: center;
-background-repeat: no-repeat;
-background-size: cover;
-border: 0;
-width: 40px;
-height: 40px;
-margin: 10px 30px;
+  background-image: url("./images/new_game_icon.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  margin: 10px 30px;
 }
 
 #info {

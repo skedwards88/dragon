@@ -1,10 +1,6 @@
 import React from "react";
 
-export default function Restart({
-  setCurrentDisplay,
-  handleNewGame
-}) {
- 
+export default function Restart({ setCurrentDisplay, handleNewGame }) {
   return (
     <div className="App">
       <div className="description">Restart?</div>
