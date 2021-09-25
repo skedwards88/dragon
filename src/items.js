@@ -742,7 +742,7 @@ const horse = new Item({
 
 const berries = new Item({
   id: "berries",
-  spawnLocation: "puddle",
+  spawnLocation: "clearing",
   getDescription: function () {
     return "handful of berries";
   },
