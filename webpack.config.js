@@ -55,7 +55,7 @@ module.exports = {
         short_name: "Dragon Hero",
         start_url: "../.",
         appDescription: "A text adventure puzzle game",
-        display: "fullscreen",
+        display: "standalone",
         developerName: "skedwards88",
         developerURL: null, // prevent retrieving from the nearest package.json
         background: "#F1F0F0",
