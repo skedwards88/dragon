@@ -12,30 +12,31 @@ import Restart from "./components/restart";
 function App() {
   const startingState = {
     reputation: 10,
-    gold: 10,
+    gold: 0,
     timeInCave: 0,
     swordCost: 40,
     maxSwordCost: 50,
     ownSword: false,
     manorFire: true,
-    naked: false,
-    squirrelDead: true,
+    naked: true,
+    squirrelDead: false,
     horseDead: false,
     horseTethered: false,
     horseMounted: false,
     playerPoisoned: false,
-    clothesPoopy: true,
+    clothesPoopy: false,
     handkerchiefDamp: false,
     playerMasked: false,
     babyCough: false,
+    playerCough: false,
     savedBaby: false,
     receivedBabyReward: false,
     playedForYouth: false,
     promisedTreasure: false,
     cursed: false,
     firstCourtyardEntry: true,
-    dragonPoisoned: true,
-    dragonAsleep: true,
+    dragonPoisoned: false,
+    dragonAsleep: false,
     dragonDead: false,
     treasureAmount: 300,
     treasureLevel: 0,
@@ -47,7 +48,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["sword", "lute", "berries", "clothes"]),
+      inventory: new Set([]),
       outOfPlay: new Set([]),
     };
 
@@ -62,7 +63,7 @@ function App() {
     return startingItemLocations;
   }
 
-  const startingLocation = "wizard";
+  const startingLocation = "room";
 
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
@@ -133,12 +134,12 @@ function App() {
       console.log("REP");
       const reputationDiff = gameStateChanges.reputation - gameState.reputation;
       consequence += `\n\nReputation ${
-        reputationDiff > 0 ? "+" : ""
+        reputationDiff >= 0 ? "+" : ""
       }${reputationDiff}`;
     }
     if (gameStateChanges && gameStateChanges.gold) {
       const goldDiff = gameStateChanges.gold - gameState.gold;
-      consequence += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
+      consequence += `\n\nGold ${goldDiff >= 0 ? "+" : ""}${goldDiff}`;
     }
     console.log(consequence);
     setLocationConsequenceText(consequence);

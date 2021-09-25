@@ -177,21 +177,26 @@ const fountain = new Location({
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
       if (props.gameState.babyCough) {
         text +=
-          '\n\nYou hear a voice: "My baby! You saved my baby! But my dear baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." \n\nAs you take the gold and praise, you see the roof collapse. Finally, the crowd is able to douse the flames. ';
+          `\n\nYou hear a voice: "My baby! You saved my baby! My dear baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." `;
       } else {
         text +=
-          '\n\nYou hear a voice: "Thank you for saving my baby! Please take this gold as thanks." \n\nAs you take the gold and praise, you see the roof collapse. Finally, the crowd is able to douse the flames. ';
+          '\n\nYou hear a voice: "Thank you for saving my baby! Please take this gold as thanks." ';
       }
+      if (props.gameState.playerCough) {
+        text += "\n\nAs they hand you the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to be away before you hack up a lung. "
+      }
+      text += '\n\nBehind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. '
     }
     return text;
   },
   onEnterGameStateEffect: function (props) {
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
+      let reputationIncrease = 0
+      if (!props.gameState.playerCough) {reputationIncrease += 1}
+      if (!props.gameState.babyCough) {reputationIncrease += 1}
       return {
         gold: props.gameState.gold + 50,
-        reputation: props.gameState.babyCough
-          ? props.gameState.reputation + 1
-          : props.gameState.reputation + 2,
+        reputation: props.gameState.reputation += reputationIncrease
       };
     }
   },
@@ -216,11 +221,9 @@ const manor = new Location({
   id: "manor",
   dropPreposition: "in",
   getConnections: function (props) {
-    return props.gameState.manorFire &&
-      props.gameState.handkerchiefDamp &&
-      props.gameState.playerMasked
+    return props.gameState.manorFire
       ? ["nursery", "fountain"]
-      : ["fountain"]; // todo allow to continue if not masked but developcough/lose reputation. todo could instead allow to continue if no fire but have manor collapse
+      : ["fountain"];
   },
   getDescription: function (props) {
     let text = "";
@@ -228,7 +231,7 @@ const manor = new Location({
     if (props.gameState.manorFire) {
       text += "You stand in the entrance of the burning manor. ";
     } else {
-      text += "You stand in the charred remains of the manor. ";
+      text += "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. ";
     }
 
     if (props.itemLocations.nursery.has("baby")) {
@@ -240,7 +243,7 @@ const manor = new Location({
       (!props.gameState.handkerchiefDamp || !props.gameState.playerMasked)
     ) {
       text +=
-        "\n\nYour throat burns from the smoke and heat. You can't breath this air. ";
+        "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the mansion. ";
     }
 
     if (
@@ -278,6 +281,12 @@ const nursery = new Location({
       return "You stand in the charred remains of a nursery. ";
     }
   },
+  onEnterGameStateEffect: function (props) {
+    if (!props.gameState.handkerchiefDamp || !props.gameState.playerMasked) {
+      return { playerCough: true };
+    }
+  },
+
 });
 
 const nurseryWindow = new Location({

@@ -31,6 +31,8 @@ module.exports = {
   },
   devServer: {
     static: "./dist",
+    port: 4001,
+
   },
   plugins: [
     new HtmlWebpackPlugin({
