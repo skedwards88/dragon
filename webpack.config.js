@@ -1,5 +1,7 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const WorkboxPlugin = require('workbox-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
 
 module.exports = {
   entry: "./src/index.js",
@@ -38,7 +40,32 @@ module.exports = {
     new HtmlWebpackPlugin({
       // Need to use template because need 'root' div for react injection. templateContent doesn't play nice with title, so just use a template file instead.
       template: "./src/index.html",
-      favicon: "./src/images/favicon.png",
+    }),
+    new WorkboxPlugin.GenerateSW({
+      // these options encourage the ServiceWorkers to get in there fast
+      // and not allow any straggling "old" SWs to hang around
+      clientsClaim: true,
+      skipWaiting: true,
+    }),
+    new FaviconsWebpackPlugin({
+      logo: "./src/images/favicon.png", // todo
+      mode: "webapp", // optional can be 'webapp', 'light' or 'auto' - 'auto' by default
+      devMode: "webapp", // optional can be 'webapp' or 'light' - 'light' by default
+      favicons: {
+        appName: "Dragon Hero",
+        short_name: "Dragon Hero",
+        start_url: "../.",
+        appDescription: "A text adventure puzzle game",
+        display: "fullscreen",
+        developerName: "skedwards88",
+        developerURL: null, // prevent retrieving from the nearest package.json
+        background: "#F1F0F0",
+        theme_color: "#6e799e",
+        icons: {
+          coast: false,
+          yandex: false,
+        },
+      },
     }),
   ],
 };
