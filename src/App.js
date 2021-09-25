@@ -48,7 +48,7 @@ function App() {
 
   function buildStartingLocations() {
     const startingItemLocations = {
-      inventory: new Set(["berries"]),
+      inventory: new Set([]),
       outOfPlay: new Set([]),
     };
 
@@ -63,7 +63,7 @@ function App() {
     return startingItemLocations;
   }
 
-  const startingLocation = "pasture";
+  const startingLocation = "room";
 
   const startingItemLocations = buildStartingLocations();
   const [itemLocations, setItemLocations] = useState(startingItemLocations);
