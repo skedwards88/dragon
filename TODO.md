@@ -8,4 +8,4 @@
 
 // todo PWA / offline
 
-offer way to restart game midgame?
+spatial map would be easier to navigate
