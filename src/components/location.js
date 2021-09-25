@@ -85,6 +85,11 @@ export default function Location({
         gold={gameState.gold}
         maxGold={gameState.maxGold}
       />
+      <div id="non-game">
+        <button id="info" onClick={() => setCurrentDisplay("info")}></button>
+        <button id="restart" onClick={() => setCurrentDisplay("restart")}></button>
+      </div>
     </div>
   );
 }
+

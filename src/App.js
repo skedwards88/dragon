@@ -6,6 +6,8 @@ import Inventory from "./components/inventory";
 import Location from "./components/location";
 import Consequence from "./components/consequence";
 import GameOver from "./components/gameOver";
+import Info from "./components/info";
+import Restart from "./components/restart";
 
 function App() {
   const startingState = {
@@ -68,7 +70,7 @@ function App() {
   const [playerLocation, setPlayerLocation] = useState(startingLocation);
   const [consequenceText, setConsequenceText] = useState("");
   const [locationConsequenceText, setLocationConsequenceText] = useState("");
-  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence
+  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart
 
   function handleNewGame() {
     console.log("new game");
@@ -406,7 +408,20 @@ function App() {
           handlePay={handlePay}
         />
       );
-    default:
+      case "info":
+        return (
+          <Info
+            setCurrentDisplay={setCurrentDisplay}
+          />
+        );
+      case "restart":
+        return (
+          <Restart
+            setCurrentDisplay={setCurrentDisplay}
+            handleNewGame={handleNewGame}
+          />
+        );  
+      default:
       return (
         <Location
           items={items}
