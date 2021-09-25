@@ -826,7 +826,8 @@ const berries = new Item({
 
       if (
         props.itemLocations[props.playerLocation].has("horse") &&
-        !props.gameState.horseTethered && !props.gameState.horseDead
+        !props.gameState.horseTethered &&
+        !props.gameState.horseDead
       ) {
         return "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
