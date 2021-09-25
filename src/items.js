@@ -758,7 +758,7 @@ const berries = new Item({
       },
       description:
         "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. ",
-      targetItemDestination: "clearing",
+      targetItemDestination: "inventory",
     });
   },
 
@@ -772,7 +772,8 @@ const berries = new Item({
       }
       if (
         props.itemLocations[props.playerLocation].has("horse") &&
-        !props.gameState.horseTethered
+        !props.gameState.horseTethered &&
+        !props.gameState.horseDead
       ) {
         return "The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
@@ -803,14 +804,7 @@ const berries = new Item({
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
       ) {
-        return "clearing";
-      }
-
-      if (
-        props.itemLocations[props.playerLocation].has("horse") &&
-        !props.gameState.horseTethered
-      ) {
-        return "clearing";
+        return "squirrel";
       }
     }
 
@@ -832,7 +826,7 @@ const berries = new Item({
 
       if (
         props.itemLocations[props.playerLocation].has("horse") &&
-        !props.gameState.horseTethered
+        !props.gameState.horseTethered && !props.gameState.horseDead
       ) {
         return "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
@@ -852,7 +846,7 @@ const berries = new Item({
         props.itemLocations[props.playerLocation].has("horse") &&
         !props.gameState.horseTethered
       ) {
-        return { squirrelDead: true };
+        return { horseDead: true };
       }
     }
 
@@ -861,13 +855,7 @@ const berries = new Item({
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
       ) {
-        return "clearing";
-      }
-      if (
-        props.itemLocations[props.playerLocation].has("horse") &&
-        !props.gameState.horseTethered
-      ) {
-        return "clearing";
+        return "squirrel";
       }
 
       if (props.playerLocation === "wizard") {

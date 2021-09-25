@@ -1,5 +1,3 @@
-
-
 // todo add tests that locations and items have required values
 
 // todo typescript
