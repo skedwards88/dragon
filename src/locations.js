@@ -196,7 +196,7 @@ const fountain = new Location({
       if (!props.gameState.babyCough) {reputationIncrease += 1}
       return {
         gold: props.gameState.gold + 50,
-        reputation: props.gameState.reputation += reputationIncrease
+        reputation: props.gameState.reputation + reputationIncrease
       };
     }
   },
@@ -347,7 +347,7 @@ const blacksmith = new Location({
     }`;
 
     if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      text += `\n\n"Are you interested in buying that sword?" they ask. It costs ${props.gameState.swordCost} gold. " `;
+      text += `\n\n"Are you interested in buying that sword?" they ask. "It costs ${props.gameState.swordCost} gold. " `;
     }
     return text;
   },
@@ -420,7 +420,7 @@ const pasture = new Location({
   },
   getDescription: function (props) {
     let text =
-      "You are standing in a wide field. There is no road in sight. To the north, you hear sounds of the blacksmith shop. ";
+      "You are standing in a wide field just outside the city gates. ";
 
     if (
       props.itemLocations.pasture.has("horse") &&
@@ -441,7 +441,7 @@ const gate = new Location({
     return ["pasture", "youth", "road1", "smithy"];
   },
   getDescription: function (props) {
-    return `You are standing at the north gate. To the north, you see a road leading up a mountain. \n\nThe youth that you saw earlier stands at the courtyard${
+    return `You are standing at the north gate. You see a pasture and a road leading up a mountain. \n\nThe youth that you saw earlier stands at the gate.${
       !props.gameState.playedForYouth ? ", crying" : ""
     }. `;
   },

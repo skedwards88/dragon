@@ -131,7 +131,6 @@ function App() {
     let consequence = "";
 
     if (gameStateChanges && gameStateChanges.reputation) {
-      console.log("REP");
       const reputationDiff = gameStateChanges.reputation - gameState.reputation;
       consequence += `\n\nReputation ${
         reputationDiff >= 0 ? "+" : ""
@@ -365,14 +364,22 @@ function App() {
           gameState: gameState,
           itemLocations: itemLocations,
         })
-        .toLowerCase()} does not want this item but agrees to hold it for you.`;
+        .toLowerCase()} does not want your ${items[item].getDescription({
+          playerLocation: playerLocation,
+          gameState: gameState,
+          itemLocations: itemLocations,
+        })} but agrees to hold it for you.`;
     } else {
       customInteraction.description = `The ${locations[playerLocation]
         .getDisplayName({
           gameState: gameState,
           itemLocations: itemLocations,
         })
-        .toLowerCase()} does not want this item.`;
+        .toLowerCase()} does not want your ${items[item].getDescription({
+          playerLocation: playerLocation,
+          gameState: gameState,
+          itemLocations: itemLocations,
+        })} item.`;
     }
 
     handleItemInteraction(customInteraction);
