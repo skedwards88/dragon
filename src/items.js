@@ -764,19 +764,23 @@ const berries = new Item({
 
   getCustomDrop: function (props) {
     function writeDescription(props) {
+      let text = "";
       if (
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
       ) {
-        return "The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
+        text +=
+          "The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
       if (
         props.itemLocations[props.playerLocation].has("horse") &&
         !props.gameState.horseTethered &&
         !props.gameState.horseDead
       ) {
-        return "The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
+        text +=
+          "The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
+      return text;
     }
 
     function getGameEffect(props) {
@@ -817,11 +821,13 @@ const berries = new Item({
 
   getCustomGive: function (props) {
     function writeDescription(props) {
+      let text = "";
       if (
         props.playerLocation === "squirrel" &&
         !props.gameState.squirrelDead
       ) {
-        return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
+        text +=
+          "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
 
       if (
@@ -829,11 +835,13 @@ const berries = new Item({
         !props.gameState.horseTethered &&
         !props.gameState.horseDead
       ) {
-        return "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
+        text +=
+          "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
       if (props.playerLocation === "wizard") {
-        return `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
+        text += `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
       }
+      return text;
     }
 
     function getGameEffect(props) {
