@@ -565,8 +565,20 @@ const road3 = new Location({
         props.gameState.treasureAmount * (props.gameState.treasureLevel / 3);
 
       return {
-        cursed: true,
         gold: props.gameState.gold - treasureTaken,
+      };
+    }
+  },
+
+  onExitGameStateEffect: function (props) {
+    if (
+      props.gameState.promisedTreasure &&
+      props.gameState.treasureLevel &&
+      !props.gameState.cursed
+    ) {
+
+      return {
+        cursed: true,
       };
     }
   },
