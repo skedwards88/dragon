@@ -53,8 +53,7 @@ const room = new Location({
   },
   dropPreposition: "in",
   getDescription: function (props) {
-    let text =
-      "You are in a bedroom with a window, wardrobe, and door. ";
+    let text = "You are in a bedroom with a window, wardrobe, and door. ";
 
     if (props.itemLocations.room.has("lute")) {
       text += "A lute leans against the bed. ";
@@ -208,7 +207,8 @@ const fountain = new Location({
     if (props.gameState.manorFire) {
       text += "\n\nBeyond the fountain, you see a manor on fire. ";
     } else {
-      text += "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
+      text +=
+        "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
     }
 
     if (props.itemLocations.nursery.has("baby")) {
@@ -912,13 +912,10 @@ const caveEntrance = new Location({
       text +=
         "\n\nYou hear coins clanking from the glittering room, as if a large beast is rolling in piles of gold. ";
 
-        if 
-          (!props.gameState.clothesPoopy || props.gameState.naked)
-        
-          {text += 'From that room, voice booms "WHO DO I SMELL?"';}
-    
+      if (!props.gameState.clothesPoopy || props.gameState.naked) {
+        text += 'From that room, voice booms "WHO DO I SMELL?"';
+      }
     }
-
 
     return text;
   },
