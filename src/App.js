@@ -198,6 +198,7 @@ function App() {
     }
 
     setCurrentDisplay("consequence");
+    setLocationConsequenceText(""); // todo this is hacky. want to clear location consequence so don't show lost reputation even if have remediated. maybe a state effect would be better.
   }
 
   function handleTake(item) {
