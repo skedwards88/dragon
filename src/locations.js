@@ -497,7 +497,7 @@ const pasture = new Location({
       E: "gate",
       W: "",
       A: [],
-    }
+    };
   },
   getDescription: function (props) {
     let text = "You are standing in a wide field just outside the city gates. ";
@@ -524,7 +524,7 @@ const gate = new Location({
       E: "",
       W: "pasture",
       A: ["youth"],
-    }
+    };
   },
   getDescription: function (props) {
     return `You are standing at the north gate. You see a pasture and a road leading up a mountain. \n\nThe youth that you saw earlier stands at the gate.${
