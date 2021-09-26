@@ -39,40 +39,34 @@ function Connections({
 
 function MapInteractions({
   connections,
-  gameState,
-  itemLocations,
   handleMovePlayer,
   itemsAtLocation,
   handleTake,
-  items,
 }) {
   let interactionDivs = <></>;
   if (connections["A"].length) {
     const interactions = connections["A"];
 
     interactionDivs = Array.from(interactions).map((interaction) => {
-      const name = locations[interaction].getDisplayName({
-        gameState: gameState,
-        itemLocations: itemLocations,
-      });
-
       return (
         <button
           className="connection"
           onClick={() => handleMovePlayer(interaction)}
           id={interaction}
           key={interaction}
-        >
-        </button>
+        ></button>
       );
     });
   }
 
-  console.log(itemsAtLocation);
   const itemDivs = Array.from(itemsAtLocation).map((item) => {
     return (
-      <button onClick={() => handleTake(item)} className="item" key={item} id={item}>
-      </button>
+      <button
+        onClick={() => handleTake(item)}
+        className="item"
+        key={item}
+        id={item}
+      ></button>
     );
   });
 
@@ -118,7 +112,6 @@ function Map({
   gameState,
   itemsAtLocation,
   handleTake,
-  items,
 }) {
   return (
     <div id="map">
@@ -139,13 +132,9 @@ function Map({
       <div id="A">
         {MapInteractions({
           connections: connections,
-          gameState: gameState,
-          itemLocations: itemLocations,
           handleMovePlayer: handleMovePlayer,
-
           itemsAtLocation,
           handleTake,
-          items,
         })}
       </div>
       {MapLocation({
@@ -203,7 +192,6 @@ export default function Location({
           locations={locations}
           itemsAtLocation={itemLocations[playerLocation]}
           handleTake={handleTake}
-          items={items}
         />
       ) : (
         <>
