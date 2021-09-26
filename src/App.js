@@ -72,6 +72,7 @@ function App() {
   const [consequenceText, setConsequenceText] = useState("");
   const [locationConsequenceText, setLocationConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart
+  const [showMap, setShowMap] = useState(true);
 
   function handleNewGame() {
     console.log("new game");
@@ -452,6 +453,8 @@ function App() {
           handleMovePlayer={handleMovePlayer}
           setCurrentDisplay={setCurrentDisplay}
           locationConsequenceText={locationConsequenceText}
+          showMap={showMap}
+          setShowMap={setShowMap}
         />
       );
   }

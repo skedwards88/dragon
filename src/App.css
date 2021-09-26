@@ -108,19 +108,7 @@ button:disabled {
   justify-content: center;
 }
 
-#restart {
-  background-image: url("./images/new_game_icon.svg");
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  border: 0;
-  width: 40px;
-  height: 40px;
-  margin: 10px 30px;
-}
-
-#info {
-  background-image: url("./images/info_icon.svg");
+#non-game > button {
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -128,4 +116,80 @@ button:disabled {
   width: 40px;
   height: 40px;
   margin: 10px 30px;
+}
+
+#restart {
+  background-image: url("./images/new_game_icon.svg");
+}
+
+#info {
+  background-image: url("./images/info_icon.svg");
+}
+
+.showMap.true {
+  background-image: url("./images/list.svg");
+}
+
+.showMap.false {
+  background-image: url("./images/compass.svg");
+}
+
+#map {
+  display: grid;
+  border: 1px solid black;
+  grid-template-columns: 50px 1fr 50px;
+  grid-template-rows: 50px 1fr 50px;
+}
+
+#N {
+  grid-column-start: 2;
+  grid-row-start: 1;
+}
+
+#W {
+  grid-column-start: 1;
+  grid-row-start: 2;
+  transform: rotate(180deg);
+}
+
+#W > p {
+  writing-mode: vertical-lr;
+}
+
+#E {
+  grid-column-start: 3;
+  grid-row-start: 2;
+}
+
+#E > p {
+  writing-mode: vertical-lr;
+}
+
+#S {
+  grid-column-start: 2;
+  grid-row-start: 3;
+}
+
+#A {
+  grid-column-start: 2;
+  grid-row-start: 2;
+  margin: 20px;
+}
+
+#map > .connection {
+  padding: 0;
+  margin: 0;
+}
+
+#map > #A > .connection {
+  border-radius: 50%;
+}
+
+#map > #A > .item {
+  border-radius: 50%;
+}
+
+#map > .connection > p {
+  padding: 0;
+  margin: 0;
 }

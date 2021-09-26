@@ -7,7 +7,7 @@ class Location {
       return id;
     },
     getConnections = function () {
-      return [];
+      return {};
     },
     dropPreposition = "at",
     getSentient = function () {
@@ -43,7 +43,13 @@ class Location {
 const room = new Location({
   id: "room",
   getConnections: function () {
-    return ["window", "wardrobe", "inn"];
+    return {
+      N: "wardrobe",
+      S: "inn",
+      E: "",
+      W: "window",
+      A: [],
+    };
   },
   dropPreposition: "in",
   getDescription: function (props) {
@@ -64,7 +70,13 @@ const room = new Location({
 const window = new Location({
   id: "window",
   getConnections: function () {
-    return ["room"];
+    return {
+      N: "",
+      S: "",
+      E: "room",
+      W: "",
+      A: [],
+    };
   },
   dropPreposition: "at",
   getDescription: function (props) {
@@ -77,7 +89,13 @@ const window = new Location({
 const wardrobe = new Location({
   id: "wardrobe",
   getConnections: function () {
-    return ["mirror", "room"];
+    return {
+      N: "",
+      S: "room",
+      E: "mirror",
+      W: "",
+      A: [],
+    };
   },
   dropPreposition: "in",
   getDescription: function (props) {
@@ -90,7 +108,13 @@ const wardrobe = new Location({
 const mirror = new Location({
   id: "mirror",
   getConnections: function () {
-    return ["room", "wardrobe"];
+    return {
+      N: "",
+      S: "room",
+      E: "",
+      W: "wardrobw",
+      A: [],
+    };
   },
   dropPreposition: "at",
   getDescription: function (props) {
@@ -108,7 +132,13 @@ const inn = new Location({
     return `${props.playerLocation === "room" ? "Door" : "Inn"}`;
   },
   getConnections: function () {
-    return ["courtyard", "room"];
+    return {
+      N: "room",
+      S: "courtyard",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   dropPreposition: "in",
   getDescription: function (props) {
@@ -132,7 +162,13 @@ const inn = new Location({
 const courtyard = new Location({
   id: "courtyard",
   getConnections: function () {
-    return ["fountain", "smithy", "inn"];
+    return {
+      N: "inn",
+      S: "",
+      E: "smithy",
+      W: "fountain",
+      A: [],
+    };
   },
   dropPreposition: "in",
   getDescription: function (props) {
@@ -157,7 +193,13 @@ const fountain = new Location({
   id: "fountain",
   dropPreposition: "in",
   getConnections: function () {
-    return ["manor", "courtyard"];
+    return {
+      N: "manor",
+      S: "",
+      E: "courtyard",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text =
@@ -226,7 +268,13 @@ const manor = new Location({
   id: "manor",
   dropPreposition: "in",
   getConnections: function (props) {
-    return props.gameState.manorFire ? ["nursery", "fountain"] : ["fountain"];
+    return {
+      N: props.gameState.manorFire ? "nursery" : "",
+      S: "fountain",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text = "";
@@ -272,7 +320,13 @@ const nursery = new Location({
   id: "nursery",
   dropPreposition: "in",
   getConnections: function () {
-    return ["nurseryWindow", "manor"];
+    return {
+      N: "nurseryWindow",
+      S: "manor",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     if (props.gameState.manorFire) {
@@ -299,7 +353,13 @@ const nurseryWindow = new Location({
   },
   dropPreposition: "at",
   getConnections: function () {
-    return ["nursery"];
+    return {
+      N: "",
+      S: "nursery",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return props.gameState.manorFire
@@ -312,11 +372,17 @@ const smithy = new Location({
   id: "smithy",
   dropPreposition: "at",
   getConnections: function () {
-    return ["blacksmith", "gate", "courtyard"];
+    return {
+      N: "gate",
+      S: "",
+      E: "",
+      W: "courtyard",
+      A: ["blacksmith"],
+    };
   },
   getDescription: function (props) {
     let text =
-      "You stand in front of a blacksmith shop. To the north and south are city gates. To the west is a courtyard. The blacksmith is working inside the shop. ";
+      "You stand in front of a blacksmith shop. To the north is the city gate. To the west is a courtyard. The blacksmith is working inside the shop. ";
 
     if (props.itemLocations.smithy.has("sword")) {
       text +=
@@ -336,7 +402,13 @@ const blacksmith = new Location({
     return true;
   },
   getConnections: function () {
-    return ["smithy"];
+    return {
+      N: "smithy",
+      S: "",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text = `The blacksmith sets down their work. ${
@@ -459,7 +531,13 @@ const youth = new Location({
   },
   dropPreposition: "by",
   getConnections: function () {
-    return ["gate"];
+    return {
+      N: "gate",
+      S: "",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text = `The youth stands by the city gates${
@@ -486,11 +564,13 @@ const road1 = new Location({
     return "Long road (South end)";
   },
   getConnections: function (props) {
-    if (props.gameState.horseMounted) {
-      return ["stream", "gate"];
-    } else {
-      return ["road2", "gate"];
-    }
+    return {
+      N: props.gameState.horseMounted ? "stream" : "road2",
+      S: "gate",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return `You stand at the end of a long road. The city gates sit to the south. To the north, you see mountains. 
@@ -509,11 +589,13 @@ const road2 = new Location({
     return "Long road (middle)";
   },
   getConnections: function (props) {
-    if (props.gameState.horseMounted) {
-      return ["stream", "gate"];
-    } else {
-      return ["road3", "road1"];
-    }
+    return {
+      N: props.gameState.horseMounted ? "stream" : "road3",
+      S: props.gameState.horseMounted ? "gate" : "road1",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return `You are halfway along a long road. The city gates sit to the south. To the north, you see mountains.     
@@ -532,11 +614,13 @@ const road3 = new Location({
     return "Long road (North end)";
   },
   getConnections: function (props) {
-    if (props.gameState.horseMounted) {
-      return ["stream", "gate"];
-    } else {
-      return ["stream", "road2"];
-    }
+    return {
+      N: "stream",
+      S: props.gameState.horseMounted ? "gate" : "road2",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     if (
@@ -572,7 +656,13 @@ const stream = new Location({
   id: "stream",
   dropPreposition: "in",
   getConnections: function () {
-    return ["clearing", "road3"];
+    return {
+      N: "clearing",
+      S: "road3",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function () {
     return "You come across a steam. It looks crossable by foot or by horse. On the north side, you see a bush full of berries. To the south, the road stretches back to the city. ";
@@ -583,10 +673,13 @@ const clearing = new Location({
   id: "clearing",
   dropPreposition: "in",
   getConnections: function (props) {
-    if (props.gameState.cursed) {
-      return ["squirrel", "stream", "cliff"];
-    }
-    return ["wizard", "squirrel", "stream", "cliff"];
+    return {
+      N: "cliff",
+      S: "stream",
+      E: "",
+      W: "",
+      A: props.gameState.cursed ? ["squirrel"] : ["wizard", "squirrel"],
+    };
   },
   getDescription: function (props) {
     let text = `You stand in a clearing. A bush full of berries catches your eye. To the south, a stream burbles. To the north, you see a rocky cliff with a cave. ${
@@ -620,7 +713,13 @@ const squirrel = new Location({
   },
   dropPreposition: "by",
   getConnections: function () {
-    return ["clearing"];
+    return {
+      N: "clearing",
+      S: "",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return props.gameState.squirrelDead
@@ -639,7 +738,13 @@ const wizard = new Location({
   },
   dropPreposition: "by",
   getConnections: function () {
-    return ["clearing"];
+    return {
+      N: "clearing",
+      S: "",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text = "The wizard looks at you though bushy eyebrows. ";
@@ -734,10 +839,15 @@ const cliff = new Location({
   id: "cliff",
   dropPreposition: "on",
   getConnections: function (props) {
-    return props.itemLocations.inventory.has("horse")
-      ? ["clearing"]
-      : ["clearing", "caveEntrance"];
+    return {
+      N: props.itemLocations.inventory.has("horse") ? "" : "caveEntrance",
+      S: "clearing",
+      E: "",
+      W: "",
+      A: [],
+    };
   },
+
   getDescription: function (props) {
     let text = "";
     if (props.itemLocations.inventory.has("horse")) {
@@ -756,7 +866,13 @@ const caveEntrance = new Location({
   },
   dropPreposition: "at",
   getConnections: function () {
-    return ["cliff", "lair", "defecatory"];
+    return {
+      N: "",
+      S: "cliff",
+      E: "lair",
+      W: "defecatory",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text =
@@ -781,7 +897,13 @@ const defecatory = new Location({
   id: "defecatory",
   dropPreposition: "in",
   getConnections: function () {
-    return ["puddle", "boulder", "dung", "caveEntrance"];
+    return {
+      N: "puddle",
+      S: "boulder",
+      E: "caveEntrance",
+      W: "dung",
+      A: [],
+    };
   },
   getDescription: function () {
     return "You stand in a large, foul smelling cavern. There is a puddle of clear water, a large boulder, and a pile of dragon dung. To the east, you feel the fresh air from the cave entrance. ";
@@ -792,7 +914,13 @@ const puddle = new Location({
   id: "puddle",
   dropPreposition: "in",
   getConnections: function () {
-    return ["boulder", "dung", "defecatory"];
+    return {
+      N: "",
+      S: "boulder",
+      E: "defecatory",
+      W: "dung",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return `You stand at a puddle of clear water. Nearby, there is a large boulder and a pile of dragon dung. The cave entrance is on the opposite side of the room. \n\n${dragonDescription(
@@ -820,7 +948,13 @@ const boulder = new Location({
   id: "boulder",
   dropPreposition: "behind",
   getConnections: function () {
-    return ["puddle", "dung", "defecatory"];
+    return {
+      N: "puddle",
+      S: "",
+      E: "defecatory",
+      W: "dung",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return `You walk behind the boulder. It seems large enough to hide your from sight. Nearby, there is a pile of dragon dung and a puddle of clear water. The cave entrance is on the opposite side of the room. \n\n${dragonDescription(
@@ -871,7 +1005,13 @@ const dung = new Location({
     return "Dung pile";
   },
   getConnections: function () {
-    return ["puddle", "boulder", "defecatory"];
+    return {
+      N: "puddle",
+      S: "boulder",
+      E: "defecatory",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     return `You stand in front of a large pile of dragon dung. The stench makes your eyes water. Nearby, there is a large boulder and a puddle of clear water. The cave entrance is on the opposite side of the room. \n\n${dragonDescription(
@@ -899,7 +1039,13 @@ const lair = new Location({
   id: "lair",
   dropPreposition: "in",
   getConnections: function () {
-    return ["caveEntrance"];
+    return {
+      N: "",
+      S: "",
+      E: "caveEntrance",
+      W: "",
+      A: [],
+    };
   },
   getDescription: function (props) {
     let text = "You stand in a room full of gold and gems. ";
@@ -980,20 +1126,20 @@ function dragonDescription(props) {
         (!props.gameState.clothesPoopy || props.gameState.naked) &&
         props.playerLocation !== "boulder"
       ) {
-        text += `"I KNEW I SMELT A HUMAN." The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
+        text += `"I KNEW I SMELT A HUMAN." The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
       } // poop and not hidden
       else if (
         props.gameState.clothesPoopy &&
         !props.gameState.naked &&
         props.playerLocation !== "boulder"
       ) {
-        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
+        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE. The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
       } // not poop and hidden
       else if (
         (!props.gameState.clothesPoopy || props.gameState.naked) &&
         props.playerLocation === "boulder"
       ) {
-        text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peaks around the boulder and spots you. The dragon singes you before you can fight or defend yourself. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
+        text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peaks around the boulder and spots you. The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
       } // poop and hidden
       else if (
         props.gameState.clothesPoopy &&
