@@ -185,11 +185,62 @@ button:disabled {
   border-radius: 50%;
 }
 
-#map > #A > .item {
-  border-radius: 50%;
-}
-
 #map > .connection > p {
   padding: 0;
   margin: 0;
+}
+
+#map > #A > button {
+  border-radius: 50%;
+  padding: 10px;
+  background-origin: content-box;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 50px;
+  height: 50px;
+
+}
+
+#map > #A > #lute {
+  background-image: url("./images/lute.svg");
+}
+#map > #A > #baby {
+  background-image: url("./images/baby.svg");
+}
+#map > #A > #berries {
+  background-image: url("./images/berries.svg");
+}
+#map > #A > #clothes {
+  background-image: url("./images/clothes.svg");
+}
+#map > #A > #handkerchief {
+  background-image: url("./images/handkerchief.svg");
+}
+#map > #A > #horse {
+  background-image: url("./images/horse.svg");
+}
+#map > #A > #score {
+  background-image: url("./images/score.svg");
+}
+#map > #A > #sword {
+  background-image: url("./images/sword.svg");
+}
+#map > #A > #treasure {
+  background-image: url("./images/treasure.svg");
+}
+#map > #A > #apple {
+  background-image: url("./images/apple.svg");
+}
+#map > #A > #wizard {
+  background-image: url("./images/wizard.svg");
+}
+#map > #A > #blacksmith {
+  background-image: url("./images/blacksmith.svg");
+}
+#map > #A > #youth {
+  background-image: url("./images/youth.svg");
+}
+#map > #A > #squirrel {
+  background-image: url("./images/squirrel.svg");
 }

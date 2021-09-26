@@ -63,7 +63,6 @@ function MapInteractions({
           id={interaction}
           key={interaction}
         >
-          <p>{name}</p>
         </button>
       );
     });
@@ -72,8 +71,7 @@ function MapInteractions({
   console.log(itemsAtLocation);
   const itemDivs = Array.from(itemsAtLocation).map((item) => {
     return (
-      <button onClick={() => handleTake(item)} className="item" key={item}>
-        {items[item].displayName || item}
+      <button onClick={() => handleTake(item)} className="item" key={item} id={item}>
       </button>
     );
   });
