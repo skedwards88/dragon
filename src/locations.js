@@ -527,7 +527,7 @@ const gate = new Location({
     };
   },
   getDescription: function (props) {
-    return `You are standing at the north gate. You see a pasture and a road leading up a mountain. \n\nThe youth that you saw earlier stands at the gate.${
+    return `You are standing at the north gate. You see a pasture and a road leading up a mountain. \n\nThe youth that you saw earlier stands at the gate${
       !props.gameState.playedForYouth ? ", crying" : ""
     }. `;
   },
@@ -652,13 +652,29 @@ const road3 = new Location({
   },
 
   onEnterGameStateEffect: function (props) {
-    if (props.gameState.promisedTreasure && props.gameState.treasureLevel) {
+    if (
+      props.gameState.promisedTreasure &&
+      props.gameState.treasureLevel &&
+      !props.gameState.cursed
+    ) {
       const treasureTaken =
         props.gameState.treasureAmount * (props.gameState.treasureLevel / 3);
 
       return {
-        cursed: true,
         gold: props.gameState.gold - treasureTaken,
+      };
+    }
+  },
+
+  onExitGameStateEffect: function (props) {
+    if (
+      props.gameState.promisedTreasure &&
+      props.gameState.treasureLevel &&
+      !props.gameState.cursed
+    ) {
+
+      return {
+        cursed: true,
       };
     }
   },
@@ -1068,7 +1084,7 @@ const lair = new Location({
       !props.gameState.dragonPoisoned
     ) {
       text +=
-        "\n\nA dragon sits atop the pile of treasure. It shoots fire as you approach. You cannot go closer without getting burnt. ";
+        "\n\nA dragon sits atop the pile of treasure. It shoots fire as you approach, singing you. You cannot go closer without getting badly burnt. ";
     }
 
     if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
