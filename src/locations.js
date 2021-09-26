@@ -672,7 +672,6 @@ const road3 = new Location({
       props.gameState.treasureLevel &&
       !props.gameState.cursed
     ) {
-
       return {
         cursed: true,
       };

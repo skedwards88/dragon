@@ -72,7 +72,7 @@ function App() {
   const [consequenceText, setConsequenceText] = useState("");
   const [locationConsequenceText, setLocationConsequenceText] = useState("");
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart
-  const [showMap, setShowMap] = useState(true);
+  const [showMap, setShowMap] = useState(false);
 
   function handleNewGame() {
     console.log("new game");
