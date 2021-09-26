@@ -12,7 +12,7 @@ export default function Stats({ reputation, maxReputation, gold, maxGold }) {
         </tr>
         <tr className="stat">
           <td className="statName">Gold: </td>
-          <td>{gold}</td>
+          <td>{Math.max(gold, 0)}</td>
           <td className="statName">Max: </td>
           <td>{maxGold}</td>
         </tr>
@@ -20,4 +20,3 @@ export default function Stats({ reputation, maxReputation, gold, maxGold }) {
     </table>
   );
 }
-//todo calc max gold and rep
