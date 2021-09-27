@@ -1,5 +1,6 @@
-html {
+html,body, #root {
   background-color: rgb(240, 240, 241);
+  height: 100%;
 }
 
 .App {
@@ -11,16 +12,25 @@ html {
   white-space: pre-line;
   flex-direction: column;
   max-width: 500px;
+  height: 95%;
 
   /* todo it would be better to use a media query for ><500px and then use max-width:100% for <500px
   @media (max-width: 500px) {
-
 }
-
 @media (min-width: 501px) {
-
 }
  */
+}
+
+#location-screen{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#non-description{
+  display: flex;
+  flex-direction: column;
 }
 
 .buttons {
@@ -136,20 +146,24 @@ button:disabled {
 
 #map {
   display: grid;
-  border: 1px solid black;
+  border: 1px solid rgb(110, 121, 158);
+  border-radius: 5px;
   grid-template-columns: 50px 1fr 50px;
   grid-template-rows: 50px 1fr 50px;
+  margin: 5px;
 }
 
 #N {
   grid-column-start: 2;
   grid-row-start: 1;
+  min-width: 50vmin;
 }
 
 #W {
   grid-column-start: 1;
   grid-row-start: 2;
   transform: rotate(180deg);
+  min-height: 50vmin;
 }
 
 #W > p {
@@ -159,6 +173,7 @@ button:disabled {
 #E {
   grid-column-start: 3;
   grid-row-start: 2;
+  min-height: 50vmin;
 }
 
 #E > p {
@@ -168,6 +183,7 @@ button:disabled {
 #S {
   grid-column-start: 2;
   grid-row-start: 3;
+  min-width: 50vmin;
 }
 
 #A {
@@ -182,10 +198,6 @@ button:disabled {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-#map > #A > .connection {
-  border-radius: 50%;
 }
 
 #map > .connection > p {

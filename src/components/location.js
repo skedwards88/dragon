@@ -86,7 +86,11 @@ function MapLocation({
   handleMovePlayer,
 }) {
   if (!connections[direction]) {
-    return <></>;
+    return <button 
+    className="connection"
+    id={direction}
+    disabled
+></button>
   }
 
   const name = locations[connections[direction]].getDisplayName({
@@ -170,7 +174,7 @@ export default function Location({
   console.log(`in location ${playerLocation}`);
 
   return (
-    <div className="App">
+    <div className="App" id="location-screen">
       <div className="description">
         {locations[playerLocation].getDescription({
           playerLocation: playerLocation,
@@ -179,6 +183,7 @@ export default function Location({
         })}
         {locationConsequenceText}
       </div>
+      <div id="non-description">
       {showMap ? (
         <Map
           connections={locations[playerLocation].getConnections({
@@ -239,6 +244,7 @@ export default function Location({
           onClick={() => setCurrentDisplay("restart")}
         ></button>
       </div>
+    </div>
     </div>
   );
 }
