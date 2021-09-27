@@ -959,12 +959,9 @@ const puddle = new Location({
     return {
       // always increase the time
       timeInCave: props.gameState.timeInCave + 1,
-      // if dragon is not poisoned and time is enough to trigger dragon entry and you are not poopy+hidden, you get singed
+      // if dragon is not poisoned and time is enough to trigger dragon entry, you get singed
       ...(!props.gameState.dragonPoisoned &&
-        (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.clothesPoopy ||
-          props.gameState.naked ||
-          props.playerLocation !== "boulder") && {
+        (props.gameState.timeInCave + 1) % 4 === 3 && {
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         }),
@@ -990,19 +987,13 @@ const boulder = new Location({
     )}`;
   },
   onEnterGameStateEffect: function (props) {
-    console.log(props.gameState.dragonPoisoned);
-    console.log(props.gameState.dragonAsleep);
-    console.log(props.gameState.dragonDead);
-
     return {
       // always increase the time
       timeInCave: props.gameState.timeInCave + 1,
-      // if dragon is not poisoned and time is enough to trigger dragon entry and you are not poopy+hidden, you get singed
+      // if dragon is not poisoned and time is enough to trigger dragon entry and you are not wearing poopy clothes, you get singed
       ...(!props.gameState.dragonPoisoned &&
         (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.clothesPoopy ||
-          props.gameState.naked ||
-          props.playerLocation !== "boulder") && {
+        (!props.gameState.clothesPoopy || props.gameState.naked) && {
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         }),
@@ -1050,12 +1041,9 @@ const dung = new Location({
     return {
       // always increase the time
       timeInCave: props.gameState.timeInCave + 1,
-      // if dragon is not poisoned and time is enough to trigger dragon entry and you are not poopy+hidden, you get singed
+      // if dragon is not poisoned and time is enough to trigger dragon entry, you get singed
       ...(!props.gameState.dragonPoisoned &&
-        (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.clothesPoopy ||
-          props.gameState.naked ||
-          props.playerLocation !== "boulder") && {
+        (props.gameState.timeInCave + 1) % 4 === 3 && {
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         }),
