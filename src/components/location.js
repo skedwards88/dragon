@@ -86,11 +86,7 @@ function MapLocation({
   handleMovePlayer,
 }) {
   if (!connections[direction]) {
-    return <button 
-    className="connection"
-    id={direction}
-    disabled
-></button>
+    return <button className="connection" id={direction} disabled></button>;
   }
 
   const name = locations[connections[direction]].getDisplayName({
@@ -184,28 +180,8 @@ export default function Location({
         {locationConsequenceText}
       </div>
       <div id="non-description">
-      {showMap ? (
-        <Map
-          connections={locations[playerLocation].getConnections({
-            playerLocation: playerLocation,
-            gameState: gameState,
-            itemLocations: itemLocations,
-          })}
-          handleMovePlayer={handleMovePlayer}
-          itemLocations={itemLocations}
-          gameState={gameState}
-          locations={locations}
-          itemsAtLocation={itemLocations[playerLocation]}
-          handleTake={handleTake}
-        />
-      ) : (
-        <>
-          <LocationItems
-            itemsAtLocation={itemLocations[playerLocation]}
-            handleTake={handleTake}
-            items={items}
-          />
-          <Connections
+        {showMap ? (
+          <Map
             connections={locations[playerLocation].getConnections({
               playerLocation: playerLocation,
               gameState: gameState,
@@ -215,36 +191,56 @@ export default function Location({
             itemLocations={itemLocations}
             gameState={gameState}
             locations={locations}
+            itemsAtLocation={itemLocations[playerLocation]}
+            handleTake={handleTake}
           />
-        </>
-      )}
-      <div className="buttons">
-        <button
-          className="inventory"
-          onClick={() => setCurrentDisplay("inventory")}
-        >
-          Inventory
-        </button>
+        ) : (
+          <>
+            <LocationItems
+              itemsAtLocation={itemLocations[playerLocation]}
+              handleTake={handleTake}
+              items={items}
+            />
+            <Connections
+              connections={locations[playerLocation].getConnections({
+                playerLocation: playerLocation,
+                gameState: gameState,
+                itemLocations: itemLocations,
+              })}
+              handleMovePlayer={handleMovePlayer}
+              itemLocations={itemLocations}
+              gameState={gameState}
+              locations={locations}
+            />
+          </>
+        )}
+        <div className="buttons">
+          <button
+            className="inventory"
+            onClick={() => setCurrentDisplay("inventory")}
+          >
+            Inventory
+          </button>
+        </div>
+        <Stats
+          reputation={gameState.reputation}
+          maxReputation={gameState.maxReputation}
+          gold={gameState.gold}
+          maxGold={gameState.maxGold}
+        />
+        <div id="non-game">
+          <button
+            id="showMap"
+            className={"showMap " + showMap}
+            onClick={() => setShowMap(!showMap)}
+          ></button>
+          <button id="info" onClick={() => setCurrentDisplay("info")}></button>
+          <button
+            id="restart"
+            onClick={() => setCurrentDisplay("restart")}
+          ></button>
+        </div>
       </div>
-      <Stats
-        reputation={gameState.reputation}
-        maxReputation={gameState.maxReputation}
-        gold={gameState.gold}
-        maxGold={gameState.maxGold}
-      />
-      <div id="non-game">
-        <button
-          id="showMap"
-          className={"showMap " + showMap}
-          onClick={() => setShowMap(!showMap)}
-        ></button>
-        <button id="info" onClick={() => setCurrentDisplay("info")}></button>
-        <button
-          id="restart"
-          onClick={() => setCurrentDisplay("restart")}
-        ></button>
-      </div>
-    </div>
     </div>
   );
 }

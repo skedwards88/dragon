@@ -1,4 +1,6 @@
-html,body, #root {
+html,
+body,
+#root {
   background-color: rgb(240, 240, 241);
   height: 100%;
 }
@@ -22,13 +24,13 @@ html,body, #root {
  */
 }
 
-#location-screen{
+#location-screen {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
 
-#non-description{
+#non-description {
   display: flex;
   flex-direction: column;
 }
