@@ -192,6 +192,10 @@ button:disabled {
   grid-column-start: 2;
   grid-row-start: 2;
   margin: 20px;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 #map > .connection {

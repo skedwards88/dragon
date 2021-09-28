@@ -98,8 +98,8 @@ const wardrobe = new Location({
   },
   dropPreposition: "in",
   getDescription: function (props) {
-    return `Inside the wardrobe, there is a mirror ${
-      props.itemLocations.wardrobe.has("clothes") ? "and a set of clothes" : ""
+    return `Inside the wardrobe, there is a mirror${
+      props.itemLocations.wardrobe.has("clothes") ? " and a set of clothes" : ""
     }. `;
   },
 });
@@ -295,7 +295,7 @@ const manor = new Location({
       (!props.gameState.handkerchiefDamp || !props.gameState.playerMasked)
     ) {
       text +=
-        "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the mansion. ";
+        "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the mansion without protection. ";
     }
 
     if (
@@ -305,6 +305,15 @@ const manor = new Location({
     ) {
       text +=
         "\n\nAlthough the smoke is thick, the damp handkerchief over your mouth helps you breath. ";
+    }
+
+    if (
+      props.gameState.manorFire &&
+      !props.gameState.handkerchiefDamp &&
+      props.gameState.playerMasked
+    ) {
+      text +=
+        "\n\nOn its own, the handkerchief does little to block the smoke. ";
     }
 
     return text;
@@ -414,7 +423,7 @@ const blacksmith = new Location({
     };
   },
   getDescription: function (props) {
-    let text = `The blacksmith sets down their work. ${
+    let text = `The blacksmith looks up as you approach. ${
       props.gameState.naked
         ? `"No clothes? You best stay away from the furnace lest you burn something important. "`
         : ""
@@ -997,10 +1006,9 @@ const boulder = new Location({
           singeCount: props.gameState.singeCount + 1,
           reputation: props.gameState.reputation - 1,
         }),
-      ...(props.itemLocations.puddle.has("berries") &&
-        props.gameState.clothesPoopy &&
-        !props.gameState.naked &&
-        props.playerLocation === "boulder" && { dragonPoisoned: true }),
+      // ...(props.itemLocations.puddle.has("berries") &&todo
+      //   props.gameState.clothesPoopy &&
+      //   !props.gameState.naked && { dragonPoisoned: true }),
     };
   },
   onExitGameStateEffect: function (props) {
@@ -1009,8 +1017,7 @@ const boulder = new Location({
     if (
       props.itemLocations.puddle.has("berries") &&
       props.gameState.clothesPoopy &&
-      !props.gameState.naked &&
-      props.playerLocation === "boulder"
+      !props.gameState.naked
     ) {
       return { dragonPoisoned: true };
     }
@@ -1149,7 +1156,7 @@ function dragonDescription(props) {
         !props.gameState.naked &&
         props.playerLocation !== "boulder"
       ) {
-        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE. The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
+        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE." The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
       } // not poop and hidden
       else if (
         (!props.gameState.clothesPoopy || props.gameState.naked) &&

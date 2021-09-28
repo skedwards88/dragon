@@ -363,7 +363,7 @@ const handkerchief = new Item({
   getCustomGive: function (props) {
     function writeDescription(props) {
       if (props.playerLocation === "youth") {
-        return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob. \n\nThe youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. `;
+        return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." \n\nThe youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. `;
       }
     }
 
@@ -382,7 +382,7 @@ const handkerchief = new Item({
 
     function getTargetItemDestination(props) {
       if (props.playerLocation === "youth") {
-        return "outOfPlay";
+        return "inventory";
       }
     }
 

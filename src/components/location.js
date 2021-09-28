@@ -17,6 +17,7 @@ function Connections({
   handleMovePlayer,
   itemLocations,
   gameState,
+  playerLocation,
 }) {
   const connectionValues = Object.values(connections).flatMap((i) => i);
   return connectionValues.map((connection) => {
@@ -30,6 +31,7 @@ function Connections({
           {locations[connection].getDisplayName({
             gameState: gameState,
             itemLocations: itemLocations,
+            playerLocation: playerLocation,
           })}
         </button>
       );
@@ -84,6 +86,7 @@ function MapLocation({
   gameState,
   itemLocations,
   handleMovePlayer,
+  playerLocation,
 }) {
   if (!connections[direction]) {
     return <button className="connection" id={direction} disabled></button>;
@@ -92,6 +95,7 @@ function MapLocation({
   const name = locations[connections[direction]].getDisplayName({
     gameState: gameState,
     itemLocations: itemLocations,
+    playerLocation: playerLocation,
   });
 
   return (
@@ -112,6 +116,7 @@ function Map({
   gameState,
   itemsAtLocation,
   handleTake,
+  playerLocation,
 }) {
   return (
     <div id="map">
@@ -121,6 +126,7 @@ function Map({
         gameState: gameState,
         itemLocations: itemLocations,
         handleMovePlayer: handleMovePlayer,
+        playerLocation: playerLocation,
       })}
       {MapLocation({
         direction: "W",
@@ -128,6 +134,7 @@ function Map({
         gameState: gameState,
         itemLocations: itemLocations,
         handleMovePlayer: handleMovePlayer,
+        playerLocation: playerLocation,
       })}
       <div id="A">
         {MapInteractions({
@@ -135,6 +142,7 @@ function Map({
           handleMovePlayer: handleMovePlayer,
           itemsAtLocation,
           handleTake,
+          playerLocation: playerLocation,
         })}
       </div>
       {MapLocation({
@@ -143,6 +151,7 @@ function Map({
         gameState: gameState,
         itemLocations: itemLocations,
         handleMovePlayer: handleMovePlayer,
+        playerLocation: playerLocation,
       })}
       {MapLocation({
         direction: "S",
@@ -150,6 +159,7 @@ function Map({
         gameState: gameState,
         itemLocations: itemLocations,
         handleMovePlayer: handleMovePlayer,
+        playerLocation: playerLocation,
       })}
     </div>
   );
@@ -193,6 +203,7 @@ export default function Location({
             locations={locations}
             itemsAtLocation={itemLocations[playerLocation]}
             handleTake={handleTake}
+            playerLocation={playerLocation}
           />
         ) : (
           <>
@@ -211,6 +222,7 @@ export default function Location({
               itemLocations={itemLocations}
               gameState={gameState}
               locations={locations}
+              playerLocation={playerLocation}
             />
           </>
         )}
