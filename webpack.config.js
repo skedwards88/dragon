@@ -5,7 +5,7 @@ const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
 
 module.exports = {
   entry: "./src/index.js",
-  mode: "development",
+  mode: "production",
   module: {
     rules: [
       {
@@ -47,7 +47,7 @@ module.exports = {
       skipWaiting: true,
     }),
     new FaviconsWebpackPlugin({
-      logo: "./src/images/favicon.png", // todo
+      logo: "./src/images/favicon.png",
       mode: "webapp", // optional can be 'webapp', 'light' or 'auto' - 'auto' by default
       devMode: "webapp", // optional can be 'webapp' or 'light' - 'light' by default
       favicons: {

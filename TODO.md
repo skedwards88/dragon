@@ -9,3 +9,7 @@ use icons in inventory also
 different handkerchief icon
 
 if you get horse before fire, should you be able to bring the horse into the fire?
+
+todo rotation lock is ignored
+
+license?
