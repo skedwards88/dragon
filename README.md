@@ -1,16 +1,18 @@
 # Dragon Hero
 
-You wake up to the sounds of screaming and the smell of burning wood. What do you do?
+You wake up to the sounds of screaming and the smell of burning wood. What do you do next?
 
 A text adventure puzzle game.
 
 **Players:** 1
 
-**Time:** 15 minutes
+**Time:** 20 minutes
 
 [Play Now!](https://skedwards88.github.io/dragon/)
 
-![Dragon](src/images/favicon.png)
+![Game icon](src/images/favicon.png)
+
+---
 
 Do you have feedback or ideas for improvement? [Open an issue](https://github.com/skedwards88/dragon/issues/new).
 
