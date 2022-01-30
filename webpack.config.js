@@ -57,6 +57,7 @@ module.exports = {
         // scope: ".",
         appDescription: "A text adventure puzzle game",
         display: "standalone",
+        orientation: "portrait",
         developerName: "skedwards88",
         developerURL: null, // prevent retrieving from the nearest package.json
         background: "#F1F0F0",
