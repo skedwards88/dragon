@@ -158,7 +158,6 @@ button:disabled {
 #N {
   grid-column-start: 2;
   grid-row-start: 1;
-  min-width: 50vmin;
 }
 
 #W {
@@ -185,7 +184,6 @@ button:disabled {
 #S {
   grid-column-start: 2;
   grid-row-start: 3;
-  min-width: 50vmin;
 }
 
 #A {
