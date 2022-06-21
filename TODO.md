@@ -4,12 +4,6 @@
 
 make more clear that not giving wizard gold, giving a promise of gold. maybe gold should have promise and pay button?
 
-use icons in inventory also
+if you get the horse before entering the fire, should you be able to bring the horse into the fire?
 
-different handkerchief icon
-
-if you get horse before fire, should you be able to bring the horse into the fire?
-
-todo rotation lock is ignored
-
-license?
+save progress
