@@ -15,6 +15,7 @@ body,
   flex-direction: column;
   max-width: 500px;
   height: 95%;
+  font-size: min(0.8cm, 5vmin);
 
   /* todo it would be better to use a media query for ><500px and then use max-width:100% for <500px
   @media (max-width: 500px) {
@@ -85,9 +86,9 @@ button {
   border-radius: 5px;
   border: 1px solid;
   padding: 10px;
-  font-size: medium;
   margin: 5px;
   text-transform: capitalize;
+  font-size: min(0.8cm, 5vmin);
 }
 
 button:disabled {
