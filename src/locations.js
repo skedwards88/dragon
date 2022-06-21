@@ -791,7 +791,7 @@ const wizard = new Location({
     if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
       text += `\n\n"I have a musical score that will be useful. I would trade it for ${
         props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
-      }gold," the wizard says. \n\n"I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score! However, I believe this score will lead to treasure if you combine it with your wit." \n\n"Instead of taking your gold now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair. All sales on credit are final. All sales completed at time of purchase are refundable." `;
+      }gold," the wizard says. \n\n"Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" \n\n"However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." \n\n"All promised payments are final. All payments completed at time of purchase are refundable." `;
     }
 
     if (props.gameState.promisedTreasure && props.gameState.treasureLevel) {
