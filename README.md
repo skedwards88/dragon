@@ -17,5 +17,3 @@ A text adventure puzzle game.
 Do you have feedback or ideas for improvement? [Open an issue](https://github.com/skedwards88/dragon/issues/new).
 
 Want more games? Visit [CnS Games](https://skedwards88.github.io/portfolio/).
-
-![Status](https://github.com/skedwards88/dragon/actions/workflows/deploy.yml/badge.svg)
