@@ -7,9 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --mode development",
     "start": "webpack-dev-server",
-    "build": "webpack",
-    "predeploy": "npm version patch && npm run build",
-    "deploy": "gh-pages -d dist"
+    "build": "webpack"
   },
   "repository": {
     "type": "git",

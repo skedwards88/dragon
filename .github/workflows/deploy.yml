@@ -31,6 +31,9 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Bump version
+        run: npm version patch
+
       - name: Upload artifact
         uses: paper-spa/upload-pages-artifact@v0
         with:
