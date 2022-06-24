@@ -32,7 +32,11 @@ jobs:
         run: npm run build
 
       - name: Bump version
-        run: npm version patch --no-git-tag-version
+        run: |
+          git config --global user.name ${{ github.actor }}
+          git config --global user.email ${{ github.actor }}@gmail.com
+          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          npm version patch --no-git-tag-version
 
       - name: Upload artifact
         uses: paper-spa/upload-pages-artifact@v0
