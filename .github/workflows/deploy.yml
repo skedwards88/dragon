@@ -1,16 +1,25 @@
-name: "Deploy to GitHub Pages"
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches:
+    - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: gh-pages
+  group: github-pages
   cancel-in-progress: true
 
 jobs:
   deploy:
-    name: Deploy
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -22,9 +31,11 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Deploy
-        run: |
-          git config --global user.name ${{ github.actor }}
-          git config --global user.email ${{ github.actor }}@gmail.com
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          npm run deploy
+      - name: Upload artifact
+        uses: paper-spa/upload-pages-artifact@v0
+        with:
+          path: './dist/'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: paper-spa/deploy-pages@main
