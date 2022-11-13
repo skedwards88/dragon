@@ -6,4 +6,6 @@ Use typescript?
 
 If you get the horse before entering the fire, should you be able to bring the horse into the fire?
 
-save progress
+use https://github.com/marketplace/actions/automated-version-bump or something similar to bump version instead
+
+Change maskable icon background color
