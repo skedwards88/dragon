@@ -79,17 +79,24 @@ function App() {
     // Check if saved state is available and if has all info
     //   locationConsequenceText and consequenceText may be empty, so don't check those
     const savedState = JSON.parse(localStorage.getItem("dragonHeroState"));
-    if (!(savedState && savedState.playerLocation && savedState.gameState && savedState.itemLocations)) {
+    if (
+      !(
+        savedState &&
+        savedState.playerLocation &&
+        savedState.gameState &&
+        savedState.itemLocations
+      )
+    ) {
       // todo should check that gameState has all needed keys
       // and that convertedItemLocations has all locations
-      return
+      return;
     }
 
     // If yes, update state
     // To save sets, needed to convert to array. De-convert here.
-    let convertedItemLocations = {}
+    let convertedItemLocations = {};
     for (const key in savedState.itemLocations) {
-      convertedItemLocations[key] = new Set(itemLocations[key])
+      convertedItemLocations[key] = new Set(itemLocations[key]);
     }
     setItemLocations(convertedItemLocations);
     setGameState(savedState.gameState);
@@ -100,13 +107,13 @@ function App() {
     // Ask if want to continue from last point or start a new game
     // It seems hacky to 1) make new game 2) overwrite with saved state 3) ask for input, then potentially overwrite with new game.
     setCurrentDisplay("resume");
-  }, [])
+  }, []);
 
   React.useEffect(() => {
     // To save sets, need to convert to array
-    let convertedItemLocations = {}
+    let convertedItemLocations = {};
     for (const key in itemLocations) {
-      convertedItemLocations[key] = Array.from(itemLocations[key])
+      convertedItemLocations[key] = Array.from(itemLocations[key]);
     }
     const stateToSave = {
       itemLocations: convertedItemLocations,
@@ -118,8 +125,8 @@ function App() {
       showMap: showMap,
     };
 
-    console.log(stateToSave)
-    console.log(JSON.stringify(stateToSave))
+    console.log(stateToSave);
+    console.log(JSON.stringify(stateToSave));
     window.localStorage.setItem("dragonHeroState", JSON.stringify(stateToSave));
   }, [
     itemLocations,
