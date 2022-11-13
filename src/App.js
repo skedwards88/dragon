@@ -8,6 +8,7 @@ import Consequence from "./components/consequence";
 import GameOver from "./components/gameOver";
 import Info from "./components/info";
 import Restart from "./components/restart";
+import Resume from "./components/resume";
 
 function App() {
   const startingState = {
@@ -71,8 +72,64 @@ function App() {
   const [playerLocation, setPlayerLocation] = useState(startingLocation);
   const [consequenceText, setConsequenceText] = useState("");
   const [locationConsequenceText, setLocationConsequenceText] = useState("");
-  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart
+  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart | resume
   const [showMap, setShowMap] = useState(true);
+
+  React.useLayoutEffect(() => {
+    // Check if saved state is available and if has all info
+    //   locationConsequenceText and consequenceText may be empty, so don't check those
+    const savedState = JSON.parse(localStorage.getItem("dragonHeroState"));
+    if (!(savedState && savedState.playerLocation && savedState.gameState && savedState.itemLocations)) {
+      // todo should check that gameState has all needed keys
+      // and that convertedItemLocations has all locations
+      return
+    }
+
+    // If yes, update state
+    // To save sets, needed to convert to array. De-convert here.
+    let convertedItemLocations = {}
+    for (const key in savedState.itemLocations) {
+      convertedItemLocations[key] = new Set(itemLocations[key])
+    }
+    setItemLocations(convertedItemLocations);
+    setGameState(savedState.gameState);
+    setPlayerLocation(savedState.playerLocation);
+    setLocationConsequenceText(savedState.locationConsequenceText);
+    setConsequenceText(savedState.consequenceText);
+
+    // Ask if want to continue from last point or start a new game
+    // It seems hacky to 1) make new game 2) overwrite with saved state 3) ask for input, then potentially overwrite with new game.
+    setCurrentDisplay("resume");
+  }, [])
+
+  React.useEffect(() => {
+    // To save sets, need to convert to array
+    let convertedItemLocations = {}
+    for (const key in itemLocations) {
+      convertedItemLocations[key] = Array.from(itemLocations[key])
+    }
+    const stateToSave = {
+      itemLocations: convertedItemLocations,
+      gameState: gameState,
+      playerLocation: playerLocation,
+      consequenceText: consequenceText,
+      locationConsequenceText: locationConsequenceText,
+      currentDisplay: currentDisplay,
+      showMap: showMap,
+    };
+
+    console.log(stateToSave)
+    console.log(JSON.stringify(stateToSave))
+    window.localStorage.setItem("dragonHeroState", JSON.stringify(stateToSave));
+  }, [
+    itemLocations,
+    gameState,
+    playerLocation,
+    consequenceText,
+    locationConsequenceText,
+    currentDisplay,
+    showMap,
+  ]);
 
   function handleNewGame() {
     console.log("new game");
@@ -439,6 +496,13 @@ function App() {
     case "restart":
       return (
         <Restart
+          setCurrentDisplay={setCurrentDisplay}
+          handleNewGame={handleNewGame}
+        />
+      );
+    case "resume":
+      return (
+        <Resume
           setCurrentDisplay={setCurrentDisplay}
           handleNewGame={handleNewGame}
         />
