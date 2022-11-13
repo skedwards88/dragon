@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "webpack-dev-server --mode development",
     "start": "webpack-dev-server",
-    "build": "webpack"
+    "build": "webpack",
+    "lint": "npx eslint --ignore-path .gitignore .",
+    "prettier": "npx prettier --ignore-path .gitignore --write ."
   },
   "repository": {
     "type": "git",
