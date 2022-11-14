@@ -177,7 +177,7 @@ const courtyard = new Location({
         : ""
     }${
       props.gameState.firstCourtyardEntry
-        ? "\n\nAn youth runs from the fire, crying as they flee. They drop a handkerchief in their distress. "
+        ? "\n\nA youth runs from the fire, crying as they flee. They drop a handkerchief in their distress. "
         : ""
     }`;
   },
@@ -214,14 +214,22 @@ const fountain = new Location({
     if (props.itemLocations.nursery.has("baby")) {
       text +=
         'A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped in the nursery. " ';
+        if (props.gameState.naked) {
+          text += `\n\nIn the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances.`;
+        }
     }
 
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
       if (props.gameState.babyCough) {
-        text += `\n\nYou hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." `;
+        text += `\n\nYou hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks.`;
       } else {
         text +=
-          '\n\nYou hear a voice: "My baby! You saved my baby! Please take this gold as thanks." ';
+          '\n\nYou hear a voice: "My baby! You saved my baby! Please take this gold as thanks.';
+      }
+      if (props.gameState.naked) {
+        text += ` And perhaps buy yourself some clothes," they say, eyeing your naked body. `;
+      } else {
+        text += `" `
       }
       if (props.gameState.playerCough) {
         text +=
@@ -240,6 +248,9 @@ const fountain = new Location({
       }
       if (!props.gameState.babyCough) {
         reputationIncrease += 1;
+      }
+      if (props.gameState.naked) {
+        reputationIncrease -= 1;
       }
       return {
         gold: props.gameState.gold + 50,
@@ -304,7 +315,7 @@ const manor = new Location({
       props.gameState.playerMasked
     ) {
       text +=
-        "\n\nAlthough the smoke is thick, the damp handkerchief over your mouth helps you breath. ";
+        "\n\nAlthough the smoke is thick, the damp handkerchief over your mouth helps you breathe. ";
     }
 
     if (
@@ -425,7 +436,7 @@ const blacksmith = new Location({
   getDescription: function (props) {
     let text = `The blacksmith looks up as you approach. ${
       props.gameState.naked
-        ? `"No clothes? You best stay away from the furnace lest you burn something important. "`
+        ? `"No clothes? You best stay away from the furnace lest you burn something important." `
         : ""
     }${
       props.gameState.playerMasked
@@ -787,6 +798,10 @@ const wizard = new Location({
   },
   getDescription: function (props) {
     let text = "The wizard looks at you though bushy eyebrows. ";
+
+    if (props.gameState.naked) {
+      text += `"Ah, a naturalist," he comments, eyeing your lack of clothes.`;
+    }
 
     if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
       text += `\n\n"I have a musical score that will be useful. I would trade it for ${

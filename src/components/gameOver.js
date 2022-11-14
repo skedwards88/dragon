@@ -24,7 +24,7 @@ export default function GameOver({
         : ""
     }${
       gameState.singeCount
-        ? `\n\nYou have ${gameState.singeCount} singe marks and no eyebrows, courtesy of the dragon's flame. `
+        ? `\n\nYou have ${gameState.singeCount} singe mark${gameState.singeCount > 1 ? "s" : ""} and no eyebrows, courtesy of the dragon's flame. `
         : ""
     }${
       gameState.cursed
