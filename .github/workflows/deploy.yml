@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write # Required for bumping version (read-only required for deployment)
+  pages: write # Required for deployment
+  id-token: write # Required for deployment
 
 concurrency:
   group: github-pages
@@ -22,8 +22,20 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup git config
+        run: |
+          git config --global user.name "skedwards88"
+          git config --global user.email "skedwards88@gmail.com"
+
+      - name: Bump version
+        run: npm version patch
+
+      - name: Push
+        run: |
+          git push origin main
 
       - name: Install requirements
         run: npm install
@@ -31,18 +43,14 @@ jobs:
       - name: Build
         run: npm run build
 
-      - name: Bump version
-        run: |
-          git config --global user.name ${{ github.actor }}
-          git config --global user.email ${{ github.actor }}@gmail.com
-          git remote set-url origin https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          npm version patch --no-git-tag-version
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
 
       - name: Upload artifact
-        uses: paper-spa/upload-pages-artifact@v0
+        uses: actions/upload-pages-artifact@v1
         with:
           path: "./dist/"
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: paper-spa/deploy-pages@main
+        uses: actions/deploy-pages@v1
