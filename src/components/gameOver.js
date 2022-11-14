@@ -49,7 +49,6 @@ export default function GameOver({
   let finalReputation = gameState.reputation;
   if (result === "win") {
     if (gameState.horseMounted) finalReputation += 1;
-    if (gameState.dragonDead) finalReputation += 2;
     if (gameState.naked) finalReputation -= 1;
     if (gameState.clothesPoopy) finalReputation -= 1;
     if (gameState.cursed) finalReputation -= 1;

@@ -562,6 +562,7 @@ const sword = new Item({
       ) {
         return {
           dragonDead: true,
+          reputation: props.gameState.reputation + 2,
         };
       } else if (
         !props.gameState.dragonAsleep &&
