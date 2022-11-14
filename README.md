@@ -10,7 +10,7 @@ A text adventure puzzle game.
 
 [Play Now!](https://skedwards88.github.io/dragon/)
 
-![Game icon](src/images/favicon.png)
+![Game icon](src/images/icon_192.png)
 
 Do you have feedback or ideas for improvement? [Open an issue](https://github.com/skedwards88/dragon/issues/new).
 
