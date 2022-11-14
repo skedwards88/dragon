@@ -214,9 +214,9 @@ const fountain = new Location({
     if (props.itemLocations.nursery.has("baby")) {
       text +=
         'A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped in the nursery. " ';
-        if (props.gameState.naked) {
-          text += `\n\nIn the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances.`;
-        }
+      if (props.gameState.naked) {
+        text += `\n\nIn the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances.`;
+      }
     }
 
     if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
@@ -229,7 +229,7 @@ const fountain = new Location({
       if (props.gameState.naked) {
         text += ` And perhaps buy yourself some clothes," they say, eyeing your naked body. `;
       } else {
-        text += `" `
+        text += `" `;
       }
       if (props.gameState.playerCough) {
         text +=

@@ -127,30 +127,34 @@ const clothes = new Item({
         text +=
           "You wrinkle your nose in distaste. Certainly you are not fit for fine company anymore.";
       }
-      if (!props.gameState.naked && props.playerLocation === 'inn') {
-        text +=
-          "The innkeeper eyes you suspiciously.";
+      if (!props.gameState.naked && props.playerLocation === "inn") {
+        text += "The innkeeper eyes you suspiciously.";
       }
-      if (!props.gameState.naked && props.playerLocation === 'blacksmith') {
-        text +=
-          "The blacksmith eyes you suspiciously.";
+      if (!props.gameState.naked && props.playerLocation === "blacksmith") {
+        text += "The blacksmith eyes you suspiciously.";
       }
-      if (!props.gameState.naked && props.playerLocation === 'youth') {
-        text +=
-          "The youth eyes you suspiciously.";
+      if (!props.gameState.naked && props.playerLocation === "youth") {
+        text += "The youth eyes you suspiciously.";
       }
       return text;
     }
 
     function getGameEffect(props) {
-      let gameEffect = props.gameState.naked ? { naked: false } : { naked: true };
-      if (!props.gameState.naked && (props.playerLocation === 'inn' || props.playerLocation === 'blacksmith' || props.playerLocation === 'youth')) {
+      let gameEffect = props.gameState.naked
+        ? { naked: false }
+        : { naked: true };
+      if (
+        !props.gameState.naked &&
+        (props.playerLocation === "inn" ||
+          props.playerLocation === "blacksmith" ||
+          props.playerLocation === "youth")
+      ) {
         gameEffect = {
           ...gameEffect,
-          reputation: props.gameState.reputation - 1
-        }
+          reputation: props.gameState.reputation - 1,
+        };
       }
-      return gameEffect
+      return gameEffect;
     }
 
     return new ItemInteraction({
@@ -167,17 +171,14 @@ const clothes = new Item({
         ? (text += `You drop your clothes ${props.dropPreposition} the ${props.playerLocation}. `)
         : (text += `You strip down and drop your clothes ${props.dropPreposition} the ${props.playerLocation}. `);
 
-      if (!props.gameState.naked && props.playerLocation === 'inn') {
-        text +=
-          "The innkeeper eyes you suspiciously.";
+      if (!props.gameState.naked && props.playerLocation === "inn") {
+        text += "The innkeeper eyes you suspiciously.";
       }
-      if (!props.gameState.naked && props.playerLocation === 'blacksmith') {
-        text +=
-          "The blacksmith eyes you suspiciously.";
+      if (!props.gameState.naked && props.playerLocation === "blacksmith") {
+        text += "The blacksmith eyes you suspiciously.";
       }
-      if (!props.gameState.naked && props.playerLocation === 'youth') {
-        text +=
-          "The youth eyes you suspiciously.";
+      if (!props.gameState.naked && props.playerLocation === "youth") {
+        text += "The youth eyes you suspiciously.";
       }
       if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
         text += "Your clothes look much cleaner now. ";
@@ -188,25 +189,30 @@ const clothes = new Item({
 
     function getGameEffect(props) {
       let gameEffect = { naked: true };
-      if (!props.gameState.naked && (props.playerLocation === 'inn' || props.playerLocation === 'blacksmith' || props.playerLocation === 'youth')) {
+      if (
+        !props.gameState.naked &&
+        (props.playerLocation === "inn" ||
+          props.playerLocation === "blacksmith" ||
+          props.playerLocation === "youth")
+      ) {
         gameEffect = {
           ...gameEffect,
-          reputation: props.gameState.reputation - 1
-        }
+          reputation: props.gameState.reputation - 1,
+        };
       }
       if (props.playerLocation === "dung") {
         gameEffect = {
           ...gameEffect,
-          clothesPoopy: true
-        }
+          clothesPoopy: true,
+        };
       }
       if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
         gameEffect = {
           ...gameEffect,
-          clothesPoopy: false
-        }
+          clothesPoopy: false,
+        };
       }
-      return gameEffect
+      return gameEffect;
     }
 
     if (["fountain", "stream", "puddle"].includes(props.playerLocation)) {
