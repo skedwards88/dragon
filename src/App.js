@@ -125,8 +125,6 @@ function App() {
       showMap: showMap,
     };
 
-    console.log(stateToSave);
-    console.log(JSON.stringify(stateToSave));
     window.localStorage.setItem("dragonHeroState", JSON.stringify(stateToSave));
   }, [
     itemLocations,
