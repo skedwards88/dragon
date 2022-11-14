@@ -94,10 +94,13 @@ function App() {
 
     // If yes, update state
     // To save sets, needed to convert to array. De-convert here.
+    console.log("converting...");
+    console.log(savedState.itemLocations);
     let convertedItemLocations = {};
     for (const key in savedState.itemLocations) {
-      convertedItemLocations[key] = new Set(itemLocations[key]);
+      convertedItemLocations[key] = new Set(savedState.itemLocations[key]);
     }
+    console.log(convertedItemLocations);
     setItemLocations(convertedItemLocations);
     setGameState(savedState.gameState);
     setPlayerLocation(savedState.playerLocation);
