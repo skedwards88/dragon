@@ -534,7 +534,7 @@ const sword = new Item({
         !props.gameState.dragonDead &&
         props.playerLocation === "lair"
       ) {
-        return "You cut off the head of the dragon. ";
+        return "You cut off the head of the dragon, freeing the town from it's tyrannical rule. ";
       } else if (
         props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
