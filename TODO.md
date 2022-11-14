@@ -8,11 +8,9 @@ If you get the horse before entering the fire, should you be able to bring the h
 
 use https://github.com/marketplace/actions/automated-version-bump or something similar to bump version instead
 
+---
+
 Bold Reputation + and Gold +
-
-you lose points for entering without clothes but not for stripping
-
-change bolder to crevace, if you aren't i ncrevice when dragon comes, you hid in there then return
 
 when you cut off dragon head, get reputation increase
 

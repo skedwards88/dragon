@@ -951,14 +951,14 @@ const defecatory = new Location({
   getConnections: function () {
     return {
       N: "puddle",
-      S: "boulder",
+      S: "crevice",
       E: "caveEntrance",
       W: "dung",
       A: [],
     };
   },
   getDescription: function () {
-    return "You stand in a large, foul smelling cavern. There is a puddle of clear water, a large boulder, and a pile of dragon dung. ";
+    return "You stand in a large, foul smelling cavern. There is a puddle of clear water, a crevice, and a pile of dragon dung. ";
   },
 });
 
@@ -968,7 +968,7 @@ const puddle = new Location({
   getConnections: function () {
     return {
       N: "",
-      S: "boulder",
+      S: "crevice",
       E: "defecatory",
       W: "dung",
       A: [],
@@ -993,8 +993,8 @@ const puddle = new Location({
   },
 });
 
-const boulder = new Location({
-  id: "boulder",
+const crevice = new Location({
+  id: "crevice",
   dropPreposition: "behind",
   getConnections: function () {
     return {
@@ -1006,7 +1006,7 @@ const boulder = new Location({
     };
   },
   getDescription: function (props) {
-    return `You walk behind the boulder. It seems large enough to hide your from sight. \n\n${dragonDescription(
+    return `You squeeze into the crevice. It isn't big, but it seems deep enough to hide your from sight. \n\n${dragonDescription(
       props
     )}`;
   },
@@ -1048,7 +1048,7 @@ const dung = new Location({
   getConnections: function () {
     return {
       N: "puddle",
-      S: "boulder",
+      S: "crevice",
       E: "defecatory",
       W: "",
       A: [],
@@ -1144,7 +1144,7 @@ function dragonDescription(props) {
       timeInterval < 3 &&
       props.gameState.clothesPoopy &&
       !props.gameState.naked &&
-      props.playerLocation === "boulder" &&
+      props.playerLocation === "crevice" &&
       props.itemLocations.puddle.has("berries")
     ) {
       text +=
@@ -1155,34 +1155,34 @@ function dragonDescription(props) {
       timeInterval === 3 ||
       (props.gameState.clothesPoopy &&
         !props.gameState.naked &&
-        props.playerLocation === "boulder" &&
+        props.playerLocation === "crevice" &&
         props.itemLocations.puddle.has("berries"))
     ) {
       text += "The dragon prowls into the cavern. ";
       // not poop and not hidden
       if (
         (!props.gameState.clothesPoopy || props.gameState.naked) &&
-        props.playerLocation !== "boulder"
+        props.playerLocation !== "crevice"
       ) {
-        text += `"I KNEW I SMELT A HUMAN." The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
+        text += `"I KNEW I SMELT A HUMAN." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. \n\nAs you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure.`;
       } // poop and not hidden
       else if (
         props.gameState.clothesPoopy &&
         !props.gameState.naked &&
-        props.playerLocation !== "boulder"
+        props.playerLocation !== "crevice"
       ) {
-        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE." The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure." `;
+        text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. \n\nAs you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure. `;
       } // not poop and hidden
       else if (
         (!props.gameState.clothesPoopy || props.gameState.naked) &&
-        props.playerLocation === "boulder"
+        props.playerLocation === "crevice"
       ) {
-        text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peaks around the boulder and spots you. The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
+        text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peers into the crevice and spots you. The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
       } // poop and hidden
       else if (
         props.gameState.clothesPoopy &&
         !props.gameState.naked &&
-        props.playerLocation === "boulder"
+        props.playerLocation === "crevice"
       ) {
         text += "It seems unaware of your location. ";
         // dragon drinks
@@ -1232,7 +1232,7 @@ export const locations = {
   caveEntrance: caveEntrance,
   defecatory: defecatory,
   puddle: puddle,
-  boulder: boulder,
+  crevice: crevice,
   dung: dung,
   lair: lair,
 };

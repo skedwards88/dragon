@@ -371,7 +371,7 @@ const handkerchief = new Item({
       }
 
       if (
-        ["dung", "defecatory", "boulder", "puddle"].includes(
+        ["dung", "defecatory", "crevice", "puddle"].includes(
           props.playerLocation
         )
       ) {
