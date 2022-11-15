@@ -25,6 +25,13 @@ body,
  */
 }
 
+h1 {
+  font-size: min(1.6cm, 10vmin);
+}
+
+small {
+  font-size: min(0.4cm, 4vmin);
+}
 #location-screen {
   display: flex;
   flex-direction: column;
