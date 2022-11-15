@@ -1,7 +1,7 @@
 html,
 body,
 #root {
-  background-color: rgb(240, 240, 241);
+  background-color: rgb(240 240 241);
   height: 100%;
 }
 
@@ -32,6 +32,7 @@ h1 {
 small {
   font-size: min(0.4cm, 4vmin);
 }
+
 #location-screen {
   display: flex;
   flex-direction: column;
@@ -70,22 +71,22 @@ small {
 
 .connection,
 .close {
-  background-color: rgb(110, 121, 158);
-  border-color: rgb(110, 121, 158);
-  color: rgb(240, 240, 241);
+  background-color: rgb(110 121 158);
+  border-color: rgb(110 121 158);
+  color: rgb(240 240 241);
 }
 
 .item,
 .inventory {
-  background-color: rgb(38, 36, 129);
-  border-color: rgb(38, 36, 129);
-  color: rgb(240, 240, 241);
+  background-color: rgb(38 36 129);
+  border-color: rgb(38 36 129);
+  color: rgb(240 240 241);
 }
 
 .item-action {
-  background-color: rgb(38, 36, 129);
-  border-color: rgb(38, 36, 129);
-  color: rgb(240, 240, 241);
+  background-color: rgb(38 36 129);
+  border-color: rgb(38 36 129);
+  color: rgb(240 240 241);
   border-width: 5px 15px;
 }
 
@@ -105,20 +106,20 @@ button:disabled {
 }
 
 .inventoryItem {
-  border-width: 1px 0 1px 0;
+  border-width: 1px 0;
   border-color: black;
   border-style: solid;
   padding: 5px 0;
 }
 
 .inventoryItem:first-child {
-  border-width: 4px 0 1px 0;
+  border-width: 4px 0 1px;
   border-color: black;
   border-style: solid;
 }
 
 .inventoryItem:last-child {
-  border-width: 1px 0 2px 0;
+  border-width: 1px 0 2px;
   border-color: black;
   border-style: solid;
 }
@@ -156,7 +157,7 @@ button:disabled {
 
 #map {
   display: grid;
-  border: 1px solid rgb(110, 121, 158);
+  border: 1px solid rgb(110 121 158);
   border-radius: 5px;
   grid-template-columns: 50px 1fr 50px;
   grid-template-rows: 50px 1fr 50px;
