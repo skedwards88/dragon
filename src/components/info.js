@@ -8,7 +8,7 @@ export default function Info({ setCurrentDisplay }) {
       <div className="description">
         <h1>Dragon Hero</h1>
         <small>{`version ${packageJson.version}\n\n`}</small>
-        {`a text adventure puzzle game\n\nThanks for play testing! We'd love to hear your feedback, especially if you find a logical discrepancy or bug. To leave feedback, `}
+        {`a text adventure puzzle game\n\nThanks for playing! We'd love to hear your feedback, especially if you find a logical discrepancy or bug. To leave feedback, `}
         <a href={feedbackLink}>open an issue</a>
         {" on GitHub."}
         {<hr></hr>}
