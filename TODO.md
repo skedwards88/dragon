@@ -11,8 +11,3 @@ use https://github.com/marketplace/actions/automated-version-bump or something s
 ---
 
 Bold Reputation + and Gold +
-
-when you cut off dragon head, get reputation increase
-
-disappear the wizard once the dragon is dead and he has the score? or don't allow to buy score after defeating the dragon.
-

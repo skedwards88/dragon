@@ -534,7 +534,7 @@ const sword = new Item({
         !props.gameState.dragonDead &&
         props.playerLocation === "lair"
       ) {
-        return "You cut off the head of the dragon, freeing the town from it's tyrannical rule. ";
+        return "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. ";
       } else if (
         props.gameState.dragonPoisoned &&
         !props.gameState.dragonAsleep &&
@@ -1183,9 +1183,12 @@ const score = new Item({
         props.playerLocation === "wizard" &&
         props.itemLocations.inventory.has("score") &&
         props.itemLocations.wizard.has("sword")
-      ) {
-        return "wizard";
-      }
+      )
+        if (props.gameState.dragonAsleep) {
+          return "outOfPlay";
+        } else {
+          return "wizard";
+        }
 
       if (
         props.playerLocation === "wizard" &&
