@@ -6,7 +6,7 @@ export default function GameOver({
   handleNewGame,
   gameState,
 }) {
-  let reputationChange = 0
+  let reputationChange = 0;
   if (result === "win") {
     if (gameState.horseMounted) reputationChange += 1;
     if (gameState.naked) reputationChange -= 1;
@@ -23,7 +23,9 @@ export default function GameOver({
         ? `proudly mounted on your horse.\n\nReputation +1`
         : "weary from the long walk. "
     }\n\nA crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${
-      gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes.\n\nReputation -1` : ""
+      gameState.naked
+        ? `\n\nThe townsfolk jeer at your lack of clothes.\n\nReputation -1`
+        : ""
     }${
       gameState.clothesPoopy && !gameState.naked
         ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth.\n\nReputation -1"
@@ -44,11 +46,10 @@ export default function GameOver({
         : ""
     }${
       gameState.dragonDead
-        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${
-          finalReputation = gameState.maxReputation
+        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${(finalReputation =
+            gameState.maxReputation
               ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot."
-              : ""
-          }`
+              : "")}`
         : `\n\nInitially excited about your successful return, the towns folk cower as a huge roar erupts from the cave. It seems that the dragon is no longer incapacitated. You hear whispers of "provoked" and "doomed" as the townsfolk glare angrily at you. \n\nEager to escape the wrath of the dragon and townsfolk, you flee town.`
     }`;
   } else {
