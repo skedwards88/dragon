@@ -24,6 +24,4 @@ To run locally with live reloading and no service worker, run `npm run dev`. (If
 
 To run locally and register the service worker, run `npm start`.
 
-When running locally, you may get an `opensslErrorStack: [ 'error:03000086:digital envelope outines::initialization error' ],` error. Executing `export NODE_OPTIONS=--openssl-legacy-provider` can resolve this.
-
 To deploy, push to `main` or manually trigger the `.github/workflows/deploy.yml` workflow.
