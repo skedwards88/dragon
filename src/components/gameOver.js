@@ -6,17 +6,27 @@ export default function GameOver({
   handleNewGame,
   gameState,
 }) {
+  let reputationChange = 0
+  if (result === "win") {
+    if (gameState.horseMounted) reputationChange += 1;
+    if (gameState.naked) reputationChange -= 1;
+    if (gameState.clothesPoopy && !gameState.naked) reputationChange -= 1;
+    if (gameState.cursed) reputationChange -= 1;
+    // Not losing reputation for being poisoned or singed since that happens when the event occurs
+  }
+  let finalReputation = gameState.reputation + reputationChange;
+
   let gameEndText;
   if (result === "win") {
     gameEndText = `You arrive at the city gates ${
       gameState.horseMounted
-        ? "proudly mounted on your horse"
-        : "weary from the long walk"
-    }. A crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${
-      gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes. ` : ""
+        ? `proudly mounted on your horse.\n\nReputation +1`
+        : "weary from the long walk. "
+    }\n\nA crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${
+      gameState.naked ? `\n\nThe townsfolk jeer at your lack of clothes.\n\nReputation -1` : ""
     }${
       gameState.clothesPoopy && !gameState.naked
-        ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth. "
+        ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth.\n\nReputation -1"
         : ""
     }${
       gameState.playerPoisoned
@@ -30,12 +40,12 @@ export default function GameOver({
         : ""
     }${
       gameState.cursed
-        ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life. "
+        ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life.\n\nReputation -1"
         : ""
     }${
       gameState.dragonDead
         ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${
-            gameState.reputation > 10
+          finalReputation = gameState.maxReputation
               ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot."
               : ""
           }`
@@ -43,16 +53,7 @@ export default function GameOver({
     }`;
   } else {
     gameEndText =
-      "Repuation: 0\n\nEven your pride has its limits. With what little reputation you have left, you flee the town.";
-  }
-
-  let finalReputation = gameState.reputation;
-  if (result === "win") {
-    if (gameState.horseMounted) finalReputation += 1;
-    if (gameState.naked) finalReputation -= 1;
-    if (gameState.clothesPoopy) finalReputation -= 1;
-    if (gameState.cursed) finalReputation -= 1;
-    // Not losing reputation for being poisoned or singed since that happens when the event occurs
+      "Reputation: 0\n\nEven your pride has its limits. With what little reputation you have left, you flee the town.";
   }
 
   return (
