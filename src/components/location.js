@@ -274,10 +274,11 @@ export default function Location({
             id="restart"
             onClick={() => setCurrentDisplay("restart")}
           ></button>
-          {navigator.canShare ? <button
-            id="share"
-            onClick={() => handleShare()}
-          ></button> : <></>}
+          {navigator.canShare ? (
+            <button id="share" onClick={() => handleShare()}></button>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
     </div>
