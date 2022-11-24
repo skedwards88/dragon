@@ -9,6 +9,7 @@
     "start": "webpack-dev-server",
     "build": "webpack",
     "lint": "npx eslint --ignore-path .gitignore .",
+    "style": "npx stylelint --fix \"**/*.css\"",
     "prettier": "npx prettier --ignore-path .gitignore --write ."
   },
   "repository": {
