@@ -63,6 +63,23 @@ export default function GameOver({
       <button className="close" onClick={handleNewGame}>
         PLAY AGAIN
       </button>
+      {navigator.canShare && result === "win" ? (
+        <button
+          className="close"
+          onClick={() =>
+            handleShareResults({
+              reputation: finalReputation,
+              maxReputation: gameState.maxReputation,
+              gold: gameState.gold,
+              maxGold: gameState.maxGold,
+            })
+          }
+        >
+          SHARE
+        </button>
+      ) : (
+        <></>
+      )}
       <Stats
         reputation={finalReputation}
         maxReputation={gameState.maxReputation}
@@ -71,4 +88,32 @@ export default function GameOver({
       />
     </div>
   );
+}
+
+function handleShareResults({ reputation, maxReputation, gold, maxGold }) {
+  const url = "https://skedwards88.github.io/dragon/";
+
+  let resultText = "";
+  if (reputation === maxReputation && gold === maxGold) {
+    resultText = `I earned the maximum score on Dragon Hero!`;
+  } else {
+    resultText = `I beat Dragon Hero: ${reputation}/${maxReputation} reputation, ${gold}/${maxGold} gold.`;
+  }
+
+  navigator
+    .share({
+      title: "Dragon Hero",
+      text: `${resultText}\n\n`,
+      url: url,
+    })
+    .then(() => console.log("Successful share"))
+    .catch((error) => {
+      // copy to clipboard as backup
+      console.log("Error sharing", error);
+      try {
+        navigator.clipboard.writeText(`${resultText}\n\n${url}`);
+      } catch (error) {
+        console.log("Error copying", error);
+      }
+    });
 }

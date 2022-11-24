@@ -165,6 +165,29 @@ function Map({
   );
 }
 
+function handleShare() {
+  const url = "https://skedwards88.github.io/dragon/";
+
+  let text = "Check out this text adventure puzzle!";
+
+  navigator
+    .share({
+      title: "Dragon Hero",
+      text: `${text}\n\n`,
+      url: url,
+    })
+    .then(() => console.log("Successful share"))
+    .catch((error) => {
+      // copy to clipboard as backup
+      console.log("Error sharing", error);
+      try {
+        navigator.clipboard.writeText(`${text}\n\n${url}`);
+      } catch (error) {
+        console.log("Error copying", error);
+      }
+    });
+}
+
 export default function Location({
   handleTake,
   items,
@@ -251,6 +274,10 @@ export default function Location({
             id="restart"
             onClick={() => setCurrentDisplay("restart")}
           ></button>
+          {navigator.canShare ? <button
+            id="share"
+            onClick={() => handleShare()}
+          ></button> : <></>}
         </div>
       </div>
     </div>
