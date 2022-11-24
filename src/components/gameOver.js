@@ -46,7 +46,7 @@ export default function GameOver({
         : ""
     }${
       gameState.dragonDead
-        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${(finalReputation =
+        ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${(finalReputation ===
             gameState.maxReputation
               ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot."
               : "")}`
