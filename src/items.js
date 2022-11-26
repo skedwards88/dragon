@@ -1,3 +1,5 @@
+import { locations } from "./locations";
+
 export class ItemInteraction {
   constructor({
     gameEffect,
@@ -162,10 +164,12 @@ const clothes = new Item({
   getCustomDrop: function (gameState) {
     function writeDescription(gameState) {
       let text = "";
+      const dropPreposition =
+        locations[gameState.playerLocation].dropPreposition;
 
       gameState.naked
-        ? (text += `You drop your clothes ${gameState.dropPreposition} the ${gameState.playerLocation}. `)
-        : (text += `You strip down and drop your clothes ${gameState.dropPreposition} the ${gameState.playerLocation}. `);
+        ? (text += `You drop your clothes ${dropPreposition} the ${gameState.playerLocation}. `)
+        : (text += `You strip down and drop your clothes ${dropPreposition} the ${gameState.playerLocation}. `);
 
       if (!gameState.naked && gameState.playerLocation === "inn") {
         text += "The innkeeper eyes you suspiciously.";
@@ -388,7 +392,10 @@ const handkerchief = new Item({
   getCustomDrop: function (gameState) {
     function writeDescription(gameState) {
       if (gameState.playerMasked) {
-        return `You remove the handkerchief from your nose and mouth and drop it ${gameState.dropPreposition} the ${gameState.playerLocation}. `;
+        const dropPreposition =
+          locations[gameState.playerLocation].dropPreposition;
+
+        return `You remove the handkerchief from your nose and mouth and drop it ${dropPreposition} the ${gameState.playerLocation}. `;
       }
     }
 

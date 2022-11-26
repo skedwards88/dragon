@@ -8,7 +8,7 @@ export function reducer(currentGameState, payload) {
   } else if (payload.action === "resume") {
     return {
       ...currentGameState,
-      ...payload.savedState,
+      ...payload.savedState.gameState,
     };
   } else if (payload.action === "takeItem") {
     const item = payload.item;
@@ -126,14 +126,8 @@ export function reducer(currentGameState, payload) {
     const playerLocation = currentGameState.playerLocation;
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
-    console.log(`taking ${item} at ${playerLocation}`);
-
     let { gameEffect, description, targetItemDestination, itemMovements } =
-      items[item].getCustomDrop({
-        dropPreposition: locations[playerLocation].dropPreposition,
-        gameState: newGameState, // todo gameState now includes itemLocations, so need to update funct to pull that out
-      });
-
+      items[item].getCustomDrop(newGameState);
     itemMovements.push({
       item: item,
       oldLocation: "inventory",
