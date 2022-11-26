@@ -36,9 +36,10 @@ function App() {
 
     // If yes, update state
     dispatchGameState({ action: "resume", savedState: savedState });
+    setShowMap(savedState.showMap ?? true);
 
     // Ask if want to continue from last point or start a new game
-    // It seems hacky to 1) make new game 2) overwrite with saved state 3) ask for input, then potentially overwrite with new game.
+    // todo It seems hacky to 1) make new game 2) overwrite with saved state 3) ask for input, then potentially overwrite with new game.
     setCurrentDisplay("resume");
   }, []);
 
