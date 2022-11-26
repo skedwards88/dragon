@@ -3,8 +3,9 @@ import Stats from "./stats";
 
 export default function GameOver({
   result, // win | lose
-  handleNewGame,
+  dispatchGameState,
   gameState,
+  setCurrentDisplay,
 }) {
   let reputationChange = 0;
   if (result === "win") {
@@ -61,7 +62,13 @@ export default function GameOver({
   return (
     <div className="App">
       <div className="description">{gameEndText}</div>
-      <button className="close" onClick={handleNewGame}>
+      <button
+        className="close"
+        onClick={() => {
+          dispatchGameState({ action: "newGame" });
+          setCurrentDisplay("location");
+        }}
+      >
         PLAY AGAIN
       </button>
       {navigator.canShare && result === "win" ? (
@@ -81,12 +88,7 @@ export default function GameOver({
       ) : (
         <></>
       )}
-      <Stats
-        reputation={finalReputation}
-        maxReputation={gameState.maxReputation}
-        gold={gameState.gold}
-        maxGold={gameState.maxGold}
-      />
+      <Stats gameState={gameState} />
     </div>
   );
 }

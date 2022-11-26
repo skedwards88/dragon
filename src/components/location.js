@@ -1,24 +1,29 @@
 import React from "react";
 import { locations } from "../../src/locations";
 import Stats from "./stats";
+import { items } from "../items";
 
-function LocationItems({ itemsAtLocation, handleTake, items }) {
+function LocationItems({ gameState, dispatchGameState, setCurrentDisplay }) {
+  const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
   return Array.from(itemsAtLocation).map((item) => {
     return (
-      <button onClick={() => handleTake(item)} className="item" key={item}>
+      <button
+        onClick={() => {
+          dispatchGameState({ action: "takeItem", item: item });
+          setCurrentDisplay("consequence");
+        }}
+        className="item"
+        key={item}
+      >
         {items[item].displayName || item}
       </button>
     );
   });
 }
 
-function Connections({
-  connections,
-  handleMovePlayer,
-  itemLocations,
-  gameState,
-  playerLocation,
-}) {
+function Connections({ gameState, dispatchGameState }) {
+  const connections =
+    locations[gameState.playerLocation].getConnections(gameState);
   const connectionValues = Object.values(connections).flatMap((i) => i);
   return connectionValues.map((connection) => {
     if (connection) {
@@ -26,13 +31,11 @@ function Connections({
         <button
           className="connection"
           key={connection}
-          onClick={() => handleMovePlayer(connection)}
+          onClick={() =>
+            dispatchGameState({ action: "movePlayer", newLocation: connection })
+          }
         >
-          {locations[connection].getDisplayName({
-            gameState: gameState,
-            itemLocations: itemLocations,
-            playerLocation: playerLocation,
-          })}
+          {locations[connection].getDisplayName(gameState)}
         </button>
       );
     }
@@ -41,9 +44,9 @@ function Connections({
 
 function MapInteractions({
   connections,
-  handleMovePlayer,
   itemsAtLocation,
-  handleTake,
+  dispatchGameState,
+  setCurrentDisplay,
 }) {
   let interactionDivs = <></>;
   if (connections["A"].length) {
@@ -53,7 +56,12 @@ function MapInteractions({
       return (
         <button
           className="connection"
-          onClick={() => handleMovePlayer(interaction)}
+          onClick={() =>
+            dispatchGameState({
+              action: "movePlayer",
+              newLocation: interaction,
+            })
+          }
           id={interaction}
           key={interaction}
         ></button>
@@ -64,7 +72,10 @@ function MapInteractions({
   const itemDivs = Array.from(itemsAtLocation).map((item) => {
     return (
       <button
-        onClick={() => handleTake(item)}
+        onClick={() => {
+          dispatchGameState({ action: "takeItem", item: item });
+          setCurrentDisplay("consequence");
+        }}
         className="item"
         key={item}
         id={item}
@@ -80,28 +91,22 @@ function MapInteractions({
   );
 }
 
-function MapLocation({
-  direction,
-  connections,
-  gameState,
-  itemLocations,
-  handleMovePlayer,
-  playerLocation,
-}) {
+function MapLocation({ direction, connections, gameState, dispatchGameState }) {
   if (!connections[direction]) {
     return <button className="connection" id={direction} disabled></button>;
   }
 
-  const name = locations[connections[direction]].getDisplayName({
-    gameState: gameState,
-    itemLocations: itemLocations,
-    playerLocation: playerLocation,
-  });
+  const name = locations[connections[direction]].getDisplayName(gameState);
 
   return (
     <button
       className="connection"
-      onClick={() => handleMovePlayer(connections[direction])}
+      onClick={() =>
+        dispatchGameState({
+          action: "movePlayer",
+          newLocation: connections[direction],
+        })
+      }
       id={direction}
     >
       <p>{name}</p>
@@ -109,57 +114,44 @@ function MapLocation({
   );
 }
 
-function Map({
-  connections,
-  handleMovePlayer,
-  itemLocations,
-  gameState,
-  itemsAtLocation,
-  handleTake,
-  playerLocation,
-}) {
+function Map({ gameState, dispatchGameState, setCurrentDisplay }) {
+  const connections =
+    locations[gameState.playerLocation].getConnections(gameState);
+
+  const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
   return (
     <div id="map">
       {MapLocation({
         direction: "N",
         connections: connections,
         gameState: gameState,
-        itemLocations: itemLocations,
-        handleMovePlayer: handleMovePlayer,
-        playerLocation: playerLocation,
+        dispatchGameState: dispatchGameState,
       })}
       {MapLocation({
         direction: "W",
         connections: connections,
         gameState: gameState,
-        itemLocations: itemLocations,
-        handleMovePlayer: handleMovePlayer,
-        playerLocation: playerLocation,
+        dispatchGameState: dispatchGameState,
       })}
       <div id="A">
         {MapInteractions({
           connections: connections,
-          handleMovePlayer: handleMovePlayer,
-          itemsAtLocation,
-          handleTake,
-          playerLocation: playerLocation,
+          dispatchGameState: dispatchGameState,
+          itemsAtLocation: itemsAtLocation,
+          setCurrentDisplay: setCurrentDisplay,
         })}
       </div>
       {MapLocation({
         direction: "E",
         connections: connections,
         gameState: gameState,
-        itemLocations: itemLocations,
-        handleMovePlayer: handleMovePlayer,
-        playerLocation: playerLocation,
+        dispatchGameState: dispatchGameState,
       })}
       {MapLocation({
         direction: "S",
         connections: connections,
         gameState: gameState,
-        itemLocations: itemLocations,
-        handleMovePlayer: handleMovePlayer,
-        playerLocation: playerLocation,
+        dispatchGameState: dispatchGameState,
       })}
     </div>
   );
@@ -189,63 +181,35 @@ function handleShare() {
 }
 
 export default function Location({
-  handleTake,
-  items,
-  handleMovePlayer,
-  itemLocations,
   gameState,
-  playerLocation,
+  dispatchGameState,
   setCurrentDisplay,
-  locationConsequenceText,
   showMap,
   setShowMap,
 }) {
-  console.log(`in location ${playerLocation}`);
-
   return (
     <div className="App" id="location-screen">
       <div className="description">
-        {locations[playerLocation].getDescription({
-          playerLocation: playerLocation,
-          gameState: gameState,
-          itemLocations: itemLocations,
-        })}
-        {locationConsequenceText}
+        {locations[gameState.playerLocation].getDescription(gameState)}
+        {gameState.locationConsequenceText}
       </div>
       <div id="non-description">
         {showMap ? (
           <Map
-            connections={locations[playerLocation].getConnections({
-              playerLocation: playerLocation,
-              gameState: gameState,
-              itemLocations: itemLocations,
-            })}
-            handleMovePlayer={handleMovePlayer}
-            itemLocations={itemLocations}
             gameState={gameState}
-            locations={locations}
-            itemsAtLocation={itemLocations[playerLocation]}
-            handleTake={handleTake}
-            playerLocation={playerLocation}
+            dispatchGameState={dispatchGameState}
+            setCurrentDisplay={setCurrentDisplay}
           />
         ) : (
           <>
             <LocationItems
-              itemsAtLocation={itemLocations[playerLocation]}
-              handleTake={handleTake}
-              items={items}
+              gameState={gameState}
+              dispatchGameState={dispatchGameState}
+              setCurrentDisplay={setCurrentDisplay}
             />
             <Connections
-              connections={locations[playerLocation].getConnections({
-                playerLocation: playerLocation,
-                gameState: gameState,
-                itemLocations: itemLocations,
-              })}
-              handleMovePlayer={handleMovePlayer}
-              itemLocations={itemLocations}
+              dispatchGameState={dispatchGameState}
               gameState={gameState}
-              locations={locations}
-              playerLocation={playerLocation}
             />
           </>
         )}
@@ -257,12 +221,7 @@ export default function Location({
             Inventory
           </button>
         </div>
-        <Stats
-          reputation={gameState.reputation}
-          maxReputation={gameState.maxReputation}
-          gold={gameState.gold}
-          maxGold={gameState.maxGold}
-        />
+        <Stats gameState={gameState} />
         <div id="non-game">
           <button
             id="showMap"

@@ -52,14 +52,14 @@ const room = new Location({
     };
   },
   dropPreposition: "in",
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = "You are in a bedroom with a window, wardrobe, and door. ";
 
-    if (props.itemLocations.room.has("lute")) {
+    if (gameState.itemLocations.room.includes("lute")) {
       text += "A lute leans against the bed. ";
     }
 
-    if (props.gameState.manorFire) {
+    if (gameState.manorFire) {
       text += "You smell fire and hear screams in the distance. ";
     }
     return text;
@@ -78,8 +78,8 @@ const window = new Location({
     };
   },
   dropPreposition: "at",
-  getDescription: function (props) {
-    return props.gameState.manorFire
+  getDescription: function (gameState) {
+    return gameState.manorFire
       ? "Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion. "
       : "Through the window, you see the charred remains of a nearby mansion. ";
   },
@@ -97,9 +97,11 @@ const wardrobe = new Location({
     };
   },
   dropPreposition: "in",
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `Inside the wardrobe, there is a mirror${
-      props.itemLocations.wardrobe.has("clothes") ? " and a set of clothes" : ""
+      gameState.itemLocations.wardrobe.includes("clothes")
+        ? " and a set of clothes"
+        : ""
     }. `;
   },
 });
@@ -116,9 +118,9 @@ const mirror = new Location({
     };
   },
   dropPreposition: "at",
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `${
-      props.gameState.naked
+      gameState.naked
         ? "You're naked!"
         : "You are quite good looking, if you say so yourself. "
     }`;
@@ -127,8 +129,8 @@ const mirror = new Location({
 
 const inn = new Location({
   id: "inn",
-  getDisplayName: function (props) {
-    return `${props.playerLocation === "room" ? "Door" : "Inn"}`;
+  getDisplayName: function (gameState) {
+    return `${gameState.playerLocation === "room" ? "Door" : "Inn"}`;
   },
   getConnections: function () {
     return {
@@ -140,20 +142,20 @@ const inn = new Location({
     };
   },
   dropPreposition: "in",
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You enter what appears to be the common room of an inn. ${
-      props.itemLocations.inn.has("apple")
+      gameState.itemLocations.inn.includes("apple")
         ? "A complementary apple rests on the table. "
         : ""
     }${
-      props.gameState.naked
+      gameState.naked
         ? `\n\nThe inn keeper laughs, "Haven't you heard of clothes?!"`
         : ""
     }`;
   },
-  onEnterGameStateEffect: function (props) {
-    if (props.gameState.naked) {
-      return { reputation: props.gameState.reputation - 1 };
+  onEnterGameStateEffect: function (gameState) {
+    if (gameState.naked) {
+      return { reputation: gameState.reputation - 1 };
     }
   },
 });
@@ -170,19 +172,19 @@ const courtyard = new Location({
     };
   },
   dropPreposition: "in",
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. ${
-      props.gameState.manorFire
+      gameState.manorFire
         ? "Beyond the fountain, you see flames and smoke. "
         : ""
     }${
-      props.gameState.firstCourtyardEntry
+      gameState.firstCourtyardEntry
         ? "\n\nA youth runs from the fire, crying as they flee. They drop a handkerchief in their distress. "
         : ""
     }`;
   },
-  onExitGameStateEffect: function (props) {
-    if (props.gameState.firstCourtyardEntry) {
+  onExitGameStateEffect: function (gameState) {
+    if (gameState.firstCourtyardEntry) {
       return { firstCourtyardEntry: false };
     }
   },
@@ -200,38 +202,38 @@ const fountain = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text =
       "You stand at the edge of a fountain. In the center is a statue of a dragon surrounded by cowering people. ";
 
-    if (props.gameState.manorFire) {
+    if (gameState.manorFire) {
       text += "\n\nBeyond the fountain, you see a manor on fire. ";
     } else {
       text +=
         "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
     }
 
-    if (props.itemLocations.nursery.has("baby")) {
+    if (gameState.itemLocations.nursery.includes("baby")) {
       text +=
         'A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped in the nursery. " ';
-      if (props.gameState.naked) {
+      if (gameState.naked) {
         text += `\n\nIn the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances.`;
       }
     }
 
-    if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
-      if (props.gameState.babyCough) {
+    if (gameState.savedBaby && !gameState.receivedBabyReward) {
+      if (gameState.babyCough) {
         text += `\n\nYou hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks.`;
       } else {
         text +=
           '\n\nYou hear a voice: "My baby! You saved my baby! Please take this gold as thanks.';
       }
-      if (props.gameState.naked) {
+      if (gameState.naked) {
         text += ` And perhaps buy yourself some clothes," they say, eyeing your naked body. `;
       } else {
         text += `" `;
       }
-      if (props.gameState.playerCough) {
+      if (gameState.playerCough) {
         text +=
           "\n\nAs you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. ";
       }
@@ -240,31 +242,31 @@ const fountain = new Location({
     }
     return text;
   },
-  onEnterGameStateEffect: function (props) {
-    if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
+  onEnterGameStateEffect: function (gameState) {
+    if (gameState.savedBaby && !gameState.receivedBabyReward) {
       let reputationIncrease = 0;
-      if (!props.gameState.playerCough) {
+      if (!gameState.playerCough) {
         reputationIncrease += 1;
       }
-      if (!props.gameState.babyCough) {
+      if (!gameState.babyCough) {
         reputationIncrease += 1;
       }
-      if (props.gameState.naked) {
+      if (gameState.naked) {
         reputationIncrease -= 1;
       }
       return {
-        gold: props.gameState.gold + 50,
-        reputation: props.gameState.reputation + reputationIncrease,
+        gold: gameState.gold + 50,
+        reputation: gameState.reputation + reputationIncrease,
       };
     }
   },
-  onExitGameStateEffect: function (props) {
-    if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
+  onExitGameStateEffect: function (gameState) {
+    if (gameState.savedBaby && !gameState.receivedBabyReward) {
       return { manorFire: false, receivedBabyReward: true };
     }
   },
-  onEnterItemLocationEffect: function (props) {
-    if (props.gameState.savedBaby && !props.gameState.receivedBabyReward) {
+  onEnterItemLocationEffect: function (gameState) {
+    if (gameState.savedBaby && !gameState.receivedBabyReward) {
       return {
         item: "baby",
         oldLocation: "inventory",
@@ -278,50 +280,50 @@ const fountain = new Location({
 const manor = new Location({
   id: "manor",
   dropPreposition: "in",
-  getConnections: function (props) {
+  getConnections: function (gameState) {
     return {
-      N: props.gameState.manorFire ? "nursery" : "",
+      N: gameState.manorFire ? "nursery" : "",
       S: "fountain",
       E: "",
       W: "",
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = "";
 
-    if (props.gameState.manorFire) {
+    if (gameState.manorFire) {
       text += "You stand in the entrance of the burning manor. ";
     } else {
       text +=
         "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. ";
     }
 
-    if (props.itemLocations.nursery.has("baby")) {
+    if (gameState.itemLocations.nursery.includes("baby")) {
       text += "You hear a baby crying upstairs. ";
     }
 
     if (
-      props.gameState.manorFire &&
-      (!props.gameState.handkerchiefDamp || !props.gameState.playerMasked)
+      gameState.manorFire &&
+      (!gameState.handkerchiefDamp || !gameState.playerMasked)
     ) {
       text +=
         "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the mansion without protection. ";
     }
 
     if (
-      props.gameState.manorFire &&
-      props.gameState.handkerchiefDamp &&
-      props.gameState.playerMasked
+      gameState.manorFire &&
+      gameState.handkerchiefDamp &&
+      gameState.playerMasked
     ) {
       text +=
         "\n\nAlthough the smoke is thick, the damp handkerchief over your mouth helps you breathe. ";
     }
 
     if (
-      props.gameState.manorFire &&
-      !props.gameState.handkerchiefDamp &&
-      props.gameState.playerMasked
+      gameState.manorFire &&
+      !gameState.handkerchiefDamp &&
+      gameState.playerMasked
     ) {
       text +=
         "\n\nOn its own, the handkerchief does little to block the smoke. ";
@@ -329,8 +331,8 @@ const manor = new Location({
 
     return text;
   },
-  onEnterGameStateEffect: function (props) {
-    if (props.itemLocations.inventory.has("baby")) {
+  onEnterGameStateEffect: function (gameState) {
+    if (gameState.itemLocations.inventory.includes("baby")) {
       return { babyCough: true };
     }
   },
@@ -348,9 +350,9 @@ const nursery = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
-    if (props.gameState.manorFire) {
-      if (props.itemLocations.nursery.has("baby")) {
+  getDescription: function (gameState) {
+    if (gameState.manorFire) {
+      if (gameState.itemLocations.nursery.includes("baby")) {
         return "You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. ";
       } else {
         return "You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. ";
@@ -359,8 +361,8 @@ const nursery = new Location({
       return "You stand in the charred remains of a nursery. ";
     }
   },
-  onEnterGameStateEffect: function (props) {
-    if (!props.gameState.handkerchiefDamp || !props.gameState.playerMasked) {
+  onEnterGameStateEffect: function (gameState) {
+    if (!gameState.handkerchiefDamp || !gameState.playerMasked) {
       return { playerCough: true };
     }
   },
@@ -381,8 +383,8 @@ const nurseryWindow = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
-    return props.gameState.manorFire
+  getDescription: function (gameState) {
+    return gameState.manorFire
       ? "Below the window, you see the gathered crowd. "
       : "You see the charred remains of the manor below you. ";
   },
@@ -403,11 +405,11 @@ const smithy = new Location({
       A: ["blacksmith"],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text =
       "You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. ";
 
-    if (props.itemLocations.smithy.has("sword")) {
+    if (gameState.itemLocations.smithy.includes("sword")) {
       text +=
         "In front of the shop, you see a sword gleaming as if someone was recently polishing it. ";
     }
@@ -433,61 +435,64 @@ const blacksmith = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = `The blacksmith looks up as you approach. ${
-      props.gameState.naked
+      gameState.naked
         ? `"No clothes? You best stay away from the furnace lest you burn something important." `
         : ""
     }${
-      props.gameState.playerMasked
+      gameState.playerMasked
         ? "They eye the handkerchief tied over your face warily, but don't comment on it."
         : ""
     }`;
 
-    if (!props.gameState.ownSword && props.itemLocations.smithy.has("sword")) {
-      text += `\n\n"Are you interested in buying that sword?" they ask. "It costs ${props.gameState.swordCost} gold. " `;
+    if (
+      !gameState.ownSword &&
+      gameState.itemLocations.smithy.includes("sword")
+    ) {
+      text += `\n\n"Are you interested in buying that sword?" they ask. "It costs ${gameState.swordCost} gold. " `;
     }
     return text;
   },
-  onEnterGameStateEffect: function (props) {
-    if (props.gameState.naked) {
+  onEnterGameStateEffect: function (gameState) {
+    if (gameState.naked) {
       return {
-        reputation: props.gameState.reputation - 1,
+        reputation: gameState.reputation - 1,
       };
     }
   },
-  getCustomPay: function (props) {
-    function writeDescription(props) {
+  getCustomPay: function (gameState) {
+    function writeDescription(gameState) {
       if (
-        !props.gameState.ownSword &&
-        props.itemLocations.smithy.has("sword")
+        !gameState.ownSword &&
+        gameState.itemLocations.smithy.includes("sword")
       ) {
-        if (props.gameState.gold >= props.gameState.swordCost) {
-          return `You hand the blacksmith ${props.gameState.swordCost} gold in exchange for the sword. `;
+        if (gameState.gold >= gameState.swordCost) {
+          return `You hand the blacksmith ${gameState.swordCost} gold in exchange for the sword. `;
         } else {
           return `"It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." `;
         }
       }
     }
 
-    function getGameEffect(props) {
+    function getGameEffect(gameState) {
       if (
-        !props.gameState.ownSword &&
-        props.itemLocations.smithy.has("sword") &&
-        props.gameState.gold >= props.gameState.swordCost
+        !gameState.ownSword &&
+        gameState.itemLocations.smithy.includes("sword") &&
+        gameState.gold >= gameState.swordCost
       ) {
         return {
           ownSword: true,
-          gold: props.gameState.gold - props.gameState.swordCost,
+          gold: gameState.gold - gameState.swordCost,
         };
       }
     }
 
-    function getItemMovements(props) {
+    function getItemMovements(gameState) {
       if (
-        !props.gameState.ownSword &&
-        props.itemLocations.smithy.has("sword") &&
-        props.gameState.gold >= props.gameState.swordCost
+        !gameState.ownSword &&
+        gameState.itemLocations.smithy.includes("sword") &&
+        gameState.gold >= gameState.swordCost
       ) {
         return [
           {
@@ -500,17 +505,17 @@ const blacksmith = new Location({
     }
 
     return new ItemInteraction({
-      gameEffect: getGameEffect(props),
-      itemMovements: getItemMovements(props),
-      description: writeDescription(props),
+      gameEffect: getGameEffect(gameState),
+      itemMovements: getItemMovements(gameState),
+      description: writeDescription(gameState),
     });
   },
 });
 
 const pasture = new Location({
   id: "pasture",
-  getSentient: function (props) {
-    return props.itemLocations.pasture.has("horse");
+  getSentient: function (gameState) {
+    return gameState.itemLocations.pasture.includes("horse");
   },
   dropPreposition: "at",
   getConnections: function () {
@@ -522,13 +527,13 @@ const pasture = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = "You are standing in a wide field just outside the city gates. ";
 
     if (
-      props.itemLocations.pasture.has("horse") &&
-      !props.gameState.horseDead &&
-      !props.gameState.tethered
+      gameState.itemLocations.pasture.includes("horse") &&
+      !gameState.horseDead &&
+      !gameState.tethered
     ) {
       text += `\n\nA horse is grazing in the field. A sign reads: "Free horse (if you can catch it)." `;
     }
@@ -549,9 +554,9 @@ const gate = new Location({
       A: ["youth"],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You are standing at the city gate. You see a pasture and a road leading up a mountain. \n\nThe youth that you saw earlier stands at the gate${
-      !props.gameState.playedForYouth ? ", crying" : ""
+      !gameState.playedForYouth ? ", crying" : ""
     }. `;
   },
 });
@@ -574,19 +579,19 @@ const youth = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = `The youth stands by the city gates${
-      props.gameState.playedForYouth ? " crying" : ""
+      gameState.playedForYouth ? " crying" : ""
     }. `;
-    if (props.gameState.naked) {
+    if (gameState.naked) {
       text += `"Ack! Where are your clothes?!"`;
     }
     return text;
   },
-  onEnterGameStateEffect: function (props) {
-    if (props.gameState.naked) {
+  onEnterGameStateEffect: function (gameState) {
+    if (gameState.naked) {
       return {
-        reputation: props.gameState.reputation - 1,
+        reputation: gameState.reputation - 1,
       };
     }
   },
@@ -598,19 +603,19 @@ const road1 = new Location({
   getDisplayName: function () {
     return "Long road (South end)";
   },
-  getConnections: function (props) {
+  getConnections: function (gameState) {
     return {
-      N: props.gameState.horseMounted ? "stream" : "road2",
+      N: gameState.horseMounted ? "stream" : "road2",
       S: "gate",
       E: "",
       W: "",
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You stand at the end of a long road that stretches from the city gate to mountains. 
     ${
-      props.gameState.horseMounted
+      gameState.horseMounted
         ? "\n\nThankfully, the horse lets you travel quickly. "
         : ""
     }`;
@@ -623,19 +628,19 @@ const road2 = new Location({
   getDisplayName: function () {
     return "Long road (middle)";
   },
-  getConnections: function (props) {
+  getConnections: function (gameState) {
     return {
-      N: props.gameState.horseMounted ? "stream" : "road3",
-      S: props.gameState.horseMounted ? "gate" : "road1",
+      N: gameState.horseMounted ? "stream" : "road3",
+      S: gameState.horseMounted ? "gate" : "road1",
       E: "",
       W: "",
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You are halfway along a long road that stretches from the city gate to mountains. 
     ${
-      props.gameState.horseMounted
+      gameState.horseMounted
         ? "\n\nThankfully, the horse lets you travel faster. "
         : "\n\nThis would be much easier if you were riding a horse. "
     }`;
@@ -648,52 +653,52 @@ const road3 = new Location({
   getDisplayName: function () {
     return "Long road (North end)";
   },
-  getConnections: function (props) {
+  getConnections: function (gameState) {
     return {
       N: "stream",
-      S: props.gameState.horseMounted ? "gate" : "road2",
+      S: gameState.horseMounted ? "gate" : "road2",
       E: "",
       W: "",
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     if (
-      props.gameState.promisedTreasure &&
-      props.gameState.treasureLevel &&
-      !props.gameState.cursed
+      gameState.promisedTreasure &&
+      gameState.treasureLevel &&
+      !gameState.cursed
     ) {
       return 'As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke.';
     } else {
       let text = `You stand at the end of a long road that stretches from the city gate to mountains. `;
 
-      if (props.gameState.horseMounted) {
+      if (gameState.horseMounted) {
         text += "\n\nThankfully, the horse lets you travel quickly. ";
       }
       return text;
     }
   },
 
-  onEnterGameStateEffect: function (props) {
+  onEnterGameStateEffect: function (gameState) {
     if (
-      props.gameState.promisedTreasure &&
-      props.gameState.treasureLevel &&
-      !props.gameState.cursed
+      gameState.promisedTreasure &&
+      gameState.treasureLevel &&
+      !gameState.cursed
     ) {
       const treasureTaken =
-        props.gameState.treasureAmount * (props.gameState.treasureLevel / 3);
+        gameState.treasureAmount * (gameState.treasureLevel / 3);
 
       return {
-        gold: props.gameState.gold - treasureTaken,
+        gold: gameState.gold - treasureTaken,
       };
     }
   },
 
-  onExitGameStateEffect: function (props) {
+  onExitGameStateEffect: function (gameState) {
     if (
-      props.gameState.promisedTreasure &&
-      props.gameState.treasureLevel &&
-      !props.gameState.cursed
+      gameState.promisedTreasure &&
+      gameState.treasureLevel &&
+      !gameState.cursed
     ) {
       return {
         cursed: true,
@@ -722,29 +727,29 @@ const stream = new Location({
 const clearing = new Location({
   id: "clearing",
   dropPreposition: "in",
-  getConnections: function (props) {
+  getConnections: function (gameState) {
     return {
       N: "cliff",
       S: "stream",
       E: "",
       W: "",
-      A: props.gameState.cursed ? ["squirrel"] : ["wizard", "squirrel"],
+      A: gameState.cursed ? ["squirrel"] : ["wizard", "squirrel"],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = `You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. ${
-      props.gameState.cursed
+      gameState.cursed
         ? "\n\nA black patch marks where the wizard vanished. "
         : "\n\nA man stands in the middle of the clearing. His long white beard, pointed hat, and staff mark him as a wizard. "
     } ${
-      props.gameState.squirrelDead
+      gameState.squirrelDead
         ? "\n\nA dead squirrel lies at the base of a tree. "
         : "\n\nA squirrel scampers around a tree. "
     }`;
 
     if (
-      props.gameState.horseDead &&
-      props.itemLocations.clearing.has("horse")
+      gameState.horseDead &&
+      gameState.itemLocations.clearing.includes("horse")
     ) {
       text +=
         "\n\nA dead horse lies on the ground, foam and partially chewed berries coming from its mouth. ";
@@ -755,8 +760,8 @@ const clearing = new Location({
 
 const squirrel = new Location({
   id: "squirrel",
-  getDisplayName: function (props) {
-    return props.gameState.squirrelDead ? "dead squirrel" : "squirrel";
+  getDisplayName: function (gameState) {
+    return gameState.squirrelDead ? "dead squirrel" : "squirrel";
   },
   getSentient: function () {
     return true;
@@ -771,8 +776,8 @@ const squirrel = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
-    return props.gameState.squirrelDead
+  getDescription: function (gameState) {
+    return gameState.squirrelDead
       ? "The squirrel lies dead on the ground. "
       : "You approach the squirrel. It pauses, perhaps curious if you will feed it, before scampering up the tree. ";
   },
@@ -796,40 +801,45 @@ const wizard = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = "The wizard looks at you though bushy eyebrows. ";
 
-    if (props.gameState.naked) {
+    if (gameState.naked) {
       text += `"Ah, a naturalist," he comments, eyeing your lack of clothes.`;
     }
 
-    if (props.itemLocations.wizard.has("score") && !props.gameState.ownScore) {
+    if (
+      gameState.itemLocations.wizard.includes("score") &&
+      !gameState.ownScore
+    ) {
       text += `\n\n"I have a musical score that will be useful. I would trade it for ${
-        props.itemLocations.inventory.has("sword") ? "your fine sword or " : ""
+        gameState.itemLocations.inventory.includes("sword")
+          ? "your fine sword or "
+          : ""
       }gold," the wizard says. \n\n"Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" \n\n"However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." \n\n"All promised payments are final. All payments completed at time of purchase are refundable." `;
     }
 
-    if (props.gameState.promisedTreasure && props.gameState.treasureLevel) {
+    if (gameState.promisedTreasure && gameState.treasureLevel) {
       text += `"Are you here to give me my share of the treasure? "`;
     }
 
     return text;
   },
-  getCustomPay: function (props) {
-    function writeDescription(props) {
+  getCustomPay: function (gameState) {
+    function writeDescription(gameState) {
       if (
-        props.itemLocations.wizard.has("score") &&
-        !props.gameState.ownScore
+        gameState.itemLocations.wizard.includes("score") &&
+        !gameState.ownScore
       ) {
         return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then vanishes. `;
       }
 
-      if (props.gameState.promisedTreasure && props.gameState.treasureLevel) {
+      if (gameState.promisedTreasure && gameState.treasureLevel) {
         let text = "";
-        if (props.gameState.treasureLevel === 3) {
+        if (gameState.treasureLevel === 3) {
           text += `"It looks like you succeeded nicely." `;
         }
-        if (props.gameState.treasureLevel < 3) {
+        if (gameState.treasureLevel < 3) {
           text += `"It looks like you succeeded, though not as well as I hoped." `;
         }
         text += "The wizard takes a share of your treasure. ";
@@ -837,17 +847,17 @@ const wizard = new Location({
         return text;
       }
 
-      if (props.gameState.promisedTreasure && !props.gameState.treasureLevel) {
+      if (gameState.promisedTreasure && !gameState.treasureLevel) {
         return `"Hmm...You have not earned any treasure. Use your wits!"`;
       }
 
       return `"Although I would like your gold, you have no debts to me."`;
     }
 
-    function getGameEffect(props) {
+    function getGameEffect(gameState) {
       if (
-        props.itemLocations.wizard.has("score") &&
-        !props.gameState.ownScore
+        gameState.itemLocations.wizard.includes("score") &&
+        !gameState.ownScore
       ) {
         return {
           ownScore: true,
@@ -855,21 +865,21 @@ const wizard = new Location({
         };
       }
 
-      if (props.gameState.promisedTreasure && props.gameState.treasureLevel) {
+      if (gameState.promisedTreasure && gameState.treasureLevel) {
         const treasureTaken =
-          props.gameState.treasureAmount * (props.gameState.treasureLevel / 3);
+          gameState.treasureAmount * (gameState.treasureLevel / 3);
 
         return {
           promisedTreasure: false,
-          gold: props.gameState.gold - treasureTaken / 2,
+          gold: gameState.gold - treasureTaken / 2,
         };
       }
     }
 
-    function getItemMovements(props) {
+    function getItemMovements(gameState) {
       if (
-        props.itemLocations.wizard.has("score") &&
-        !props.gameState.ownScore
+        gameState.itemLocations.wizard.includes("score") &&
+        !gameState.ownScore
       ) {
         return [
           {
@@ -882,9 +892,9 @@ const wizard = new Location({
     }
 
     return new ItemInteraction({
-      gameEffect: getGameEffect(props),
-      itemMovements: getItemMovements(props),
-      description: writeDescription(props),
+      gameEffect: getGameEffect(gameState),
+      itemMovements: getItemMovements(gameState),
+      description: writeDescription(gameState),
     });
   },
 });
@@ -892,9 +902,11 @@ const wizard = new Location({
 const cliff = new Location({
   id: "cliff",
   dropPreposition: "on",
-  getConnections: function (props) {
+  getConnections: function (gameState) {
     return {
-      N: props.itemLocations.inventory.has("horse") ? "" : "caveEntrance",
+      N: gameState.itemLocations.inventory.includes("horse")
+        ? ""
+        : "caveEntrance",
       S: "clearing",
       E: "",
       W: "",
@@ -902,9 +914,9 @@ const cliff = new Location({
     };
   },
 
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = "";
-    if (props.itemLocations.inventory.has("horse")) {
+    if (gameState.itemLocations.inventory.includes("horse")) {
       text += `The horse cannot make it up the rocky cliff. You must return to the clearing. `;
     } else {
       text += `You scramble on the rocky cliff. Above you is the entrance to a cave. Below you is a clearing next to a stream. `;
@@ -928,15 +940,15 @@ const caveEntrance = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text =
       "You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. ";
 
-    if (!props.gameState.dragonAsleep) {
+    if (!gameState.dragonAsleep) {
       text +=
         "\n\nYou hear coins clanking from the glittering room, as if a large beast is rolling in piles of gold. ";
 
-      if (!props.gameState.clothesPoopy || props.gameState.naked) {
+      if (!gameState.clothesPoopy || gameState.naked) {
         text += 'From that room, voice booms "WHO DO I SMELL?"';
       }
     }
@@ -974,20 +986,20 @@ const puddle = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You stand at a puddle of clear water. \n\n${dragonDescription(
-      props
+      gameState
     )}`;
   },
-  onEnterGameStateEffect: function (props) {
+  onEnterGameStateEffect: function (gameState) {
     return {
       // always increase the time
-      timeInCave: props.gameState.timeInCave + 1,
+      timeInCave: gameState.timeInCave + 1,
       // if dragon is not poisoned and time is enough to trigger dragon entry, you get singed
-      ...(!props.gameState.dragonPoisoned &&
-        (props.gameState.timeInCave + 1) % 4 === 3 && {
-          singeCount: props.gameState.singeCount + 1,
-          reputation: props.gameState.reputation - 1,
+      ...(!gameState.dragonPoisoned &&
+        (gameState.timeInCave + 1) % 4 === 3 && {
+          singeCount: gameState.singeCount + 1,
+          reputation: gameState.reputation - 1,
         }),
     };
   },
@@ -1005,34 +1017,34 @@ const crevice = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You squeeze into the crevice. It isn't big, but it seems deep enough to hide your from sight. \n\n${dragonDescription(
-      props
+      gameState
     )}`;
   },
-  onEnterGameStateEffect: function (props) {
+  onEnterGameStateEffect: function (gameState) {
     return {
       // always increase the time
-      timeInCave: props.gameState.timeInCave + 1,
+      timeInCave: gameState.timeInCave + 1,
       // if dragon is not poisoned and time is enough to trigger dragon entry and you are not wearing poopy clothes, you get singed
-      ...(!props.gameState.dragonPoisoned &&
-        (props.gameState.timeInCave + 1) % 4 === 3 &&
-        (!props.gameState.clothesPoopy || props.gameState.naked) && {
-          singeCount: props.gameState.singeCount + 1,
-          reputation: props.gameState.reputation - 1,
+      ...(!gameState.dragonPoisoned &&
+        (gameState.timeInCave + 1) % 4 === 3 &&
+        (!gameState.clothesPoopy || gameState.naked) && {
+          singeCount: gameState.singeCount + 1,
+          reputation: gameState.reputation - 1,
         }),
-      // ...(props.itemLocations.puddle.has("berries") &&todo
-      //   props.gameState.clothesPoopy &&
-      //   !props.gameState.naked && { dragonPoisoned: true }),
+      // ...(gameState.itemLocations.puddle.includes("berries") &&todo
+      //   gameState.clothesPoopy &&
+      //   !gameState.naked && { dragonPoisoned: true }),
     };
   },
-  onExitGameStateEffect: function (props) {
+  onExitGameStateEffect: function (gameState) {
     // if the berries are in the puddle and you are poopy_hidden, the dragon is poisoned
 
     if (
-      props.itemLocations.puddle.has("berries") &&
-      props.gameState.clothesPoopy &&
-      !props.gameState.naked
+      gameState.itemLocations.puddle.includes("berries") &&
+      gameState.clothesPoopy &&
+      !gameState.naked
     ) {
       return { dragonPoisoned: true };
     }
@@ -1054,20 +1066,20 @@ const dung = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     return `You stand in front of a large pile of dragon dung. The stench makes your eyes water. \n\n${dragonDescription(
-      props
+      gameState
     )}`;
   },
-  onEnterGameStateEffect: function (props) {
+  onEnterGameStateEffect: function (gameState) {
     return {
       // always increase the time
-      timeInCave: props.gameState.timeInCave + 1,
+      timeInCave: gameState.timeInCave + 1,
       // if dragon is not poisoned and time is enough to trigger dragon entry, you get singed
-      ...(!props.gameState.dragonPoisoned &&
-        (props.gameState.timeInCave + 1) % 4 === 3 && {
-          singeCount: props.gameState.singeCount + 1,
-          reputation: props.gameState.reputation - 1,
+      ...(!gameState.dragonPoisoned &&
+        (gameState.timeInCave + 1) % 4 === 3 && {
+          singeCount: gameState.singeCount + 1,
+          reputation: gameState.reputation - 1,
         }),
     };
   },
@@ -1085,32 +1097,32 @@ const lair = new Location({
       A: [],
     };
   },
-  getDescription: function (props) {
+  getDescription: function (gameState) {
     let text = "You stand in a room full of gold and gems. ";
 
     if (
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      !props.gameState.dragonPoisoned
+      !gameState.dragonAsleep &&
+      !gameState.dragonDead &&
+      !gameState.dragonPoisoned
     ) {
       text +=
         "\n\nA dragon sits atop the pile of treasure. It shoots fire as you approach, singing you. You cannot go closer without getting badly burnt. ";
     }
 
-    if (props.gameState.dragonAsleep && !props.gameState.dragonDead) {
+    if (gameState.dragonAsleep && !gameState.dragonDead) {
       text +=
         "\n\nThe dragon lies in a deep slumber atop the pile of treasure, periodically snoring flames of fire. ";
     }
 
-    if (props.gameState.dragonDead) {
+    if (gameState.dragonDead) {
       text +=
         "\n\nThe dragon's body lies severed from its head. The treasure it was guarding is now accessible. ";
     }
 
     if (
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      props.gameState.dragonPoisoned
+      !gameState.dragonAsleep &&
+      !gameState.dragonDead &&
+      gameState.dragonPoisoned
     ) {
       text +=
         "\n\nThe dragon looks half dead from the poison but still shoots flame as you approach it and its pile of treasure. \n\nThe flame is no longer strong enough to harm you from the entrance to the lair, but it will surely singe you if you get closer. ";
@@ -1118,34 +1130,34 @@ const lair = new Location({
 
     return text;
   },
-  onEnterGameStateEffect: function (props) {
+  onEnterGameStateEffect: function (gameState) {
     // todo maybe shouldn't get singed when enter...but then would need to get singed any time you try to do something at this location
     if (
-      !props.gameState.dragonAsleep &&
-      !props.gameState.dragonDead &&
-      !props.gameState.dragonPoisoned
+      !gameState.dragonAsleep &&
+      !gameState.dragonDead &&
+      !gameState.dragonPoisoned
     ) {
       return {
-        singeCount: props.gameState.singeCount + 1,
-        reputation: props.gameState.reputation - 1,
+        singeCount: gameState.singeCount + 1,
+        reputation: gameState.reputation - 1,
       };
     }
   },
 });
 
-function dragonDescription(props) {
-  const timeInterval = props.gameState.timeInCave % 4;
+function dragonDescription(gameState) {
+  const timeInterval = gameState.timeInCave % 4;
 
   let text = "";
 
-  if (!props.gameState.dragonPoisoned) {
+  if (!gameState.dragonPoisoned) {
     // If the dragon is not due to return yet but the poison conditions are met
     if (
       timeInterval < 3 &&
-      props.gameState.clothesPoopy &&
-      !props.gameState.naked &&
-      props.playerLocation === "crevice" &&
-      props.itemLocations.puddle.has("berries")
+      gameState.clothesPoopy &&
+      !gameState.naked &&
+      gameState.playerLocation === "crevice" &&
+      gameState.itemLocations.puddle.includes("berries")
     ) {
       text +=
         "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? \n\n";
@@ -1153,40 +1165,40 @@ function dragonDescription(props) {
 
     if (
       timeInterval === 3 ||
-      (props.gameState.clothesPoopy &&
-        !props.gameState.naked &&
-        props.playerLocation === "crevice" &&
-        props.itemLocations.puddle.has("berries"))
+      (gameState.clothesPoopy &&
+        !gameState.naked &&
+        gameState.playerLocation === "crevice" &&
+        gameState.itemLocations.puddle.includes("berries"))
     ) {
       text += "The dragon prowls into the cavern. ";
       // not poop and not hidden
       if (
-        (!props.gameState.clothesPoopy || props.gameState.naked) &&
-        props.playerLocation !== "crevice"
+        (!gameState.clothesPoopy || gameState.naked) &&
+        gameState.playerLocation !== "crevice"
       ) {
         text += `"I KNEW I SMELT A HUMAN." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. \n\nAs you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure.`;
       } // poop and not hidden
       else if (
-        props.gameState.clothesPoopy &&
-        !props.gameState.naked &&
-        props.playerLocation !== "crevice"
+        gameState.clothesPoopy &&
+        !gameState.naked &&
+        gameState.playerLocation !== "crevice"
       ) {
         text += `"YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. \n\nAs you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure. `;
       } // not poop and hidden
       else if (
-        (!props.gameState.clothesPoopy || props.gameState.naked) &&
-        props.playerLocation === "crevice"
+        (!gameState.clothesPoopy || gameState.naked) &&
+        gameState.playerLocation === "crevice"
       ) {
         text += `"I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peers into the crevice and spots you. The dragon singes you before you can fight or run. \n\nAs you smother the flames, you hear the dragon return to its lair to guard its treasure.`;
       } // poop and hidden
       else if (
-        props.gameState.clothesPoopy &&
-        !props.gameState.naked &&
-        props.playerLocation === "crevice"
+        gameState.clothesPoopy &&
+        !gameState.naked &&
+        gameState.playerLocation === "crevice"
       ) {
         text += "It seems unaware of your location. ";
         // dragon drinks
-        if (props.itemLocations.puddle.has("berries")) {
+        if (gameState.itemLocations.puddle.includes("berries")) {
           text +=
             "\n\nThe dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. ";
         } else {
