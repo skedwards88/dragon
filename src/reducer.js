@@ -66,7 +66,7 @@ export function reducer(currentGameState, payload) {
       ...gameEffect,
       itemLocations: itemLocations,
       consequenceText: description,
-      locationConsequenceText: "", // todo this is hacky. want to clear location consequence so don't show lost reputation even if have remediated. maybe a state effect would be better.
+      locationConsequenceText: "",
     };
   } else if (payload.action === "useItem") {
     const item = payload.item;
@@ -119,7 +119,7 @@ export function reducer(currentGameState, payload) {
       ...gameEffect,
       itemLocations: itemLocations,
       consequenceText: description,
-      locationConsequenceText: "", // todo this is hacky. want to clear location consequence so don't show lost reputation even if have remediated. maybe a state effect would be better.
+      locationConsequenceText: "",
     };
   } else if (payload.action === "dropItem") {
     const item = payload.item;
@@ -175,7 +175,7 @@ export function reducer(currentGameState, payload) {
       ...gameEffect,
       itemLocations: itemLocations,
       consequenceText: description,
-      locationConsequenceText: "", // todo this is hacky. want to clear location consequence so don't show lost reputation even if have remediated. maybe a state effect would be better.
+      locationConsequenceText: "",
     };
   } else if (payload.action === "pay") {
     const playerLocation = currentGameState.playerLocation;
@@ -229,7 +229,7 @@ export function reducer(currentGameState, payload) {
       ...gameEffect,
       itemLocations: itemLocations,
       consequenceText: description,
-      locationConsequenceText: "", // todo this is hacky. want to clear location consequence so don't show lost reputation even if have remediated. maybe a state effect would be better.
+      locationConsequenceText: "",
     };
   } else if (payload.action === "giveItem") {
     const item = payload.item;
@@ -301,7 +301,7 @@ export function reducer(currentGameState, payload) {
       ...gameEffect,
       itemLocations: itemLocations,
       consequenceText: description,
-      locationConsequenceText: "", // todo this is hacky. want to clear location consequence so don't show lost reputation even if have remediated. maybe a state effect would be better.
+      locationConsequenceText: "",
     };
   } else if (payload.action === "movePlayer") {
     const newLocation = payload.newLocation;
@@ -314,10 +314,7 @@ export function reducer(currentGameState, payload) {
 
     const customExitStateEffect =
       locations[oldLocation].onExitGameStateEffect &&
-      locations[oldLocation].onExitGameStateEffect({
-        gameState: newGameState, // todo gameState now includes itemLocations, so need to update funct to pull that out
-        playerLocation: oldLocation,
-      });
+      locations[oldLocation].onExitGameStateEffect(newGameState);
     gameStateChanges = { ...gameStateChanges, ...customExitStateEffect };
 
     const customEnterStateEffect =
