@@ -44,7 +44,7 @@ function updateLocations({ itemMovements, newGameState }) {
     };
   }
 
-  return itemLocations
+  return itemLocations;
 }
 
 export function reducer(currentGameState, payload) {
