@@ -664,7 +664,8 @@ const road3 = new Location({
   },
   getDescription: function (gameState) {
     if (
-      gameState.promisedTreasure &&
+      gameState.gotScoreByCredit &&
+      !gameState.paidDebt &&
       gameState.treasureLevel &&
       !gameState.cursed
     ) {
@@ -681,7 +682,8 @@ const road3 = new Location({
 
   onEnterGameStateEffect: function (gameState) {
     if (
-      gameState.promisedTreasure &&
+      gameState.gotScoreByCredit &&
+      !gameState.paidDebt &&
       gameState.treasureLevel &&
       !gameState.cursed
     ) {
@@ -696,7 +698,8 @@ const road3 = new Location({
 
   onExitGameStateEffect: function (gameState) {
     if (
-      gameState.promisedTreasure &&
+      gameState.gotScoreByCredit &&
+      !gameState.paidDebt &&
       gameState.treasureLevel &&
       !gameState.cursed
     ) {
@@ -810,7 +813,7 @@ const wizard = new Location({
 
     if (
       gameState.itemLocations.wizard.includes("score") &&
-      !gameState.ownScore
+      !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
     ) {
       text += `\n\n"I have a musical score that will be useful. I would trade it for ${
         gameState.itemLocations.inventory.includes("sword")
@@ -819,7 +822,11 @@ const wizard = new Location({
       }gold," the wizard says. \n\n"Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" \n\n"However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." \n\n"All promised payments are final. All payments completed at time of purchase are refundable." `;
     }
 
-    if (gameState.promisedTreasure && gameState.treasureLevel) {
+    if (
+      gameState.gotScoreByCredit &&
+      !gameState.paidDebt &&
+      gameState.treasureLevel
+    ) {
       text += `"Are you here to give me my share of the treasure? "`;
     }
 
@@ -829,12 +836,16 @@ const wizard = new Location({
     function writeDescription(gameState) {
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
         return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then vanishes. `;
       }
 
-      if (gameState.promisedTreasure && gameState.treasureLevel) {
+      if (
+        gameState.gotScoreByCredit &&
+        !gameState.paidDebt &&
+        gameState.treasureLevel
+      ) {
         let text = "";
         if (gameState.treasureLevel === 3) {
           text += `"It looks like you succeeded nicely." `;
@@ -847,7 +858,11 @@ const wizard = new Location({
         return text;
       }
 
-      if (gameState.promisedTreasure && !gameState.treasureLevel) {
+      if (
+        gameState.gotScoreByCredit &&
+        !gameState.paidDebt &&
+        !gameState.treasureLevel
+      ) {
         return `"Hmm...You have not earned any treasure. Use your wits!"`;
       }
 
@@ -857,20 +872,24 @@ const wizard = new Location({
     function getGameEffect(gameState) {
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
         return {
-          ownScore: true,
-          promisedTreasure: true,
+          gotScoreByCredit: true,
+          paidDebt: false,
         };
       }
 
-      if (gameState.promisedTreasure && gameState.treasureLevel) {
+      if (
+        gameState.gotScoreByCredit &&
+        !gameState.paidDebt &&
+        gameState.treasureLevel
+      ) {
         const treasureTaken =
           gameState.treasureAmount * (gameState.treasureLevel / 3);
 
         return {
-          promisedTreasure: false,
+          paidDebt: true,
           gold: gameState.gold - treasureTaken / 2,
         };
       }
@@ -879,7 +898,7 @@ const wizard = new Location({
     function getItemMovements(gameState) {
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
         return [
           {

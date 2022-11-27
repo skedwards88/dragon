@@ -584,13 +584,10 @@ const sword = new Item({
   getCustomTake: function (gameState) {
     function writeDescription(gameState) {
       if (gameState.playerLocation === "smithy" && !gameState.ownSword) {
-        return 'You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith shop grabs the sword from you and returns it to the table. ';
+        return 'You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. ';
       }
 
-      if (
-        gameState.playerLocation === "wizard" &&
-        gameState.itemLocations.inventory.includes("score")
-      ) {
+      if (gameState.playerLocation === "wizard" && gameState.gotScoreByTrade) {
         return "Ah you would like to exchange? You must first give me the score.";
       }
     }
@@ -608,10 +605,7 @@ const sword = new Item({
         return "smithy";
       }
 
-      if (
-        gameState.playerLocation === "wizard" &&
-        gameState.itemLocations.inventory.includes("score")
-      ) {
+      if (gameState.playerLocation === "wizard" && gameState.gotScoreByTrade) {
         return "wizard";
       }
     }
@@ -627,7 +621,7 @@ const sword = new Item({
     function writeDescription(gameState) {
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore &&
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
         gameState.playerLocation === "wizard"
       ) {
         return "You give your sword to the wizard. In exchange, they give you the musical score. ";
@@ -639,10 +633,10 @@ const sword = new Item({
 
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore &&
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
         gameState.playerLocation === "wizard"
       ) {
-        gameEffect = { ...gameEffect, ownScore: true };
+        gameEffect = { ...gameEffect, gotScoreByTrade: true };
       }
 
       if (Object.keys(gameEffect).length) return gameEffect;
@@ -651,7 +645,7 @@ const sword = new Item({
     function getTargetItemDestination(gameState) {
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore &&
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
         gameState.playerLocation === "wizard"
       ) {
         return "wizard";
@@ -661,7 +655,7 @@ const sword = new Item({
     function getItemMovements(gameState) {
       if (
         gameState.itemLocations.wizard.includes("score") &&
-        !gameState.ownScore &&
+        !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
         gameState.playerLocation === "wizard"
       ) {
         return [
@@ -1103,7 +1097,7 @@ const score = new Item({
 
   getCustomTake: function (gameState) {
     function writeDescription(gameState) {
-      if (!gameState.ownScore) {
+      if (!(gameState.gotScoreByCredit || gameState.gotScoreByTrade)) {
         return `"Ah ah!" The wizard shakes a finger at you. "Not for free. I would trade it for ${
           gameState.itemLocations.inventory.includes("sword")
             ? "your fine sword or "
@@ -1113,7 +1107,7 @@ const score = new Item({
     }
 
     function getTargetItemDestination(gameState) {
-      if (!gameState.ownScore) {
+      if (!(gameState.gotScoreByCredit || gameState.gotScoreByTrade)) {
         return "wizard";
       }
     }
@@ -1128,6 +1122,7 @@ const score = new Item({
     function writeDescription(gameState) {
       if (
         gameState.playerLocation === "wizard" &&
+        gameState.gotScoreByTrade &&
         gameState.itemLocations.inventory.includes("score") &&
         gameState.itemLocations.wizard.includes("sword")
       ) {
@@ -1137,9 +1132,9 @@ const score = new Item({
       if (
         gameState.playerLocation === "wizard" &&
         gameState.itemLocations.inventory.includes("score") &&
-        gameState.promisedTreasure
+        gameState.gotScoreByCredit
       ) {
-        return "Ah ah. All sales on credit are final. The score is yours to keep, and half your resulting treasure is mine.";
+        return '"Ah ah." The wizard waggles his finger. "All sales on credit are final. The score is yours to keep, and half your resulting treasure is mine."';
       }
     }
 
@@ -1149,7 +1144,7 @@ const score = new Item({
         gameState.itemLocations.inventory.includes("score") &&
         gameState.itemLocations.wizard.includes("sword")
       ) {
-        return { ownScore: false };
+        return { gotScoreByTrade: false };
       }
     }
 
@@ -1168,7 +1163,7 @@ const score = new Item({
       if (
         gameState.playerLocation === "wizard" &&
         gameState.itemLocations.inventory.includes("score") &&
-        gameState.promisedTreasure
+        gameState.gotScoreByCredit
       ) {
         return "inventory";
       }

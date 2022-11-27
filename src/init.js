@@ -43,7 +43,6 @@ export function init() {
     savedBaby: false,
     receivedBabyReward: false,
     playedForYouth: false,
-    promisedTreasure: false,
     cursed: false,
     firstCourtyardEntry: true,
     dragonPoisoned: false,
@@ -52,7 +51,9 @@ export function init() {
     treasureAmount: 300,
     treasureLevel: 0,
     singeCount: 0,
-    ownScore: false,
+    gotScoreByCredit: false,
+    paidDebt: false,
+    gotScoreByTrade: false,
     maxReputation: 17,
     maxGold: 310,
 
