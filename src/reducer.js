@@ -2,6 +2,51 @@ import { init } from "./init.js";
 import { items } from "./items.js";
 import { locations } from "./locations.js";
 
+function appendConsequenceToDescription({
+  gameEffect,
+  description,
+  newGameState,
+}) {
+  if (gameEffect && gameEffect.reputation) {
+    const reputationDiff = gameEffect.reputation - newGameState.reputation;
+    description += `\n\nReputation ${
+      reputationDiff > 0 ? "+" : ""
+    }${reputationDiff}`;
+  }
+
+  if (gameEffect && gameEffect.gold) {
+    const goldDiff = gameEffect.gold - newGameState.gold;
+    description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
+  }
+
+  return description;
+}
+
+function updateLocations({ itemMovements, newGameState }) {
+  let itemLocations = newGameState.itemLocations;
+
+  for (let index = 0; index < itemMovements.length; index++) {
+    const { item, oldLocation, newLocation } = itemMovements[index];
+    if (oldLocation === newLocation) continue;
+
+    let updatedItemsAtOld = new Set(itemLocations[oldLocation]);
+    updatedItemsAtOld.delete(item);
+    updatedItemsAtOld = Array.from(updatedItemsAtOld);
+
+    let updatedItemsAtNew = new Set(itemLocations[newLocation]);
+    updatedItemsAtNew.add(item);
+    updatedItemsAtNew = Array.from(updatedItemsAtNew);
+
+    itemLocations = {
+      ...itemLocations,
+      [oldLocation]: updatedItemsAtOld,
+      [newLocation]: updatedItemsAtNew,
+    };
+  }
+
+  return itemLocations
+}
+
 export function reducer(currentGameState, payload) {
   if (payload.action === "newGame") {
     return init();
@@ -34,33 +79,17 @@ export function reducer(currentGameState, payload) {
       } ${items[item].getDescription(newGameState)}.`;
     }
     ////
-    if (gameEffect && gameEffect.reputation) {
-      const reputationDiff = gameEffect.reputation - newGameState.reputation;
-      description += `\n\nReputation ${
-        reputationDiff > 0 ? "+" : ""
-      }${reputationDiff}`;
-    }
+    description = appendConsequenceToDescription({
+      gameEffect: gameEffect,
+      description: description,
+      newGameState: newGameState,
+    });
 
-    if (gameEffect && gameEffect.gold) {
-      const goldDiff = gameEffect.gold - newGameState.gold;
-      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
-    }
+    let itemLocations = updateLocations({
+      itemMovements: itemMovements,
+      newGameState: newGameState,
+    });
 
-    let itemLocations = newGameState.itemLocations;
-    for (let index = 0; index < itemMovements.length; index++) {
-      const { item, oldLocation, newLocation } = itemMovements[index];
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
-    }
     return {
       ...currentGameState,
       ...gameEffect,
@@ -86,33 +115,16 @@ export function reducer(currentGameState, payload) {
     }
 
     /////
-    if (gameEffect && gameEffect.reputation) {
-      const reputationDiff = gameEffect.reputation - newGameState.reputation;
-      description += `\n\nReputation ${
-        reputationDiff > 0 ? "+" : ""
-      }${reputationDiff}`;
-    }
+    description = appendConsequenceToDescription({
+      gameEffect: gameEffect,
+      description: description,
+      newGameState: newGameState,
+    });
 
-    if (gameEffect && gameEffect.gold) {
-      const goldDiff = gameEffect.gold - newGameState.gold;
-      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
-    }
-
-    let itemLocations = newGameState.itemLocations;
-    for (let index = 0; index < itemMovements.length; index++) {
-      const { item, oldLocation, newLocation } = itemMovements[index];
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
-    }
+    let itemLocations = updateLocations({
+      itemMovements: itemMovements,
+      newGameState: newGameState,
+    });
 
     return {
       ...currentGameState,
@@ -143,33 +155,16 @@ export function reducer(currentGameState, payload) {
     }
 
     ////
-    if (gameEffect && gameEffect.reputation) {
-      const reputationDiff = gameEffect.reputation - newGameState.reputation;
-      description += `\n\nReputation ${
-        reputationDiff > 0 ? "+" : ""
-      }${reputationDiff}`;
-    }
+    description = appendConsequenceToDescription({
+      gameEffect: gameEffect,
+      description: description,
+      newGameState: newGameState,
+    });
 
-    if (gameEffect && gameEffect.gold) {
-      const goldDiff = gameEffect.gold - newGameState.gold;
-      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
-    }
-
-    let itemLocations = newGameState.itemLocations;
-    for (let index = 0; index < itemMovements.length; index++) {
-      const { item, oldLocation, newLocation } = itemMovements[index];
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
-    }
+    let itemLocations = updateLocations({
+      itemMovements: itemMovements,
+      newGameState: newGameState,
+    });
     return {
       ...currentGameState,
       ...gameEffect,
@@ -197,33 +192,17 @@ export function reducer(currentGameState, payload) {
     }
 
     ////
-    if (gameEffect && gameEffect.reputation) {
-      const reputationDiff = gameEffect.reputation - newGameState.reputation;
-      description += `\n\nReputation ${
-        reputationDiff > 0 ? "+" : ""
-      }${reputationDiff}`;
-    }
+    description = appendConsequenceToDescription({
+      gameEffect: gameEffect,
+      description: description,
+      newGameState: newGameState,
+    });
 
-    if (gameEffect && gameEffect.gold) {
-      const goldDiff = gameEffect.gold - newGameState.gold;
-      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
-    }
+    let itemLocations = updateLocations({
+      itemMovements: itemMovements,
+      newGameState: newGameState,
+    });
 
-    let itemLocations = newGameState.itemLocations;
-    for (let index = 0; index < itemMovements.length; index++) {
-      const { item, oldLocation, newLocation } = itemMovements[index];
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
-    }
     return {
       ...currentGameState,
       ...gameEffect,
@@ -268,33 +247,16 @@ export function reducer(currentGameState, payload) {
     }
 
     /////
-    if (gameEffect && gameEffect.reputation) {
-      const reputationDiff = gameEffect.reputation - newGameState.reputation;
-      description += `\n\nReputation ${
-        reputationDiff > 0 ? "+" : ""
-      }${reputationDiff}`;
-    }
+    description = appendConsequenceToDescription({
+      gameEffect: gameEffect,
+      description: description,
+      newGameState: newGameState,
+    });
 
-    if (gameEffect && gameEffect.gold) {
-      const goldDiff = gameEffect.gold - newGameState.gold;
-      description += `\n\nGold ${goldDiff > 0 ? "+" : ""}${goldDiff}`;
-    }
-
-    let itemLocations = newGameState.itemLocations;
-    for (let index = 0; index < itemMovements.length; index++) {
-      const { item, oldLocation, newLocation } = itemMovements[index];
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
-    }
+    let itemLocations = updateLocations({
+      itemMovements: itemMovements,
+      newGameState: newGameState,
+    });
 
     return {
       ...currentGameState,
@@ -337,45 +299,28 @@ export function reducer(currentGameState, payload) {
     }
 
     // update item locations
-    let itemLocations = newGameState.itemLocations;
 
+    let itemMovements = [];
     const customEnterItemLocationEffect =
       locations[newLocation].onEnterItemLocationEffect &&
       locations[newLocation].onEnterItemLocationEffect(newGameState);
-
-    if (customEnterItemLocationEffect) {
-      const { item, oldLocation, newLocation } = customEnterItemLocationEffect;
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
-    }
 
     const customExitItemLocationEffect =
       locations[oldLocation].onExitItemLocationEffect &&
       locations[oldLocation].onExitItemLocationEffect(newGameState);
 
-    if (customExitItemLocationEffect) {
-      const { item, oldLocation, newLocation } = customExitItemLocationEffect;
-      const updatedItemsAtOld = Array.from(
-        new Set(itemLocations[oldLocation]).delete(item)
-      );
-      const updatedItemsAtNew = Array.from(
-        new Set(itemLocations[newLocation]).add(item)
-      );
-      itemLocations = {
-        ...itemLocations,
-        [oldLocation]: updatedItemsAtOld,
-        [newLocation]: updatedItemsAtNew,
-      };
+    if (customEnterItemLocationEffect) {
+      itemMovements = [...itemMovements, customEnterItemLocationEffect];
     }
+
+    if (customExitItemLocationEffect) {
+      itemMovements = [...itemMovements, customExitItemLocationEffect];
+    }
+
+    let itemLocations = updateLocations({
+      itemMovements: itemMovements,
+      newGameState: newGameState,
+    });
 
     return {
       ...currentGameState,
