@@ -461,8 +461,12 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.arrayContaining([item]))
-  expect(output.itemLocations[location]).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 });
 
