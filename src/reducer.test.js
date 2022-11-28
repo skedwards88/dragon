@@ -789,3 +789,119 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
     `"You strip down and drop your clothes in the fountain. Your clothes look much cleaner now. "`
   );
 });
+
+test("Dropping clothes in the dung pile will make them poopy", () => {
+  const item = "clothes"
+  let output = reducer(
+    { ...newGameState, playerLocation: "dung", clothesPoopy: false },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.clothesPoopy).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations.dung).toEqual(expect.arrayContaining([item]))
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop your clothes in the dung. "`
+  );
+  
+  output = reducer(
+    { ...newGameState, playerLocation: "dung", clothesPoopy: true },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.clothesPoopy).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations.dung).toEqual(expect.arrayContaining([item]))
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop your clothes in the dung. "`
+  );
+});
+
+test("Dropping clothes in water will make them not poopy", () => {
+  const item = "clothes"
+  let location = "fountain"
+  let output = reducer(
+    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop your clothes in the fountain. Your clothes look much cleaner now. "`
+  );
+
+  location = "stream"
+  output = reducer(
+    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop your clothes in the stream. Your clothes look much cleaner now. "`
+  );
+
+  location = "puddle"
+  output = reducer(
+    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
+  );
+
+  location = "puddle"
+  output = reducer(
+    { ...newGameState, playerLocation: location, clothesPoopy: false },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
+  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
+  );
+});
