@@ -614,7 +614,11 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
   const item = "clothes";
   const location = "dung";
   let output = reducer(
-    { ...newGameState, playerLocation: location, clothesPoopy: false },
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+    },
     {
       action: "dropItem",
       item: item,
@@ -660,7 +664,11 @@ test("Dropping clothes in water will make them not poopy", () => {
   const item = "clothes";
   let location = "fountain";
   let output = reducer(
-    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+    },
     {
       action: "dropItem",
       item: item,
@@ -683,7 +691,11 @@ test("Dropping clothes in water will make them not poopy", () => {
 
   location = "stream";
   output = reducer(
-    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+    },
     {
       action: "dropItem",
       item: item,
@@ -706,7 +718,11 @@ test("Dropping clothes in water will make them not poopy", () => {
 
   location = "puddle";
   output = reducer(
-    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+    },
     {
       action: "dropItem",
       item: item,
@@ -729,7 +745,11 @@ test("Dropping clothes in water will make them not poopy", () => {
 
   location = "puddle";
   output = reducer(
-    { ...newGameState, playerLocation: location, clothesPoopy: false },
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+    },
     {
       action: "dropItem",
       item: item,
@@ -748,5 +768,34 @@ test("Dropping clothes in water will make them not poopy", () => {
 
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
+  );
+});
+
+test("Eating the apple does not remove it from inventory", () => {
+  const item = "apple";
+  let output = reducer(
+    {
+      ...newGameState,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You take a bite from the apple, feeling refreshed. "`
   );
 });
