@@ -654,3 +654,138 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   expect(output.itemLocations.fountain).toMatchInlineSnapshot(`[]`);
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 });
+
+test("Dropping your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: "youth",
+      naked: false,
+      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+    },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`9`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.youth).toMatchInlineSnapshot(`
+    [
+      "clothes",
+    ]
+  `);
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You strip down and drop your clothes by the youth. The youth eyes you suspiciously.
+
+    Reputation -1"
+  `);
+
+  output = reducer(
+    {
+      ...newGameState,
+      playerLocation: "blacksmith",
+      naked: false,
+      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+    },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`9`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.blacksmith).toMatchInlineSnapshot(`
+    [
+      "clothes",
+    ]
+  `);
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You strip down and drop your clothes by the blacksmith. The blacksmith eyes you suspiciously.
+
+    Reputation -1"
+  `);
+
+  output = reducer(
+    {
+      ...newGameState,
+      playerLocation: "inn",
+      naked: false,
+      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+    },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`9`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.inn).toMatchInlineSnapshot(`
+    [
+      "apple",
+      "clothes",
+    ]
+  `);
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You strip down and drop your clothes in the inn. The innkeeper eyes you suspiciously.
+
+    Reputation -1"
+  `);
+
+  output = reducer(
+    {
+      ...newGameState,
+      playerLocation: "wizard",
+      naked: false,
+      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+    },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.wizard).toMatchInlineSnapshot(`
+    [
+      "score",
+      "clothes",
+    ]
+  `);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You strip down and drop your clothes by the wizard. "`
+  );
+
+  output = reducer(
+    {
+      ...newGameState,
+      playerLocation: "fountain",
+      naked: false,
+      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+    },
+    {
+      action: "dropItem",
+      item: "clothes",
+    }
+  );
+
+  expect(output.reputation).toMatchInlineSnapshot(`10`);
+  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.fountain).toMatchInlineSnapshot(`
+    [
+      "clothes",
+    ]
+  `);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You strip down and drop your clothes in the fountain. Your clothes look much cleaner now. "`
+  );
+});
