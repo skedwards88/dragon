@@ -248,256 +248,74 @@ test("Resuming will apply saved state over new game state", () => {
 });
 
 test("Taking the sword from the smithy increases sword cost (once) and reduces reputation (every time)", () => {
+  const item = "sword";
+  const location = "smithy";
   const output = reducer(
-    { ...newGameState, playerLocation: "smithy" },
+    { ...newGameState, playerLocation: location },
     {
       action: "takeItem",
-      item: "sword",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.swordCost).toMatchInlineSnapshot(`50`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.smithy).toMatchInlineSnapshot(`
-    [
-      "sword",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
 
     Reputation -1"
   `);
-  expect(output).toMatchInlineSnapshot(`
-    {
-      "babyCough": false,
-      "clothesPoopy": false,
-      "consequenceText": "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
-
-    Reputation -1",
-      "cursed": false,
-      "dragonAsleep": false,
-      "dragonDead": false,
-      "dragonPoisoned": false,
-      "firstCourtyardEntry": true,
-      "gold": 0,
-      "gotScoreByCredit": false,
-      "gotScoreByTrade": false,
-      "handkerchiefDamp": false,
-      "horseDead": false,
-      "horseMounted": false,
-      "horseTethered": false,
-      "itemLocations": {
-        "blacksmith": [],
-        "caveEntrance": [],
-        "clearing": [
-          "berries",
-        ],
-        "cliff": [],
-        "courtyard": [
-          "handkerchief",
-        ],
-        "crevice": [],
-        "defecatory": [],
-        "dung": [],
-        "fountain": [],
-        "gate": [],
-        "inn": [
-          "apple",
-        ],
-        "inventory": [],
-        "lair": [
-          "treasure",
-        ],
-        "manor": [],
-        "mirror": [],
-        "nursery": [
-          "baby",
-        ],
-        "nurseryWindow": [],
-        "outOfPlay": [],
-        "pasture": [
-          "horse",
-        ],
-        "puddle": [],
-        "road1": [],
-        "road2": [],
-        "road3": [],
-        "room": [
-          "lute",
-        ],
-        "smithy": [
-          "sword",
-        ],
-        "squirrel": [],
-        "stream": [],
-        "wardrobe": [
-          "clothes",
-        ],
-        "window": [],
-        "wizard": [
-          "score",
-        ],
-        "youth": [],
-      },
-      "locationConsequenceText": "",
-      "manorFire": true,
-      "maxGold": 310,
-      "maxReputation": 17,
-      "maxSwordCost": 50,
-      "naked": true,
-      "ownSword": false,
-      "paidDebt": false,
-      "playedForYouth": false,
-      "playerCough": false,
-      "playerLocation": "smithy",
-      "playerMasked": false,
-      "playerPoisoned": false,
-      "receivedBabyReward": false,
-      "reputation": 9,
-      "savedBaby": false,
-      "singeCount": 0,
-      "squirrelDead": false,
-      "swordCost": 50,
-      "timeInCave": 0,
-      "treasureAmount": 300,
-      "treasureLevel": 0,
-    }
-  `);
 
   const output2 = reducer(output, {
     action: "takeItem",
-    item: "sword",
+    item: item,
   });
 
   expect(output2.reputation).toMatchInlineSnapshot(`8`);
   expect(output2.swordCost).toMatchInlineSnapshot(`50`);
-  expect(output2.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output2.itemLocations.smithy).toMatchInlineSnapshot(`
-    [
-      "sword",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output2.consequenceText).toMatchInlineSnapshot(`
     "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
 
     Reputation -1"
   `);
-  expect(output2).toMatchInlineSnapshot(`
-    {
-      "babyCough": false,
-      "clothesPoopy": false,
-      "consequenceText": "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
-
-    Reputation -1",
-      "cursed": false,
-      "dragonAsleep": false,
-      "dragonDead": false,
-      "dragonPoisoned": false,
-      "firstCourtyardEntry": true,
-      "gold": 0,
-      "gotScoreByCredit": false,
-      "gotScoreByTrade": false,
-      "handkerchiefDamp": false,
-      "horseDead": false,
-      "horseMounted": false,
-      "horseTethered": false,
-      "itemLocations": {
-        "blacksmith": [],
-        "caveEntrance": [],
-        "clearing": [
-          "berries",
-        ],
-        "cliff": [],
-        "courtyard": [
-          "handkerchief",
-        ],
-        "crevice": [],
-        "defecatory": [],
-        "dung": [],
-        "fountain": [],
-        "gate": [],
-        "inn": [
-          "apple",
-        ],
-        "inventory": [],
-        "lair": [
-          "treasure",
-        ],
-        "manor": [],
-        "mirror": [],
-        "nursery": [
-          "baby",
-        ],
-        "nurseryWindow": [],
-        "outOfPlay": [],
-        "pasture": [
-          "horse",
-        ],
-        "puddle": [],
-        "road1": [],
-        "road2": [],
-        "road3": [],
-        "room": [
-          "lute",
-        ],
-        "smithy": [
-          "sword",
-        ],
-        "squirrel": [],
-        "stream": [],
-        "wardrobe": [
-          "clothes",
-        ],
-        "window": [],
-        "wizard": [
-          "score",
-        ],
-        "youth": [],
-      },
-      "locationConsequenceText": "",
-      "manorFire": true,
-      "maxGold": 310,
-      "maxReputation": 17,
-      "maxSwordCost": 50,
-      "naked": true,
-      "ownSword": false,
-      "paidDebt": false,
-      "playedForYouth": false,
-      "playerCough": false,
-      "playerLocation": "smithy",
-      "playerMasked": false,
-      "playerPoisoned": false,
-      "receivedBabyReward": false,
-      "reputation": 8,
-      "savedBaby": false,
-      "singeCount": 0,
-      "squirrelDead": false,
-      "swordCost": 50,
-      "timeInCave": 0,
-      "treasureAmount": 300,
-      "treasureLevel": 0,
-    }
-  `);
 });
 
 test("Playing the lute for the youth will boost reputation only once", () => {
+  const item = "lute";
+  const location = "youth";
   const output = reducer(
     {
       ...newGameState,
-      playerLocation: "youth",
+      playerLocation: location,
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "useItem",
-      item: "lute",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`11`);
   expect(output.playedForYouth).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.youth).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You play a song for the crying youth. The music seems to cheer the youth up. 
 
@@ -506,330 +324,337 @@ test("Playing the lute for the youth will boost reputation only once", () => {
 
   const output2 = reducer(output, {
     action: "useItem",
-    item: "lute",
+    item: item,
   });
 
   expect(output2.reputation).toMatchInlineSnapshot(`11`);
   expect(output2.playedForYouth).toMatchInlineSnapshot(`true`);
-  expect(output2.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output2.itemLocations.youth).toMatchInlineSnapshot(`[]`);
   expect(output2.consequenceText).toMatchInlineSnapshot(
     `"They appreciate the music, but don't seem keen to listen all day. "`
   );
 });
 
 test("Removing your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
+  const item = "clothes";
+  let location = "youth";
+
   let output = reducer(
     {
       ...newGameState,
-      playerLocation: "youth",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "useItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
-  expect(output.itemLocations.youth).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down. The youth eyes you suspiciously.
 
     Reputation -1"
   `);
 
+  location = "blacksmith";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "blacksmith",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "useItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
-  expect(output.itemLocations.blacksmith).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down. The blacksmith eyes you suspiciously.
 
     Reputation -1"
   `);
 
+  location = "inn";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "inn",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "useItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
-  expect(output.itemLocations.inn).toMatchInlineSnapshot(`
-    [
-      "apple",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down. The innkeeper eyes you suspiciously.
 
     Reputation -1"
   `);
 
+  location = "wizard";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "wizard",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "useItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
-  expect(output.itemLocations.wizard).toMatchInlineSnapshot(`
-    [
-      "score",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 
+  location = "fountain";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "fountain",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "useItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
-  expect(output.itemLocations.fountain).toMatchInlineSnapshot(`[]`);
+  expect(output.itemLocations.inventory).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations[location]).toEqual(expect.not.arrayContaining([item]))
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 });
 
 test("Dropping your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
+  const item = "clothes";
+  let location = "youth";
+
   let output = reducer(
     {
       ...newGameState,
-      playerLocation: "youth",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.youth).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down and drop your clothes by the youth. The youth eyes you suspiciously.
 
     Reputation -1"
   `);
 
+  location = "blacksmith";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "blacksmith",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.blacksmith).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down and drop your clothes by the blacksmith. The blacksmith eyes you suspiciously.
 
     Reputation -1"
   `);
 
+  location = "inn";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "inn",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.inn).toMatchInlineSnapshot(`
-    [
-      "apple",
-      "clothes",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down and drop your clothes in the inn. The innkeeper eyes you suspiciously.
 
     Reputation -1"
   `);
 
+  location = "wizard";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "wizard",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.wizard).toMatchInlineSnapshot(`
-    [
-      "score",
-      "clothes",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You strip down and drop your clothes by the wizard. "`
   );
 
+  location = "fountain";
   output = reducer(
     {
       ...newGameState,
-      playerLocation: "fountain",
+      playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: ["clothes"] },
+      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toMatchInlineSnapshot(`[]`);
-  expect(output.itemLocations.fountain).toMatchInlineSnapshot(`
-    [
-      "clothes",
-    ]
-  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You strip down and drop your clothes in the fountain. Your clothes look much cleaner now. "`
   );
 });
 
 test("Dropping clothes in the dung pile will make them poopy", () => {
-  const item = "clothes"
+  const item = "clothes";
+  const location = "dung";
   let output = reducer(
-    { ...newGameState, playerLocation: "dung", clothesPoopy: false },
+    { ...newGameState, playerLocation: location, clothesPoopy: false },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toMatchInlineSnapshot(`true`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
-  expect(output.itemLocations.dung).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the dung. "`
   );
-  
+
   output = reducer(
-    { ...newGameState, playerLocation: "dung", clothesPoopy: true },
+    { ...newGameState, playerLocation: location, clothesPoopy: true },
     {
       action: "dropItem",
-      item: "clothes",
+      item: item,
     }
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toMatchInlineSnapshot(`true`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
-  expect(output.itemLocations.dung).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the dung. "`
   );
 });
 
 test("Dropping clothes in water will make them not poopy", () => {
-  const item = "clothes"
-  let location = "fountain"
+  const item = "clothes";
+  let location = "fountain";
   let output = reducer(
     { ...newGameState, playerLocation: location, clothesPoopy: true },
     {
@@ -841,14 +666,18 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
-  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the fountain. Your clothes look much cleaner now. "`
   );
 
-  location = "stream"
+  location = "stream";
   output = reducer(
     { ...newGameState, playerLocation: location, clothesPoopy: true },
     {
@@ -860,14 +689,18 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
-  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the stream. Your clothes look much cleaner now. "`
   );
 
-  location = "puddle"
+  location = "puddle";
   output = reducer(
     { ...newGameState, playerLocation: location, clothesPoopy: true },
     {
@@ -879,14 +712,18 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
-  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
   );
 
-  location = "puddle"
+  location = "puddle";
   output = reducer(
     { ...newGameState, playerLocation: location, clothesPoopy: false },
     {
@@ -898,8 +735,12 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
   expect(output.naked).toMatchInlineSnapshot(`true`);
-  expect(output.itemLocations.inventory).toEqual(expect.not.arrayContaining([item]))
-  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]))
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
