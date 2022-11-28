@@ -248,12 +248,11 @@ const apple = new Item({
   },
   getCustomUse: function (gameState) {
     function writeDescription() {
-      return "You eat the apple, feeling refreshed. ";
+      return "You take a bite from the apple, feeling refreshed. ";
     }
 
     return new ItemInteraction({
       description: writeDescription(gameState),
-      targetItemDestination: "inn",
     });
   },
 
