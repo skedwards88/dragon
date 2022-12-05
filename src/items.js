@@ -257,7 +257,7 @@ const apple = new Item({
   },
 
   getCustomDrop: function (gameState) {
-    function writeDescription({ gameState }) {
+    function writeDescription(gameState) {
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
