@@ -12,8 +12,9 @@ export default function Info({ setCurrentDisplay }) {
         <a href={feedbackLink}>open an issue</a>
         {" on GitHub."}
         {<hr></hr>}
-        {`Story by Colin\nBuilt by Sarah\n\nWant more games?\nVisit `}
-        <a href="https://skedwards88.github.io/portfolio/">CnS Games</a>
+        {`Story by Colin\nBuilt by Sarah\n\nWant more games?\nCheck `}
+        <a href="https://skedwards88.github.io/portfolio/">these</a>
+        {` out.`}
       </div>
       <button className="close" onClick={() => setCurrentDisplay("location")}>
         CLOSE
