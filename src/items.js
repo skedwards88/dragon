@@ -239,44 +239,95 @@ const clothes = new Item({
 const apple = new Item({
   id: "apple",
   spawnLocation: "inn",
-  getDescription: function () {
-    return "fresh apple";
+  getDescription: function (gameState) {
+    switch (gameState.appleBitesRemaining) {
+      case 5:
+        return "fresh apple";
+      case 4:
+        return "apple with a bite taken";
+      case 3:
+        return "partially eaten apple";
+      case 2:
+        return "mostly eaten apple";
+      case 1:
+        return "apple with one bite remaining";
+      case 0:
+        return "apple core";
+      default:
+        return "apple core";
+      }
   },
 
   getUseVerb: function () {
     return "Eat";
   },
   getCustomUse: function (gameState) {
-    function writeDescription() {
-      return "You take a bite from the apple, feeling refreshed. ";
+    function writeDescription(gameState) {
+      switch (gameState.appleBitesRemaining) {
+        case 5:
+          return "You take a bite from the apple, feeling refreshed. ";
+        case 4:
+          return "You take a bite from the apple, feeling refreshed. It looks like there are a few bites remaining. ";
+        case 3:
+          return "You take a bite from the apple, feeling refreshed. It looks like there are a couple of bites remaining. ";
+        case 2:
+          return "You take a bite from the apple, wondering if you'll be able to find another apple. It looks like there is one bite remaining. ";
+        case 1:
+          return "You take the last bite from the apple, feeling regret that there isn't any more. ";
+        case 0:
+          return "You nibble at the core, but there isn't much flesh remaining. ";
+        default:
+          return "You nibble at the core, but there isn't much flesh remaining. ";
+        }
+    }
+
+    function getGameEffect(gameState) {
+      if (gameState.appleBitesRemaining > 0) {
+        return {
+          appleBitesRemaining: gameState.appleBitesRemaining - 1,
+        };
+      }
     }
 
     return new ItemInteraction({
+      gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
   getCustomDrop: function (gameState) {
     function writeDescription(gameState) {
+      let appleDescription
+      if (gameState.appleBitesRemaining <= 0) {
+        appleDescription = "apple core"
+      } else if (gameState.appleBitesRemaining === 5) {
+        appleDescription = "apple"
+      } else {
+        appleDescription = "partially eaten apple"
+      }
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
       ) {
-        return "This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse.";
+        if (gameState.appleBitesRemaining > 0 ) {
+        return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped. While he is preoccupied, you grab the reins. You now have a horse.`;
+        } else {
+          return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
+        }
       }
 
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        return "The squirrel sniffs at the apple but doesn't bite. Perhaps it needs something smaller. ";
+        return `The squirrel sniffs at the ${appleDescription} but doesn't bite. Perhaps it needs something smaller. `;
       }
     }
 
     if (
       gameState.itemLocations[gameState.playerLocation].includes("horse") &&
-      !gameState.horseTethered
+      !gameState.horseTethered && gameState.appleBitesRemaining > 0
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
-        targetItemDestination: "inn",
+        targetItemDestination: "outOfPlay",
         itemMovements: [
           {
             item: "horse",
@@ -295,25 +346,37 @@ const apple = new Item({
 
   getCustomGive: function (gameState) {
     function writeDescription(gameState) {
+      let appleDescription
+      if (gameState.appleBitesRemaining <= 0) {
+        appleDescription = "apple core"
+      } else if (gameState.appleBitesRemaining === 5) {
+        appleDescription = "apple"
+      } else {
+        appleDescription = "partially eaten apple"
+      }
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
       ) {
-        return "This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse.";
+        if (gameState.appleBitesRemaining > 0 ) {
+        return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered. While he is preoccupied, you grab the reins. You now have a horse.`;
+        } else {
+          return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
+        }
       }
 
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        return "The squirrel sniffs at the apple but doesn't bite. Perhaps it needs something smaller. ";
+        return `The squirrel sniffs at the ${appleDescription} but doesn't bite. Perhaps it needs something smaller. `;
       }
     }
 
     if (
       gameState.itemLocations[gameState.playerLocation].includes("horse") &&
-      !gameState.horseTethered
+      !gameState.horseTethered && gameState.appleBitesRemaining > 0
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
-        targetItemDestination: "inn",
+        targetItemDestination: "outOfPlay",
         itemMovements: [
           {
             item: "horse",

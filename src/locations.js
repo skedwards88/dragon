@@ -144,7 +144,7 @@ const inn = new Location({
   dropPreposition: "in",
   getDescription: function (gameState) {
     return `You enter what appears to be the common room of an inn. ${
-      gameState.itemLocations.inn.includes("apple")
+      gameState.itemLocations.inn.includes("apple") && gameState.appleBitesRemaining === 5
         ? "A complementary apple rests on the table. "
         : ""
     }${
@@ -514,6 +514,10 @@ const blacksmith = new Location({
 
 const pasture = new Location({
   id: "pasture",
+  getDisplayName: function (gameState) {
+    const pastureHasHorse = gameState.itemLocations?.pasture.includes("horse")
+    return pastureHasHorse ? "horse" : "pasture";
+  },
   getSentient: function (gameState) {
     return gameState.itemLocations.pasture.includes("horse");
   },

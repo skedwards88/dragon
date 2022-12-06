@@ -243,7 +243,7 @@ export function reducer(currentGameState, payload) {
         .getDisplayName(newGameState)
         .toLowerCase()} does not want your ${items[item].getDescription(
         newGameState
-      )} item.`;
+      )}.`;
     }
 
     /////

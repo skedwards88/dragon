@@ -8,6 +8,7 @@ test("New game resets state", () => {
 
   expect(output).toMatchInlineSnapshot(`
     {
+      "appleBitesRemaining": 5,
       "babyCough": false,
       "clothesPoopy": false,
       "consequenceText": "",
@@ -153,6 +154,7 @@ test("Resuming will apply saved state over new game state", () => {
 
   expect(output).toMatchInlineSnapshot(`
     {
+      "appleBitesRemaining": 5,
       "babyCough": true,
       "clothesPoopy": true,
       "consequenceText": "This happened",
@@ -798,4 +800,80 @@ test("Eating the apple does not remove it from inventory", () => {
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You take a bite from the apple, feeling refreshed. "`
   );
+});
+
+test("Dropping or giving the apple will give you the horse if the horse is present and if the apple is not fully eaten. The apple will go out of game.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  // Drop uneaten apple
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining(["horse"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`
+  );
+
+  // Give uneaten apple
+  output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining(["horse"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
+  );
+
+
+
 });

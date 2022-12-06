@@ -56,6 +56,7 @@ export function init() {
     gotScoreByTrade: false,
     maxReputation: 17,
     maxGold: 310,
+    appleBitesRemaining: 5,
 
     playerLocation: "room",
 
