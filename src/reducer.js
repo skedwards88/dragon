@@ -78,7 +78,7 @@ export function reducer(currentGameState, payload) {
           : "a"
       } ${items[item].getDescription(newGameState)}.`;
     }
-    ////
+
     description = appendConsequenceToDescription({
       gameEffect: gameEffect,
       description: description,
@@ -114,7 +114,6 @@ export function reducer(currentGameState, payload) {
       description = `You use the ${items[item].displayName.toLowerCase()}.`;
     }
 
-    /////
     description = appendConsequenceToDescription({
       gameEffect: gameEffect,
       description: description,
@@ -154,7 +153,6 @@ export function reducer(currentGameState, payload) {
         .toLowerCase()}.`;
     }
 
-    ////
     description = appendConsequenceToDescription({
       gameEffect: gameEffect,
       description: description,
@@ -191,7 +189,6 @@ export function reducer(currentGameState, payload) {
         .toLowerCase()} is not interested in your gold.`;
     }
 
-    ////
     description = appendConsequenceToDescription({
       gameEffect: gameEffect,
       description: description,
@@ -246,7 +243,6 @@ export function reducer(currentGameState, payload) {
       )}.`;
     }
 
-    /////
     description = appendConsequenceToDescription({
       gameEffect: gameEffect,
       description: description,
@@ -271,7 +267,6 @@ export function reducer(currentGameState, payload) {
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
     // update game state
-
     let gameStateChanges = {};
 
     const customExitStateEffect =
@@ -299,7 +294,6 @@ export function reducer(currentGameState, payload) {
     }
 
     // update item locations
-
     let itemMovements = [];
     const customEnterItemLocationEffect =
       locations[newLocation].onEnterItemLocationEffect &&
