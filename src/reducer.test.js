@@ -874,6 +874,74 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
     `"This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
   );
 
+  // Drop partially apple
+  output = reducer(
+    {
+      ...newGameState,
+      appleBitesRemaining: 2,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
 
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining(["horse"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`
+  );
+
+  // Give uneaten apple
+  output = reducer(
+    {
+      ...newGameState,
+      appleBitesRemaining: 2,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining(["horse"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
+  );
 
 });
