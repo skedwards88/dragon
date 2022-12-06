@@ -796,9 +796,28 @@ test("Eating the apple does not remove it from inventory", () => {
   expect(output.itemLocations["inn"]).toEqual(
     expect.not.arrayContaining([item])
   );
-
+  expect(output.appleBitesRemaining).toEqual(newGameState.appleBitesRemaining - 1)
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You take a bite from the apple, feeling refreshed. "`
+  );
+
+  // bite 2
+  output = reducer(
+    output,
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.appleBitesRemaining).toEqual(newGameState.appleBitesRemaining - 2)
+  expect(output.consequenceText).toMatchInlineSnapshot(
   );
 });
 
