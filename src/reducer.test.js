@@ -775,6 +775,7 @@ test("Dropping clothes in water will make them not poopy", () => {
 
 test("Eating the apple does not remove it from inventory", () => {
   const item = "apple";
+  let biteNumber = 1;
   let output = reducer(
     {
       ...newGameState,
@@ -796,19 +797,18 @@ test("Eating the apple does not remove it from inventory", () => {
   expect(output.itemLocations["inn"]).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.appleBitesRemaining).toEqual(newGameState.appleBitesRemaining - 1)
+  expect(output.appleBitesRemaining).toEqual(
+    newGameState.appleBitesRemaining - biteNumber
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You take a bite from the apple, feeling refreshed. "`
   );
 
-  // bite 2
-  output = reducer(
-    output,
-    {
-      action: "useItem",
-      item: item,
-    }
-  );
+  biteNumber++;
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
 
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
@@ -816,8 +816,102 @@ test("Eating the apple does not remove it from inventory", () => {
   expect(output.itemLocations["inn"]).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.appleBitesRemaining).toEqual(newGameState.appleBitesRemaining - 2)
+  expect(output.appleBitesRemaining).toEqual(
+    newGameState.appleBitesRemaining - biteNumber
+  );
   expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You take a bite from the apple, feeling refreshed. It looks like there are a few bites remaining. "`
+  );
+
+  biteNumber++;
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.appleBitesRemaining).toEqual(
+    newGameState.appleBitesRemaining - biteNumber
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You take a bite from the apple, feeling refreshed. It looks like there are a couple of bites remaining. "`
+  );
+
+  biteNumber++;
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.appleBitesRemaining).toEqual(
+    newGameState.appleBitesRemaining - biteNumber
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You take a bite from the apple, wondering if you'll be able to find another apple. It looks like there is one bite remaining. "`
+  );
+
+  biteNumber++;
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.appleBitesRemaining).toEqual(
+    newGameState.appleBitesRemaining - biteNumber
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You take the last bite from the apple, feeling regret that there isn't any more. "`
+  );
+
+  biteNumber++;
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.appleBitesRemaining).toEqual(0);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You nibble at the core, but there isn't much flesh remaining. "`
+  );
+
+  biteNumber++;
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["inn"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.appleBitesRemaining).toEqual(0);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You nibble at the core, but there isn't much flesh remaining. "`
   );
 });
 
