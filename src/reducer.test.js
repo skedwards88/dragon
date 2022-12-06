@@ -802,11 +802,10 @@ test("Eating the apple does not remove it from inventory", () => {
   );
 });
 
-test("Dropping or giving the apple will give you the horse if the horse is present and if the apple is not fully eaten. The apple will go out of game.", () => {
+test("Dropping the apple will give you the horse if the horse is present and if the apple is not eaten. The apple will go out of game.", () => {
   const item = "apple";
   let location = "pasture";
 
-  // Drop uneaten apple
   let output = reducer(
     {
       ...newGameState,
@@ -829,7 +828,9 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining(["horse"])
   );
@@ -839,9 +840,13 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`
   );
+});
 
-  // Give uneaten apple
-  output = reducer(
+test("Giving the apple will give you the horse if the horse is present and if the apple is not eaten. The apple will go out of game.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  let output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -863,7 +868,9 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining(["horse"])
   );
@@ -873,9 +880,13 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
   );
+});
 
-  // Drop partially apple
-  output = reducer(
+test("Dropping the apple will give you the horse if the horse is present and if the apple is partially eaten. The apple will go out of game.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  let output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 2,
@@ -898,7 +909,9 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining(["horse"])
   );
@@ -908,9 +921,13 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`
   );
+});
 
-  // Give uneaten apple
-  output = reducer(
+test("Giving the apple will give you the horse if the horse is present and if the apple is partially eaten. The apple will go out of game.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  let output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 2,
@@ -933,7 +950,9 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.itemLocations["outOfPlay"]).toEqual(expect.arrayContaining([item]));
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.arrayContaining([item])
+  );
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining(["horse"])
   );
@@ -943,5 +962,86 @@ test("Dropping or giving the apple will give you the horse if the horse is prese
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
   );
+});
 
+test("Dropping the apple will not give you the horse if the apple is fully eaten. The apple will just be dropped at location.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      appleBitesRemaining: 0,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"This horse seems very interested in food. The horse walks over to eat the apple core that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins."`
+  );
+});
+
+test("Giving the apple will not give you the horse if the apple is fully eaten. The apple will just be dropped at location.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      appleBitesRemaining: 0,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The horse does not want your apple core."`
+  );
 });
