@@ -1158,3 +1158,73 @@ test("Giving the apple will not give you the horse if the apple is fully eaten. 
     `"The horse does not want your apple core."`
   );
 });
+
+test("Dropping the apple at the pasture will not matter if the horse is not at the pasture.", () => {
+  const item = "apple";
+  let location = "pasture";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      appleBitesRemaining: 0,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+        pasture: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["outOfPlay"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["horse"])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the apple at the pasture."`
+  );
+});
+
+test("Giving the apple to the squirrel will effectively drop it.", () => {
+  const item = "apple";
+  let location = "squirrel";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        inn: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The squirrel does not want your fresh apple."`
+  );
+});
