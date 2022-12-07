@@ -415,7 +415,13 @@ const handkerchief = new Item({
         gameState.manorFire &&
         gameState.handkerchiefDamp
       ) {
-        text += "The damp handkerchief lets you breath more easily. ";
+        if (gameState.playerMasked) {
+            // was masked ==> is now not masked
+            text += "The smoke fills your lungs, making you cough. "
+        } else {
+          // was not masked ==> is now masked
+          text += "The damp handkerchief lets you breath more easily. ";
+        }
       }
 
       if (
@@ -424,8 +430,11 @@ const handkerchief = new Item({
         ) &&
         gameState.manorFire &&
         !gameState.handkerchiefDamp
-      ) {
-        text += "On its own, the handkerchief does little to block the smoke. ";
+      )  {
+        if (!gameState.playerMasked) {
+          // was not masked ==> is now masked
+          text += "On its own, the handkerchief does little to block the smoke. ";
+        }
       }
 
       if (

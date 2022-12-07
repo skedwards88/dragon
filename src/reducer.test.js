@@ -1458,8 +1458,89 @@ test("Removing handkerchief, not damp, in manor", () => {
     }
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You remove the handkerchief from your nose and mouth. "`
+  );
+  expect(output.playerMasked).toBe(false);
+});
+
+test("Removing handkerchief, damp, in manor", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You remove the handkerchief from your nose and mouth. The smoke fills your lungs, making you cough. "`
+  );
+  expect(output.playerMasked).toBe(false);
+});
+
+test("Wearing handkerchief, not damp, in manor, no fire", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      manorFire: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. "`
   );
   expect(output.playerMasked).toBe(true);
 });
-// todo remove handk
+
+test("Wearing handkerchief, damp, in manor, no fire", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: false,
+      manorFire: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
 // todo using in cave
