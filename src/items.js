@@ -255,7 +255,7 @@ const apple = new Item({
         return "apple core";
       default:
         return "apple core";
-      }
+    }
   },
 
   getUseVerb: function () {
@@ -278,7 +278,7 @@ const apple = new Item({
           return "You nibble at the core, but there isn't much flesh remaining. ";
         default:
           return "You nibble at the core, but there isn't much flesh remaining. ";
-        }
+      }
     }
 
     function getGameEffect(gameState) {
@@ -297,20 +297,20 @@ const apple = new Item({
 
   getCustomDrop: function (gameState) {
     function writeDescription(gameState) {
-      let appleDescription
+      let appleDescription;
       if (gameState.appleBitesRemaining <= 0) {
-        appleDescription = "apple core"
+        appleDescription = "apple core";
       } else if (gameState.appleBitesRemaining === 5) {
-        appleDescription = "apple"
+        appleDescription = "apple";
       } else {
-        appleDescription = "partially eaten apple"
+        appleDescription = "partially eaten apple";
       }
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
       ) {
-        if (gameState.appleBitesRemaining > 0 ) {
-        return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped. While he is preoccupied, you grab the reins. You now have a horse.`;
+        if (gameState.appleBitesRemaining > 0) {
+          return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped. While he is preoccupied, you grab the reins. You now have a horse.`;
         } else {
           return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
         }
@@ -323,7 +323,8 @@ const apple = new Item({
 
     if (
       gameState.itemLocations[gameState.playerLocation].includes("horse") &&
-      !gameState.horseTethered && gameState.appleBitesRemaining > 0
+      !gameState.horseTethered &&
+      gameState.appleBitesRemaining > 0
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
@@ -346,20 +347,20 @@ const apple = new Item({
 
   getCustomGive: function (gameState) {
     function writeDescription(gameState) {
-      let appleDescription
+      let appleDescription;
       if (gameState.appleBitesRemaining <= 0) {
-        appleDescription = "apple core"
+        appleDescription = "apple core";
       } else if (gameState.appleBitesRemaining === 5) {
-        appleDescription = "apple"
+        appleDescription = "apple";
       } else {
-        appleDescription = "partially eaten apple"
+        appleDescription = "partially eaten apple";
       }
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
       ) {
-        if (gameState.appleBitesRemaining > 0 ) {
-        return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered. While he is preoccupied, you grab the reins. You now have a horse.`;
+        if (gameState.appleBitesRemaining > 0) {
+          return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered. While he is preoccupied, you grab the reins. You now have a horse.`;
         } else {
           return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
         }
@@ -372,7 +373,8 @@ const apple = new Item({
 
     if (
       gameState.itemLocations[gameState.playerLocation].includes("horse") &&
-      !gameState.horseTethered && gameState.appleBitesRemaining > 0
+      !gameState.horseTethered &&
+      gameState.appleBitesRemaining > 0
     ) {
       return new ItemInteraction({
         gameEffect: { horseTethered: true },
@@ -416,8 +418,8 @@ const handkerchief = new Item({
         gameState.handkerchiefDamp
       ) {
         if (gameState.playerMasked) {
-            // was masked ==> is now not masked
-            text += "The smoke fills your lungs, making you cough. "
+          // was masked ==> is now not masked
+          text += "The smoke fills your lungs, making you cough. ";
         } else {
           // was not masked ==> is now masked
           text += "The damp handkerchief lets you breath more easily. ";
@@ -430,10 +432,11 @@ const handkerchief = new Item({
         ) &&
         gameState.manorFire &&
         !gameState.handkerchiefDamp
-      )  {
+      ) {
         if (!gameState.playerMasked) {
           // was not masked ==> is now masked
-          text += "On its own, the handkerchief does little to block the smoke. ";
+          text +=
+            "On its own, the handkerchief does little to block the smoke. ";
         }
       }
 
