@@ -1437,5 +1437,29 @@ test("Wearing handkerchief, damp, in inn", () => {
   expect(output.playerMasked).toBe(true);
 });
 
+test("Removing handkerchief, not damp, in manor", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+  );
+  expect(output.playerMasked).toBe(true);
+});
 // todo remove handk
 // todo using in cave
