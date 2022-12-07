@@ -1228,3 +1228,214 @@ test("Giving the apple to the squirrel will effectively drop it.", () => {
     `"The squirrel does not want your fresh apple."`
   );
 });
+
+test("Wearing handkerchief, not damp, in manor", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, not damp, in nursery", () => {
+  const item = "handkerchief";
+  let location = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, not damp, in nurseryWindow", () => {
+  const item = "handkerchief";
+  let location = "nurseryWindow";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, not damp, in inn", () => {
+  const item = "handkerchief";
+  let location = "inn";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, damp, in manor", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, damp, in nursery", () => {
+  const item = "handkerchief";
+  let location = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, damp, in nurseryWindow", () => {
+  const item = "handkerchief";
+  let location = "nurseryWindow";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Wearing handkerchief, damp, in inn", () => {
+  const item = "handkerchief";
+  let location = "inn";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+// todo remove handk
+// todo using in cave
