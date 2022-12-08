@@ -1744,7 +1744,7 @@ test("The baby has no use", () => {
       playerLocation: location,
       itemLocations: {
         ...newGameState.itemLocations,
-        inventory: ["baby"],
+        inventory: [item],
         nursery: [],
       },
     },
@@ -1769,7 +1769,7 @@ test("Dropping the baby in the nursery returns it to the crib and un-saves it", 
       savedBaby: true,
       itemLocations: {
         ...newGameState.itemLocations,
-        inventory: ["baby"],
+        inventory: [item],
         nursery: [],
       },
     },
@@ -1784,8 +1784,10 @@ test("Dropping the baby in the nursery returns it to the crib and un-saves it", 
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]));
-  expect(output.savedBaby).toBe(false)
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.savedBaby).toBe(false);
 });
 
 test("Dropping the baby out the window saves it and removes it from game", () => {
@@ -1799,7 +1801,7 @@ test("Dropping the baby out the window saves it and removes it from game", () =>
       savedBaby: true,
       itemLocations: {
         ...newGameState.itemLocations,
-        inventory: ["baby"],
+        inventory: [item],
         nursery: [],
       },
     },
@@ -1820,7 +1822,7 @@ test("Dropping the baby out the window saves it and removes it from game", () =>
   expect(output.itemLocations.outOfPlay).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.savedBaby).toBe(true)
+  expect(output.savedBaby).toBe(true);
 });
 
 test("Dropping the baby away from the nursery/window just makes it cry more", () => {
@@ -1834,7 +1836,7 @@ test("Dropping the baby away from the nursery/window just makes it cry more", ()
       savedBaby: true,
       itemLocations: {
         ...newGameState.itemLocations,
-        inventory: ["baby"],
+        inventory: [item],
         nursery: [],
       },
     },
@@ -1849,6 +1851,68 @@ test("Dropping the baby away from the nursery/window just makes it cry more", ()
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
-  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]));
-  expect(output.savedBaby).toBe(false)
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.savedBaby).toBe(false);
+});
+
+test("Taking the baby from nursery gives cough hint", () => {
+  const item = "baby";
+  let location = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        nursery: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You pick up the baby from the crib. The baby coughs as you move it away from the open window. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.location).toEqual(
+    expect.not.arrayContaining([item])
+  );
+});
+
+test("Taking the baby from somewhere besides nursery does not give cough hint", () => {
+  const item = "baby";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You now have a crying baby."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.location).toEqual(
+    expect.not.arrayContaining([item])
+  );
 });
