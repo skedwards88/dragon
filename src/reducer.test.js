@@ -1733,3 +1733,122 @@ test("Giving the handkerchief to youth once increases reputation and gives plot 
   );
   expect(output.itemLocations.youth).toEqual(expect.arrayContaining([item]));
 });
+
+test("The baby has no use", () => {
+  const item = "baby";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["baby"],
+        nursery: [],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"It's unclear what use this baby has. "`
+  );
+});
+
+test("Dropping the baby in the nursery returns it to the crib and un-saves it", () => {
+  const item = "baby";
+  let location = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      savedBaby: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["baby"],
+        nursery: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You place the baby back in the crib. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]));
+  expect(output.savedBaby).toBe(false)
+});
+
+test("Dropping the baby out the window saves it and removes it from game", () => {
+  const item = "baby";
+  let location = "nurseryWindow";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      savedBaby: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["baby"],
+        nursery: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the baby out of the open window. The crowd below catches the baby. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.savedBaby).toBe(true)
+});
+
+test("Dropping the baby away from the nursery/window just makes it cry more", () => {
+  const item = "baby";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      savedBaby: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["baby"],
+        nursery: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the crying baby. It cries even louder. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(expect.arrayContaining([item]));
+  expect(output.savedBaby).toBe(false)
+});

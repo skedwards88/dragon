@@ -578,13 +578,10 @@ const baby = new Item({
     }
 
     function getGameEffect(gameState) {
-      let gameEffect = {};
-
-      if (!gameState.playerLocation === "nurseryWindow") {
-        gameEffect = { ...gameEffect, savedBaby: false };
+      // you "save the baby" when you pick it up. If you drop it anywhere besides the window, you no longer save it.
+      if (gameState.playerLocation !== "nurseryWindow") {
+        return { savedBaby: false };
       }
-
-      if (Object.keys(gameEffect).length) return gameEffect;
     }
 
     function getTargetItemDestination(gameState) {
