@@ -507,17 +507,23 @@ const handkerchief = new Item({
   getCustomGive: function (gameState) {
     function writeDescription(gameState) {
       if (gameState.playerLocation === "youth") {
-        return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." \n\nThe youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. `;
+        if (!gameState.offeredHandkerchiefToYouth) {
+          return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." \n\nThe youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. `;
+        }
       }
     }
 
     function getGameEffect(gameState) {
       let gameEffect = {};
 
-      if (gameState.playerLocation === "youth") {
+      if (
+        gameState.playerLocation === "youth" &&
+        !gameState.offeredHandkerchiefToYouth
+      ) {
         gameEffect = {
           ...gameEffect,
           reputation: gameState.reputation + 1,
+          offeredHandkerchiefToYouth: true,
         };
       }
 
@@ -525,7 +531,10 @@ const handkerchief = new Item({
     }
 
     function getTargetItemDestination(gameState) {
-      if (gameState.playerLocation === "youth") {
+      if (
+        gameState.playerLocation === "youth" &&
+        !gameState.offeredHandkerchiefToYouth
+      ) {
         return "inventory";
       }
     }

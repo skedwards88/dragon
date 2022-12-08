@@ -83,6 +83,7 @@ test("New game resets state", () => {
       "maxReputation": 17,
       "maxSwordCost": 50,
       "naked": true,
+      "offeredHandkerchiefToYouth": false,
       "ownSword": false,
       "paidDebt": false,
       "playedForYouth": false,
@@ -229,6 +230,7 @@ test("Resuming will apply saved state over new game state", () => {
       "maxReputation": 17,
       "maxSwordCost": 50,
       "naked": true,
+      "offeredHandkerchiefToYouth": false,
       "ownSword": false,
       "paidDebt": false,
       "playedForYouth": false,
@@ -1676,4 +1678,58 @@ test("Dropping handkerchief when wearing it in fountain", () => {
   );
   expect(output.playerMasked).toBe(false);
   expect(output.handkerchiefDamp).toBe(true);
+});
+
+test("Giving the handkerchief to youth once increases reputation and gives plot details. Giving again does nothing.", () => {
+  const item = "handkerchief";
+  let location = "youth";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: true,
+      offeredHandkerchiefToYouth: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." 
+
+    The youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. 
+
+    Reputation +1"
+  `);
+  expect(output.playerMasked).toBe(true);
+  expect(output.offeredHandkerchiefToYouth).toBe(true);
+  expect(output.reputation).toEqual(newGameState.reputation + 1);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.youth).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(output, {
+    action: "giveItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The youth does not want your damp handkerchief but agrees to hold it for you."`
+  );
+  expect(output.playerMasked).toBe(true);
+  expect(output.offeredHandkerchiefToYouth).toBe(true);
+  expect(output.reputation).toEqual(newGameState.reputation + 1);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.youth).toEqual(expect.arrayContaining([item]));
 });

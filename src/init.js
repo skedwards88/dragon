@@ -43,6 +43,7 @@ export function init() {
     savedBaby: false,
     receivedBabyReward: false,
     playedForYouth: false,
+    offeredHandkerchiefToYouth: false,
     cursed: false,
     firstCourtyardEntry: true,
     dragonPoisoned: false,
