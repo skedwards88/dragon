@@ -1543,4 +1543,137 @@ test("Wearing handkerchief, damp, in manor, no fire", () => {
   expect(output.playerMasked).toBe(true);
 });
 
-// todo using in cave
+test("Wearing handkerchief in cave", () => {
+  const item = "handkerchief";
+  let location = "crevice";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You tie the handkerchief around your nose and mouth. "`
+  );
+  expect(output.playerMasked).toBe(true);
+});
+
+test("Removing handkerchief in cave", () => {
+  const item = "handkerchief";
+  let location = "crevice";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You remove the handkerchief from your nose and mouth. "`
+  );
+  expect(output.playerMasked).toBe(false);
+});
+
+test("Dropping handkerchief when wearing it in fire", () => {
+  const item = "handkerchief";
+  let location = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: true,
+      playerMasked: true,
+      manorFire: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You remove the handkerchief from your nose and mouth and drop it in the manor. The smoke fills your lungs, making you cough. "`
+  );
+  expect(output.playerMasked).toBe(false);
+});
+
+test("Dropping handkerchief when wearing it in cave", () => {
+  const item = "handkerchief";
+  let location = "crevice";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: true,
+      manorFire: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You remove the handkerchief from your nose and mouth and drop it in the crevice. "`
+  );
+  expect(output.playerMasked).toBe(false);
+  expect(output.handkerchiefDamp).toBe(false);
+});
+
+test("Dropping handkerchief when wearing it in fountain", () => {
+  const item = "handkerchief";
+  let location = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: true,
+      manorFire: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You remove the handkerchief from your nose and mouth and drop it in the fountain. "`
+  );
+  expect(output.playerMasked).toBe(false);
+  expect(output.handkerchiefDamp).toBe(true);
+});

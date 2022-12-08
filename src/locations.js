@@ -1031,7 +1031,7 @@ const puddle = new Location({
 
 const crevice = new Location({
   id: "crevice",
-  dropPreposition: "behind",
+  dropPreposition: "in",
   getConnections: function () {
     return {
       N: "puddle",

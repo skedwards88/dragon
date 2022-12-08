@@ -442,7 +442,7 @@ const handkerchief = new Item({
 
       if (
         ["dung", "defecatory", "crevice", "puddle"].includes(
-          gameState.playerLocation
+          gameState.playerLocation && !gameState.playerMasked
         )
       ) {
         text += "Even with it, the stench reaches your nose. ";
@@ -469,7 +469,18 @@ const handkerchief = new Item({
         const dropPreposition =
           locations[gameState.playerLocation].dropPreposition;
 
-        return `You remove the handkerchief from your nose and mouth and drop it ${dropPreposition} the ${gameState.playerLocation}. `;
+        let text = `You remove the handkerchief from your nose and mouth and drop it ${dropPreposition} the ${gameState.playerLocation}. `;
+
+        if (
+          ["manor", "nursery", "nurseryWindow"].includes(
+            gameState.playerLocation
+          ) &&
+          gameState.manorFire &&
+          gameState.handkerchiefDamp
+        ) {
+          text += "The smoke fills your lungs, making you cough. ";
+        }
+        return text;
       }
     }
 
