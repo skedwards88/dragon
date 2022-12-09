@@ -1916,3 +1916,154 @@ test("Taking the baby from somewhere besides nursery does not give cough hint", 
     expect.not.arrayContaining([item])
   );
 });
+
+test("Using the sword to on sleeping dragon", () => {
+  const item = "sword";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: true,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. 
+
+    Reputation +2"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.location).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.dragonAsleep).toBe(true);
+  expect(output.dragonDead).toBe(true);
+  expect(output.reputation).toEqual(newGameState.reputation + 2);
+});
+
+test("Using the sword to on poisoned not sleeping dragon", () => {
+  const item = "sword";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: false,
+      dragonPoisoned: true,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. 
+
+    Reputation -1"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.location).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.dragonAsleep).toBe(false);
+  expect(output.dragonPoisoned).toBe(true);
+  expect(output.dragonDead).toBe(false);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(1);
+});
+
+test("Using the sword to on not poisoned not sleeping dragon", () => {
+  const item = "sword";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: false,
+      dragonPoisoned: false,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You try to cut off the dragon's head, but it singes you as soon as you get close enough. 
+
+    Reputation -1"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.location).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.dragonAsleep).toBe(false);
+  expect(output.dragonPoisoned).toBe(false);
+  expect(output.dragonDead).toBe(false);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(1);
+});
+
+test("Using the sword not on dragon", () => {
+  const item = "sword";
+  let location = "inn";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: false,
+      dragonPoisoned: false,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You slash the sword through the air, looking a bit foolish. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.location).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.dragonAsleep).toBe(false);
+  expect(output.dragonPoisoned).toBe(false);
+  expect(output.dragonDead).toBe(false);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(0);
+});
