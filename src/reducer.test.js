@@ -1882,7 +1882,7 @@ test("Taking the baby from nursery gives cough hint", () => {
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.itemLocations.location).toEqual(
+  expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
 });
@@ -1912,7 +1912,7 @@ test("Taking the baby from somewhere besides nursery does not give cough hint", 
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.itemLocations.location).toEqual(
+  expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
 });
@@ -1945,7 +1945,7 @@ test("Using the sword to on sleeping dragon", () => {
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.itemLocations.location).toEqual(
+  expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
   expect(output.dragonAsleep).toBe(true);
@@ -1982,7 +1982,7 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.itemLocations.location).toEqual(
+  expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
   expect(output.dragonAsleep).toBe(false);
@@ -2021,7 +2021,7 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.itemLocations.location).toEqual(
+  expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
   expect(output.dragonAsleep).toBe(false);
@@ -2058,7 +2058,7 @@ test("Using the sword not on dragon", () => {
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
-  expect(output.itemLocations.location).toEqual(
+  expect(output.itemLocations[location]).toEqual(
     expect.not.arrayContaining([item])
   );
   expect(output.dragonAsleep).toBe(false);
@@ -2066,4 +2066,140 @@ test("Using the sword not on dragon", () => {
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(0);
+});
+
+test("Taking the sword from the blacksmith if you haven't paid will lose reputation (every time) and increase cose (once)", () => {
+  const item = "sword";
+  let location = "smithy";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      ownSword: false,
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+
+    Reputation -1"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.swordCost).toEqual(newGameState.swordCost + 10);
+
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+
+    Reputation -1"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.reputation).toEqual(newGameState.reputation - 2);
+  expect(output.swordCost).toEqual(newGameState.swordCost + 10);
+});
+
+test("Taking the sword from the blacksmith if you have paid is a normal take", () => {
+  const item = "sword";
+  let location = "smithy";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      ownSword: true,
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You now have a sword."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.swordCost).toEqual(newGameState.swordCost);
+});
+
+test("You can't take the sword from the wizard if you traded it to the wizard", () => {
+  const item = "sword";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gotScoreByTrade: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        wizard: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"Ah you would like to exchange? You must first give me the score."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+});
+
+test("You can take the sword from the wizard if you didn't trade it to the wizard", () => {
+  const item = "sword";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gotScoreByTrade: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        wizard: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You now have a sword."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
 });
