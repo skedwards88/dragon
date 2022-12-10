@@ -2203,3 +2203,168 @@ test("You can take the sword from the wizard if you didn't trade it to the wizar
     expect.not.arrayContaining([item])
   );
 });
+
+test("Give the sword to the wizard for the score as long as you haven't bargained yet. You can't take the sword back directly.", () => {
+  const item = "sword";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gotScoreByTrade: false,
+      gotScoreByCredit: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        wizard: ["score"],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You give your sword to the wizard. In exchange, they give you the musical score. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining(["score"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.gotScoreByTrade).toBe(true);
+
+  // trade back
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"Ah you would like to exchange? You must first give me the score."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining(["score"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.gotScoreByTrade).toBe(true);
+});
+
+test("If you paid for the score, you can't trade for the score; giving the sword is a normal give and taking back is a normal take.", () => {
+  const item = "sword";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gotScoreByTrade: false,
+      gotScoreByCredit: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        wizard: ["score"],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The wizard does not want your sword but agrees to hold it for you."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["score"])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.gotScoreByTrade).toBe(false);
+  expect(output.gotScoreByCredit).toBe(true);
+
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You now have a sword."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["score"])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.gotScoreByTrade).toBe(false);
+  expect(output.gotScoreByCredit).toBe(true);
+});
+
+test("If the wizard doesn't have the score, giving the sword is a normal give.", () => {
+  const item = "sword";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gotScoreByTrade: false,
+      gotScoreByCredit: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        wizard: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The wizard does not want your sword but agrees to hold it for you."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["score"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining(["score"])
+  );
+  expect(output.gotScoreByTrade).toBe(false);
+  expect(output.gotScoreByCredit).toBe(false);
+
+  // take back
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You now have a sword."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining(["score"])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining(["score"])
+  );
+  expect(output.gotScoreByTrade).toBe(false);
+  expect(output.gotScoreByCredit).toBe(false);
+});
