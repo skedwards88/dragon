@@ -2724,5 +2724,63 @@ test("Using the horse will unmount if mounted but will keep the horse tethered",
   expect(output.horseTethered).toBe(true);
 });
 
+test("Eating the berries will lose reputation and get poisoned but berries will still be available. Eating again will do the same.", () => {
+  const item = "berries";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      playerPoisoned: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
+
+    Reputation -1"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.playerPoisoned).toBe(true);
+  
+  output = reducer(
+    output,
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
+
+    Reputation -1"
+  `);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.reputation).toEqual(newGameState.reputation - 2);
+  expect(output.playerPoisoned).toBe(true);
+});
+
 //todo if horse dies because gave it berries, remove from inventory
 // todo when take berries, change clearing description
+// todo make saves intentional and limited. when die allow to resume from last save
+// start with magic journal in inventory? can never give it or drop it? like Pay, but Save?
