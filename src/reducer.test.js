@@ -2472,7 +2472,7 @@ test("If the horse is tethered, you can take it", () => {
   expect(output.horseTethered).toBe(true);
 });
 
-test("When you give the horse, you automatically unmount", () => {
+test("When you give the horse, you automatically unmount but the horse is still tethered", () => {
   const item = "horse";
   let location = "wizard";
 
@@ -2507,4 +2507,72 @@ test("When you give the horse, you automatically unmount", () => {
   expect(output.horseTethered).toBe(true);
 });
 
-//todo if horse dies, remove from inventory
+test("If you drop the horse, it is no longer tethered", () => {
+  const item = "horse";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      horseMounted: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(false);
+});
+
+test("If you  drop the horse when mounted, it is no longer tethered", () => {
+  const item = "horse";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      horseMounted: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(false);
+});
