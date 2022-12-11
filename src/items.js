@@ -943,15 +943,8 @@ const berries = new Item({
       if (Object.keys(gameEffect).length) return gameEffect;
     }
 
-    function getTargetItemDestination(gameState) {
-      if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        return "squirrel";
-      }
-    }
-
     return new ItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
       description: writeDescription(gameState),
     });
   },
@@ -991,10 +984,6 @@ const berries = new Item({
     }
 
     function getTargetItemDestination(gameState) {
-      if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        return "squirrel";
-      }
-
       if (gameState.playerLocation === "wizard") {
         return "inventory";
       }

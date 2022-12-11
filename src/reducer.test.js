@@ -2832,7 +2832,7 @@ test("If you drop the berries at the horse, it dies, but it won't die twice", ()
     {
       ...newGameState,
       playerLocation: location,
-      squirrelDead: false,
+      horseDead: false,
       itemLocations: {
         ...newGameState.itemLocations,
         inventory: [item],
@@ -2871,7 +2871,40 @@ test("If you drop the berries at the horse, it dies, but it won't die twice", ()
   expect(output.horseDead).toBe(true);
 });
 
-test("If you drop the berries at the horse and squirrel, the both die, but not twice", () => {
+test("If you drop the berries at the horse, it won't die if it is tethered", () => {
+  const item = "berries";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["horse"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the berries in the stream."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+});
+
+test("If you drop the berries at the horse and squirrel, they both die, but not twice", () => {
   const item = "berries";
   let location = "squirrel";
 
@@ -2880,6 +2913,7 @@ test("If you drop the berries at the horse and squirrel, the both die, but not t
       ...newGameState,
       playerLocation: location,
       squirrelDead: false,
+      horseDead: false,
       itemLocations: {
         ...newGameState.itemLocations,
         inventory: [item],
