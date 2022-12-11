@@ -2652,6 +2652,5 @@ test("If you drop the horse at the clearing, it doesn't die if the berries are n
   expect(output.horseTethered).toBe(false);
 });
 
-
 //todo if horse dies because gave it berries, remove from inventory
 // todo when take berries, change clearing description
