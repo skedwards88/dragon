@@ -2757,14 +2757,11 @@ test("Eating the berries will lose reputation and get poisoned but berries will 
   );
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.playerPoisoned).toBe(true);
-  
-  output = reducer(
-    output,
-    {
-      action: "useItem",
-      item: item,
-    }
-  );
+
+  output = reducer(output, {
+    action: "useItem",
+    item: item,
+  });
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
 
@@ -2779,6 +2776,151 @@ test("Eating the berries will lose reputation and get poisoned but berries will 
   expect(output.reputation).toEqual(newGameState.reputation - 2);
   expect(output.playerPoisoned).toBe(true);
 });
+
+test("If you drop the berries at the squirrel, it dies, but it won't die twice", () => {
+  const item = "berries";
+  let location = "squirrel";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.squirrelDead).toBe(true);
+
+  output = reducer(output, {
+    action: "dropItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the berries by the dead squirrel."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.squirrelDead).toBe(true);
+});
+
+test("If you drop the berries at the horse, it dies, but it won't die twice", () => {
+  const item = "berries";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["horse"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+
+  output = reducer(output, {
+    action: "dropItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the berries in the stream."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+});
+
+test("If you drop the berries at the horse and squirrel, the both die, but not twice", () => {
+  const item = "berries";
+  let location = "squirrel";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["horse"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+  expect(output.squirrelDead).toBe(true);
+
+  output = reducer(output, {
+    action: "dropItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You drop the berries by the dead squirrel."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+  expect(output.squirrelDead).toBe(true);
+});
+
+// todo what if drop berries at horse and squirrel at same time?
 
 //todo if horse dies because gave it berries, remove from inventory
 // todo when take berries, change clearing description
