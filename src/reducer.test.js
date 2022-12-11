@@ -2652,5 +2652,77 @@ test("If you drop the horse at the clearing, it doesn't die if the berries are n
   expect(output.horseTethered).toBe(false);
 });
 
+test("Using the horse will mount if unmounted", () => {
+  const item = "horse";
+  let location = "clearing";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: false,
+      horseMounted: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You mount the horse. Much easier than walking!"`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(true);
+  expect(output.horseTethered).toBe(true);
+});
+
+test("Using the horse will unmount if mounted but will keep the horse tethered", () => {
+  const item = "horse";
+  let location = "clearing";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: false,
+      horseMounted: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "useItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You unmount the horse, keeping hold of the horse's reins. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(true);
+});
+
 //todo if horse dies because gave it berries, remove from inventory
 // todo when take berries, change clearing description

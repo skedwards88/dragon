@@ -787,8 +787,8 @@ const horse = new Item({
 
     function getGameEffect(gameState) {
       return gameState.horseMounted
-        ? { horseMounted: false }
-        : { horseMounted: true };
+        ? { horseMounted: false, horseTethered: true }
+        : { horseMounted: true, horseTethered: true };
     }
 
     return new ItemInteraction({
