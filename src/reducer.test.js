@@ -2576,3 +2576,82 @@ test("If you  drop the horse when mounted, it is no longer tethered", () => {
   expect(output.horseMounted).toBe(false);
   expect(output.horseTethered).toBe(false);
 });
+
+test("If you drop the horse at the same place as the berries are, it dies. The berries are still available.", () => {
+  const item = "horse";
+  let location = "gate";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      horseMounted: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["berries"],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You unmount the horse and let go of the horse's reins. The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining(["berries"])
+  );
+  expect(output.horseDead).toBe(true);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(false);
+});
+
+test("If you drop the horse at the clearing, it doesn't die if the berries are no longer there", () => {
+  const item = "horse";
+  let location = "clearing";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      horseMounted: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "dropItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(false);
+});
+
+
+//todo if horse dies because gave it berries, remove from inventory
+// todo when take berries, change clearing description

@@ -807,7 +807,7 @@ const horse = new Item({
         text += "You let go of the horse's reins. ";
       }
 
-      if (gameState.playerLocation === "clearing") {
+      if (gameState.itemLocations[gameState.playerLocation].includes("berries")) {
         text +=
           "The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. ";
       } else {
@@ -821,7 +821,7 @@ const horse = new Item({
     function getGameEffect(gameState) {
       let gameEffect = { horseTethered: false };
 
-      if (gameState.playerLocation === "clearing") {
+      if (gameState.itemLocations[gameState.playerLocation].includes("berries")) {
         gameEffect = { ...gameEffect, horseDead: true };
       }
 
