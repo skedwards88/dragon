@@ -517,10 +517,10 @@ const pasture = new Location({
   id: "pasture",
   getDisplayName: function (gameState) {
     const pastureHasHorse = gameState.itemLocations?.pasture.includes("horse");
-    return pastureHasHorse ? "horse" : "pasture";
+    return pastureHasHorse && !gameState.horseDead ? "horse" : "pasture";
   },
   getSentient: function (gameState) {
-    return gameState.itemLocations.pasture.includes("horse");
+    return gameState.itemLocations.pasture.includes("horse") && !gameState.horseDead ;
   },
   dropPreposition: "at",
   getConnections: function () {
@@ -771,8 +771,8 @@ const squirrel = new Location({
   getDisplayName: function (gameState) {
     return gameState.squirrelDead ? "dead squirrel" : "squirrel";
   },
-  getSentient: function () {
-    return true;
+  getSentient: function (gameState) {
+    return !gameState.squirrelDead;
   },
   dropPreposition: "by",
   getConnections: function () {

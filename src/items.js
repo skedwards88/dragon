@@ -951,10 +951,8 @@ const berries = new Item({
 
   getCustomGive: function (gameState) {
     function writeDescription(gameState) {
-      let text = "";
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        text +=
-          "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
+        return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
 
       if (
@@ -962,13 +960,12 @@ const berries = new Item({
         !gameState.horseTethered &&
         !gameState.horseDead
       ) {
-        text +=
-          "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
+        return "The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. ";
       }
+
       if (gameState.playerLocation === "wizard") {
-        text += `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
+        return `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
       }
-      return text;
     }
 
     function getGameEffect(gameState) {

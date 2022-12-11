@@ -2954,7 +2954,203 @@ test("If you drop the berries at the horse and squirrel, they both die, but not 
   expect(output.squirrelDead).toBe(true);
 });
 
-// todo what if drop berries at horse and squirrel at same time?
+test("If you give the berries to the squirrel, it dies, but it won't die twice", () => {
+  const item = "berries";
+  let location = "squirrel";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.squirrelDead).toBe(true);
+
+  output = reducer(output, {
+    action: "giveItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The dead squirrel does not want your handful of berries."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.squirrelDead).toBe(true);
+});
+
+test("If you give the berries to the horse, it dies, but it won't die twice", () => {
+  const item = "berries";
+  let location = "pasture";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["horse"],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+
+  // giving isn't technically allowed anymore since the pasture is not sentient without the horse
+  // but this is what would happen if it was
+  output = reducer(output, {
+    action: "giveItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The pasture does not want your handful of berries."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+});
+
+test("If you give the berries to the horse, it won't die even if it is tethered", () => {
+  const item = "berries";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["horse"],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The stream does not want your handful of berries."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+});
+
+test("If you give the berries to the squirrel and the horse is present, only the squirrel dies", () => {
+  const item = "berries";
+  let location = "squirrel";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      horseDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: ["horse"],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.squirrelDead).toBe(true);
+
+  // giving to the horse is not enabled since the dead squirrel is not sentient
+  // but here's what would happen if it was
+  output = reducer(output, {
+    action: "giveItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+  expect(output.squirrelDead).toBe(true);
+
+  output = reducer(output, {
+    action: "giveItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The dead squirrel does not want your handful of berries."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+  expect(output.squirrelDead).toBe(true);
+});
+
 
 //todo if horse dies because gave it berries, remove from inventory
 // todo when take berries, change clearing description
