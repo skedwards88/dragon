@@ -2155,7 +2155,7 @@ test("You can't take the sword from the wizard if you traded it to the wizard", 
       gotScoreByTrade: true,
       itemLocations: {
         ...newGameState.itemLocations,
-        wizard: [item],
+        [location]: [item],
       },
     },
     {
@@ -2185,7 +2185,7 @@ test("You can take the sword from the wizard if you didn't trade it to the wizar
       gotScoreByTrade: false,
       itemLocations: {
         ...newGameState.itemLocations,
-        wizard: [item],
+        [location]: [item],
       },
     },
     {
@@ -2216,7 +2216,7 @@ test("Give the sword to the wizard for the score as long as you haven't bargaine
       gotScoreByCredit: false,
       itemLocations: {
         ...newGameState.itemLocations,
-        wizard: ["score"],
+        [location]: ["score"],
       },
     },
     {
@@ -2264,7 +2264,7 @@ test("If you paid for the score, you can't trade for the score; giving the sword
       gotScoreByCredit: true,
       itemLocations: {
         ...newGameState.itemLocations,
-        wizard: ["score"],
+        [location]: ["score"],
       },
     },
     {
@@ -2319,7 +2319,7 @@ test("If the wizard doesn't have the score, giving the sword is a normal give.",
       gotScoreByCredit: false,
       itemLocations: {
         ...newGameState.itemLocations,
-        wizard: [],
+        [location]: [],
       },
     },
     {
@@ -2368,3 +2368,143 @@ test("If the wizard doesn't have the score, giving the sword is a normal give.",
   expect(output.gotScoreByTrade).toBe(false);
   expect(output.gotScoreByCredit).toBe(false);
 });
+
+test("You can't take the horse if it is dead", () => {
+  const item = "horse";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: true,
+      horseTethered: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"This dead horse is too heavy to carry. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(true);
+});
+
+test("You can't take the horse directly", () => {
+  const item = "horse";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: false,
+      horseMounted: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [location]: [item],
+        inventory: ["apple", "berries"],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(false);
+});
+
+test("If the horse is tethered, you can take it", () => {
+  const item = "horse";
+  let location = "stream";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: true,
+      horseMounted: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You take back the horse's reins. "`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(true);
+});
+
+test("When you give the horse, you automatically unmount", () => {
+  const item = "horse";
+  let location = "wizard";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      horseDead: false,
+      horseTethered: false,
+      horseMounted: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The wizard does not want your voracious horse but agrees to hold it for you."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.horseMounted).toBe(false);
+  expect(output.horseTethered).toBe(true);
+});
+
+//todo if horse dies, remove from inventory

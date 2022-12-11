@@ -872,7 +872,7 @@ const horse = new Item({
   getCustomGive: function (gameState) {
     function getGameEffect(gameState) {
       if (gameState.horseMounted) {
-        return { horseMounted: false };
+        return { horseMounted: false, horseTethered: true };
       }
     }
 
