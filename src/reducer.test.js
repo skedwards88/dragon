@@ -3151,8 +3151,73 @@ test("If you give the berries to the squirrel and the horse is present, only the
   expect(output.squirrelDead).toBe(true);
 });
 
+test("The wizard refuses the berries", () => {
+  const item = "berries";
+  let location = "wizard";
 
-//todo if horse dies because gave it berries, remove from inventory
-// todo when take berries, change clearing description
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      horseDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The wizard politely refuses the berries. "Those will give you a life changing experience," he says."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.squirrelDead).toBe(false);
+});
+
+test("Other sentients will just hold the berries", () => {
+  const item = "berries";
+  let location = "blacksmith";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      squirrelDead: false,
+      horseDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+        [location]: [],
+      },
+    },
+    {
+      action: "giveItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The blacksmith does not want your handful of berries but agrees to hold it for you."`
+  );
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.horseDead).toBe(false);
+  expect(output.squirrelDead).toBe(false);
+});
+
 // todo make saves intentional and limited. when die allow to resume from last save
 // start with magic journal in inventory? can never give it or drop it? like Pay, but Save?
