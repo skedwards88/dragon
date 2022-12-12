@@ -519,7 +519,9 @@ const pasture = new Location({
     return pastureHasHorse && !gameState.horseDead ? "horse" : "pasture";
   },
   getSentient: function (gameState) {
-    return gameState.itemLocations.pasture.includes("horse") && !gameState.horseDead ;
+    return (
+      gameState.itemLocations.pasture.includes("horse") && !gameState.horseDead
+    );
   },
   dropPreposition: "at",
   getConnections: function () {

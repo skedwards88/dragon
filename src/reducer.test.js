@@ -3598,7 +3598,7 @@ test("Moving player, no consequences", () => {
     }
   );
   expect(output.playerLocation).toEqual(newLocation);
-  expect(output).toEqual({...newGameState, playerLocation: newLocation})
+  expect(output).toEqual({ ...newGameState, playerLocation: newLocation });
 });
 
 test("Entering the inn when naked will lose reputation", () => {
@@ -3637,13 +3637,10 @@ test("Leaving the courtyard the first time is different", () => {
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
 
-  output = reducer(
-    output,
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    }
-  );
+  output = reducer(output, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
 });
@@ -3837,7 +3834,7 @@ test("Entering the fountain: saved baby, not rewarded yet, cough, baby cough, no
 test("Entering the fountain: baby goes out of play", () => {
   let oldLocation = "manor";
   let newLocation = "fountain";
-  let item = "baby"
+  let item = "baby";
 
   let output = reducer(
     {
@@ -3876,7 +3873,7 @@ test("Entering the fountain: baby goes out of play", () => {
 test("Entering the fountain: baby goes out of play, does not error if baby already was out of play", () => {
   let oldLocation = "manor";
   let newLocation = "fountain";
-  let item = "baby"
+  let item = "baby";
 
   let output = reducer(
     {
@@ -4080,7 +4077,7 @@ test("Having but not wearing a damp handkerchief doesn't protect from cough", ()
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.playerCough).toBe(true);
-})
+});
 
 test("Wearing a damp handkerchief protects from cough", () => {
   let oldLocation = "manor";
