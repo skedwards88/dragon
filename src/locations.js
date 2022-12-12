@@ -1061,9 +1061,6 @@ const crevice = new Location({
           singeCount: gameState.singeCount + 1,
           reputation: gameState.reputation - 1,
         }),
-      // ...(gameState.itemLocations.puddle.includes("berries") &&todo
-      //   gameState.clothesPoopy &&
-      //   !gameState.naked && { dragonPoisoned: true }),
     };
   },
   onExitGameStateEffect: function (gameState) {

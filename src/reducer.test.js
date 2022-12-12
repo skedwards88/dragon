@@ -4525,3 +4525,167 @@ test("When enter dung, if enough time has elapsed but dragon is poisoned, you do
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
+
+test("When enter crevice, time in cave increases", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "crevice";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("When enter crevice, if the dragon is not poisoned and you are not wearing poopy clothes, and enough time has elapsed, you get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "crevice";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: false,
+      timeInCave: timeInCave,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(newGameState.singeCount + 1);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation -1"
+  `);
+});
+
+test("When enter crevice, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "crevice";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: true,
+      timeInCave: timeInCave,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("When enter crevice, if enough time has elapsed but you are wearing poopy clothes, you don't get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "crevice";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: false,
+      timeInCave: timeInCave,
+      naked: false,
+      clothesPoopy: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("When enter crevice, if enough time has elapsed and you have poopy clothes but are not wearing them, you get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "crevice";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: false,
+      timeInCave: timeInCave,
+      naked: true,
+      clothesPoopy: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(newGameState.singeCount + 1);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation -1"
+  `);
+});
+
+test("When enter crevice, if enough time has elapsed and you have are wearing clothes but they are not poopy, you get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "crevice";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: false,
+      timeInCave: timeInCave,
+      naked: false,
+      clothesPoopy: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(newGameState.singeCount + 1);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation -1"
+  `);
+});
