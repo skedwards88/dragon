@@ -4804,3 +4804,196 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
   expect(output.dragonPoisoned).toBe(false);
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, true]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, false]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, true]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, true]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, true]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, false]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, false]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+});
+
+
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
+  let oldLocation = "caveEntrance";
+  let newLocation = "lair";
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, false]
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: dragonPoisoned,
+      dragonDead: dragonDead,
+      dragonAsleep: dragonAsleep,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(newGameState.singeCount + 1);
+});
