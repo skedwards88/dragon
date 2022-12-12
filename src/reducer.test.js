@@ -4121,7 +4121,7 @@ test("Talking to the blacksmith when naked will lose reputation", () => {
   expect(output.reputation).toEqual(newGameState.reputation - 1);
 });
 
-test("Talking to the yough when naked will lose reputation", () => {
+test("Talking to the youth when naked will lose reputation", () => {
   let oldLocation = "gate";
   let newLocation = "youth";
 
@@ -4137,4 +4137,241 @@ test("Talking to the yough when naked will lose reputation", () => {
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
+});
+
+test("If you cross the stream without repaying the wizard, you get cursed", () => {
+  let oldLocation = "stream";
+  let newLocation = "road3";
+  let treasureLevel = 1;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      paidDebt: false,
+      treasureLevel: treasureLevel,
+      cursed: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.gold).toEqual(newGameState.gold - 100);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation -1
+
+    Gold -100"
+  `);
+
+  // The game state doesn't reflect cursed until you leave the location though
+  output = reducer(
+    {
+      ...output,
+      playerLocation: newLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: oldLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(oldLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.gold).toEqual(newGameState.gold - 100);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(true);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("If you haven't earned any treasure, it is safe to cross", () => {
+  let oldLocation = "stream";
+  let newLocation = "road3";
+  let treasureLevel = 0;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      paidDebt: false,
+      treasureLevel: treasureLevel,
+      cursed: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+  output = reducer(
+    {
+      ...output,
+      playerLocation: newLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: oldLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(oldLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("If you repaid the wizard, it is safe to cross", () => {
+  let oldLocation = "stream";
+  let newLocation = "road3";
+  let treasureLevel = 1;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      paidDebt: true,
+      treasureLevel: treasureLevel,
+      cursed: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(true);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+  output = reducer(
+    {
+      ...output,
+      playerLocation: newLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: oldLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(oldLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(true);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("If you don't owe the wizard, you can cross safely", () => {
+  let oldLocation = "stream";
+  let newLocation = "road3";
+  let treasureLevel = 1;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: false,
+      paidDebt: false,
+      treasureLevel: treasureLevel,
+      cursed: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+  output = reducer(
+    {
+      ...output,
+      playerLocation: newLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: oldLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(oldLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(false);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("You won't get cursed twice", () => {
+  let oldLocation = "stream";
+  let newLocation = "road3";
+  let treasureLevel = 1;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      paidDebt: false,
+      treasureLevel: treasureLevel,
+      cursed: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(true);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+  output = reducer(
+    {
+      ...output,
+      playerLocation: newLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: oldLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(oldLocation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.gold).toEqual(newGameState.gold);
+  expect(output.treasureLevel).toEqual(treasureLevel);
+  expect(output.paidDebt).toBe(false);
+  expect(output.cursed).toBe(true);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
