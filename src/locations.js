@@ -697,7 +697,9 @@ const road3 = new Location({
         gameState.treasureAmount * (gameState.treasureLevel / 3);
 
       return {
+        // you won't get cursed until you leave the location so that the proper text displays
         gold: gameState.gold - treasureTaken,
+        reputation: gameState.reputation - 1,
       };
     }
   },
@@ -710,6 +712,7 @@ const road3 = new Location({
       !gameState.cursed
     ) {
       return {
+        // you get cursed when you leave instead of when you enter so that the proper text displays
         cursed: true,
       };
     }

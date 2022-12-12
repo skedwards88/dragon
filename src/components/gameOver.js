@@ -12,7 +12,6 @@ export default function GameOver({
     if (gameState.horseMounted) reputationChange += 1;
     if (gameState.naked) reputationChange -= 1;
     if (gameState.clothesPoopy && !gameState.naked) reputationChange -= 1;
-    if (gameState.cursed) reputationChange -= 1;
     // Not losing reputation for being poisoned or singed since that happens when the event occurs
   }
   let finalReputation = gameState.reputation + reputationChange;
