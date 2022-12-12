@@ -4808,7 +4808,7 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, true]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, true];
 
   let output = reducer(
     {
@@ -4832,7 +4832,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, false]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, false];
 
   let output = reducer(
     {
@@ -4856,7 +4856,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, true]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, true];
 
   let output = reducer(
     {
@@ -4880,7 +4880,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, true]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, true];
 
   let output = reducer(
     {
@@ -4904,7 +4904,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, true]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, true];
 
   let output = reducer(
     {
@@ -4928,7 +4928,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, false]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, false];
 
   let output = reducer(
     {
@@ -4952,7 +4952,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, false]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, false];
 
   let output = reducer(
     {
@@ -4973,11 +4973,10 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-
 test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
   let oldLocation = "caveEntrance";
   let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, false]
+  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, false];
 
   let output = reducer(
     {
