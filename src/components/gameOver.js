@@ -42,7 +42,7 @@ export default function GameOver({
         : ""
     }${
       gameState.cursed
-        ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life.\n\nReputation -1"
+        ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life."
         : ""
     }${
       gameState.dragonDead
