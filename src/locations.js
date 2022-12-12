@@ -275,7 +275,6 @@ const fountain = new Location({
       };
     }
   },
-  onExitItemLocationEffect: function () {},
 });
 
 const manor = new Location({

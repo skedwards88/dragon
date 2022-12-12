@@ -3458,6 +3458,7 @@ test("If the dragon is not poisoned or anything, you can't take any treasure", (
     expect.not.arrayContaining([item])
   );
 });
+
 test("You can take the treasure in increments, getting singed along the way", () => {
   const item = "treasure";
   let location = "lair";
@@ -3582,5 +3583,561 @@ test("You can take the treasure in increments, getting singed along the way", ()
   );
 });
 
-// todo make saves intentional and limited. when die allow to resume from last save
-// start with magic journal in inventory? can never give it or drop it? like Pay, but Save?
+test("Moving player, no consequences", () => {
+  let oldLocation = "inn";
+  let newLocation = "room";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output).toEqual({...newGameState, playerLocation: newLocation})
+});
+
+test("Entering the inn when naked will lose reputation", () => {
+  let oldLocation = "fountain";
+  let newLocation = "inn";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+});
+
+test("Leaving the courtyard the first time is different", () => {
+  let oldLocation = "courtyard";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      firstCourtyardEntry: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.firstCourtyardEntry).toEqual(false);
+
+  output = reducer(
+    output,
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.firstCourtyardEntry).toEqual(false);
+});
+
+test("Entering the fountain: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: false,
+      babyCough: false,
+      naked: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation + 2);
+  expect(output.gold).toEqual(newGameState.gold + 50);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation +2
+
+    Gold +50"
+  `);
+});
+
+test("Entering the fountain: saved baby, not rewarded yet, cough, no baby cough, clothed", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: true,
+      babyCough: false,
+      naked: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation + 1);
+  expect(output.gold).toEqual(newGameState.gold + 50);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation +1
+
+    Gold +50"
+  `);
+});
+
+test("Entering the fountain: saved baby, not rewarded yet, no cough, baby cough, clothed", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: false,
+      babyCough: true,
+      naked: false,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation + 1);
+  expect(output.gold).toEqual(newGameState.gold + 50);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation +1
+
+    Gold +50"
+  `);
+});
+
+test("Entering the fountain: saved baby, not rewarded yet, no cough, no baby cough, not clothed", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: false,
+      babyCough: false,
+      naked: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation + 1);
+  expect(output.gold).toEqual(newGameState.gold + 50);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation +1
+
+    Gold +50"
+  `);
+});
+
+test("Entering the fountain: saved baby, not rewarded yet, cough, no baby cough, not clothed", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: true,
+      babyCough: false,
+      naked: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation + 0);
+  expect(output.gold).toEqual(newGameState.gold + 50);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation +0
+
+    Gold +50"
+  `);
+});
+
+test("Entering the fountain: saved baby, not rewarded yet, cough, baby cough, not clothed", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: true,
+      babyCough: true,
+      naked: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.gold).toEqual(newGameState.gold + 50);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation -1
+
+    Gold +50"
+  `);
+});
+
+test("Entering the fountain: baby goes out of play", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+  let item = "baby"
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: true,
+      babyCough: true,
+      naked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[oldLocation]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[newLocation]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.arrayContaining([item])
+  );
+});
+
+test("Entering the fountain: baby goes out of play, does not error if baby already was out of play", () => {
+  let oldLocation = "manor";
+  let newLocation = "fountain";
+  let item = "baby"
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      playerCough: true,
+      babyCough: true,
+      naked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        outOfPlay: [item],
+        inventory: [],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[oldLocation]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[newLocation]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.arrayContaining([item])
+  );
+});
+
+test("Exiting the fountain puts out the fire if the baby was saved", () => {
+  let oldLocation = "fountain";
+  let newLocation = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      manorFire: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.savedBaby).toBe(true);
+  expect(output.manorFire).toBe(false);
+  expect(output.receivedBabyReward).toBe(true);
+});
+
+test("Exiting the fountain does not put out the fire if the baby was not saved", () => {
+  let oldLocation = "fountain";
+  let newLocation = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: false,
+      receivedBabyReward: false,
+      manorFire: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.savedBaby).toBe(false);
+  expect(output.manorFire).toBe(true);
+  expect(output.receivedBabyReward).toBe(false);
+});
+
+test("Taking the baby into the manor gives it a cough", () => {
+  let oldLocation = "nursery";
+  let newLocation = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      manorFire: true,
+      babyCough: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["baby"],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.babyCough).toBe(true);
+  expect(output.manorFire).toBe(true);
+});
+
+test("The baby doesn't develop a cough if you don't bring it with you", () => {
+  let oldLocation = "nursery";
+  let newLocation = "manor";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      manorFire: true,
+      babyCough: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        nursery: ["baby"],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.babyCough).toBe(false);
+  expect(output.manorFire).toBe(true);
+});
+
+test("If you get to the nursery without wearing the damp handkerchief, you get a cough", () => {
+  let oldLocation = "manor";
+  let newLocation = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      handkerchiefDamp: false,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.playerCough).toBe(true);
+});
+
+test("Wearing a dry handkerchief doesn't protect from cough", () => {
+  let oldLocation = "manor";
+  let newLocation = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      handkerchiefDamp: false,
+      playerMasked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.playerCough).toBe(true);
+});
+
+test("Having but not wearing a damp handkerchief doesn't protect from cough", () => {
+  let oldLocation = "manor";
+  let newLocation = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      handkerchiefDamp: true,
+      playerMasked: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.playerCough).toBe(true);
+})
+
+test("Wearing a damp handkerchief protects from cough", () => {
+  let oldLocation = "manor";
+  let newLocation = "nursery";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      handkerchiefDamp: true,
+      playerMasked: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.playerCough).toBe(false);
+});
+
+test("Talking to the blacksmith when naked will lose reputation", () => {
+  let oldLocation = "smithy";
+  let newLocation = "blacksmith";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+});
+
+test("Talking to the yough when naked will lose reputation", () => {
+  let oldLocation = "gate";
+  let newLocation = "youth";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+});

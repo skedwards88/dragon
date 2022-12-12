@@ -11,3 +11,6 @@ use https://github.com/marketplace/actions/automated-version-bump or something s
 ---
 
 Bold Reputation + and Gold +
+
+// todo make saves intentional and limited. when die allow to resume from last save
+// start with magic journal in inventory? can never give it or drop it? like Pay, but Save?
