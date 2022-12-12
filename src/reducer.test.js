@@ -4450,3 +4450,78 @@ test("When enter puddle, if enough time has elapsed but dragon is poisoned, you 
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
+
+test("When enter dung, time in cave increases", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "dung";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
+
+test("When enter dung, if the dragon is not poisoned, and enough time has elapsed, you get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "dung";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: false,
+      timeInCave: timeInCave,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(output.singeCount).toEqual(newGameState.singeCount + 1);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+    "
+
+    Reputation -1"
+  `);
+});
+
+test("When enter dung, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "dung";
+  let timeInCave = 2;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      dragonPoisoned: true,
+      timeInCave: timeInCave,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(timeInCave + 1);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.singeCount).toEqual(newGameState.singeCount);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
