@@ -1032,6 +1032,7 @@ const treasure = new Item({
         return "You try to steal the treasure, but the dragon singes you before you can get close. ";
       }
     }
+
     function getGameEffect(gameState) {
       if (gameState.dragonDead) {
         const newTreasureLevel = 3;

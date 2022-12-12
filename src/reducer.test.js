@@ -3219,5 +3219,368 @@ test("Other sentients will just hold the berries", () => {
   expect(output.squirrelDead).toBe(false);
 });
 
+test("If the dragon is dead, you take all the treasure", () => {
+  const item = "treasure";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonDead: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You scoop all of the treasure into your bag, avoiding the gore from the severed dragon head. 
+
+    Gold +300"
+  `);
+  expect(output.treasureLevel).toBe(3);
+  expect(output.gold).toBe(newGameState.gold + 300);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.arrayContaining([item])
+  );
+});
+
+test("If the dragon is asleep but not dead lets you take some treasure but not all, even on second try. Treasure still remains in lair. You get singed each time.", () => {
+  const item = "treasure";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonDead: false,
+      dragonAsleep: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
+
+    Reputation -1
+
+    Gold +200"
+  `);
+  expect(output.treasureLevel).toBe(2);
+  expect(output.gold).toBe(newGameState.gold + 200);
+  expect(output.singeCount).toBe(newGameState.singeCount + 1);
+  expect(output.reputation).toBe(newGameState.reputation - 1);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon snores, releasing a burst of flame that singes your eyebrows. 
+
+    Reputation -1
+
+    Gold 0"
+  `);
+  expect(output.treasureLevel).toBe(2);
+  expect(output.gold).toBe(newGameState.gold + 200);
+  expect(output.singeCount).toBe(newGameState.singeCount + 2);
+  expect(output.reputation).toBe(newGameState.reputation - 2);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+});
+
+test("If the dragon is poisoned but not asleep/dead, you can take some treasure", () => {
+  const item = "treasure";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonDead: false,
+      dragonAsleep: false,
+      dragonPoisoned: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
+
+    Reputation -2
+
+    Gold +100"
+  `);
+  expect(output.treasureLevel).toBe(1);
+  expect(output.gold).toBe(newGameState.gold + 100);
+  expect(output.singeCount).toBe(newGameState.singeCount + 2);
+  expect(output.reputation).toBe(newGameState.reputation - 2);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. 
+
+    Reputation -2
+
+    Gold 0"
+  `);
+  expect(output.treasureLevel).toBe(1);
+  expect(output.gold).toBe(newGameState.gold + 100);
+  expect(output.singeCount).toBe(newGameState.singeCount + 4);
+  expect(output.reputation).toBe(newGameState.reputation - 4);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+});
+
+test("If the dragon is not poisoned or anything, you can't take any treasure", () => {
+  const item = "treasure";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonDead: false,
+      dragonAsleep: false,
+      dragonPoisoned: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You try to steal the treasure, but the dragon singes you before you can get close. 
+
+    Reputation -1"
+  `);
+  expect(output.treasureLevel).toBe(0);
+  expect(output.gold).toBe(newGameState.gold);
+  expect(output.singeCount).toBe(newGameState.singeCount + 1);
+  expect(output.reputation).toBe(newGameState.reputation - 1);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(output, {
+    action: "takeItem",
+    item: item,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You try to steal the treasure, but the dragon singes you before you can get close. 
+
+    Reputation -1"
+  `);
+  expect(output.treasureLevel).toBe(0);
+  expect(output.gold).toBe(newGameState.gold);
+  expect(output.singeCount).toBe(newGameState.singeCount + 2);
+  expect(output.reputation).toBe(newGameState.reputation - 2);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+});
+test("You can take the treasure in increments, getting singed along the way", () => {
+  const item = "treasure";
+  let location = "lair";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      dragonDead: false,
+      dragonAsleep: false,
+      dragonPoisoned: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        [location]: [item],
+      },
+    },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You try to steal the treasure, but the dragon singes you before you can get close. 
+
+    Reputation -1"
+  `);
+  expect(output.treasureLevel).toBe(0);
+  expect(output.gold).toBe(newGameState.gold);
+  expect(output.singeCount).toBe(newGameState.singeCount + 1);
+  expect(output.reputation).toBe(newGameState.reputation - 1);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(
+    { ...output, dragonPoisoned: true },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
+
+    Reputation -2
+
+    Gold +100"
+  `);
+  expect(output.treasureLevel).toBe(1);
+  expect(output.gold).toBe(newGameState.gold + 100);
+  expect(output.singeCount).toBe(newGameState.singeCount + 3);
+  expect(output.reputation).toBe(newGameState.reputation - 3);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(
+    { ...output, dragonPoisoned: true, dragonAsleep: true },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
+
+    Reputation -1
+
+    Gold +100"
+  `);
+  expect(output.treasureLevel).toBe(2);
+  expect(output.gold).toBe(newGameState.gold + 200);
+  expect(output.singeCount).toBe(newGameState.singeCount + 4);
+  expect(output.reputation).toBe(newGameState.reputation - 4);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.not.arrayContaining([item])
+  );
+
+  output = reducer(
+    { ...output, dragonPoisoned: true, dragonAsleep: true, dragonDead: true },
+    {
+      action: "takeItem",
+      item: item,
+    }
+  );
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You scoop all of the treasure into your bag, avoiding the gore from the severed dragon head. 
+
+    Gold +100"
+  `);
+  expect(output.treasureLevel).toBe(3);
+  expect(output.gold).toBe(newGameState.gold + 300);
+  expect(output.singeCount).toBe(newGameState.singeCount + 4);
+  expect(output.reputation).toBe(newGameState.reputation - 4);
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations.outOfPlay).toEqual(
+    expect.arrayContaining([item])
+  );
+});
+
 // todo make saves intentional and limited. when die allow to resume from last save
 // start with magic journal in inventory? can never give it or drop it? like Pay, but Save?
