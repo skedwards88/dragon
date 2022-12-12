@@ -4375,3 +4375,27 @@ test("You won't get cursed twice", () => {
   expect(output.cursed).toBe(true);
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
+
+test("When enter puddle, time in cave always increases. If the dragon is not poisoned, and enough time has elapsed, you get singed.", () => {
+  let oldLocation = "defecatory";
+  let newLocation = "puddle";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      gotScoreByCredit: true,
+      paidDebt: false,
+      cursed: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.timeInCave).toEqual(newGameState.timeInCave);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.reputation).toEqual(newGameState.reputation);
+  expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+});
