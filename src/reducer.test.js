@@ -4996,3 +4996,136 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.singeCount).toEqual(newGameState.singeCount + 1);
 });
+
+test("Paying the blacksmith will give you the sword", () => {
+  let location = "blacksmith";
+  let item = "sword";
+  let startingGold = 50;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      ownSword: false,
+      playerLocation: location,
+      gold: startingGold,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        smithy: [item],
+      },
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations["smithy"]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.ownSword).toBe(true);
+  expect(output.gold).toEqual(startingGold - output.swordCost);
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    "You hand the blacksmith 40 gold in exchange for the sword. 
+
+    Gold -40"
+  `);
+});
+
+test("Paying the blacksmith will not give you the sword if you don't have enough money", () => {
+  let location = "blacksmith";
+  let item = "sword";
+  let startingGold = 20;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      ownSword: false,
+      playerLocation: location,
+      gold: startingGold,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        smithy: [item],
+      },
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations["smithy"]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.ownSword).toBe(false);
+  expect(output.gold).toEqual(startingGold);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The blacksmith looks at your gold. "It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." "`
+  );
+});
+
+test("Paying the blacksmith will not give you the sword if you already own it, even if the sword is at the smithy", () => {
+  let location = "blacksmith";
+  let item = "sword";
+  let startingGold = 50;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      ownSword: true,
+      playerLocation: location,
+      gold: startingGold,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [],
+        smithy: [item],
+      },
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.itemLocations["smithy"]).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.ownSword).toBe(true);
+  expect(output.gold).toEqual(startingGold);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The blacksmith is not interested in your gold."`
+  );
+});
+
+test("Paying the youth has no effect", () => {
+  let location = "youth";
+  let startingGold = 50;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gold: startingGold,
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output).toEqual({
+    ...newGameState,
+    playerLocation: location,
+    gold: startingGold,
+    consequenceText: output.consequenceText,
+  });
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"The youth is not interested in your gold."`
+  );
+});

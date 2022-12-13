@@ -470,7 +470,7 @@ const blacksmith = new Location({
         if (gameState.gold >= gameState.swordCost) {
           return `You hand the blacksmith ${gameState.swordCost} gold in exchange for the sword. `;
         } else {
-          return `"It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." `;
+          return `The blacksmith looks at your gold. "It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." `;
         }
       }
     }
