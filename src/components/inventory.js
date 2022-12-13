@@ -1,53 +1,39 @@
 import React from "react";
+import { items } from "../items";
+import { locations } from "../locations";
 
-function InventoryItems({
-  items,
-  itemLocations,
-  itemsInInventory,
-  gameState,
-  locations,
-  playerLocation,
-  handleUse,
-  handleDrop,
-  handleGive,
-}) {
+function InventoryItems({ dispatchGameState, gameState, setCurrentDisplay }) {
+  const itemsInInventory = gameState.itemLocations.inventory;
   return Array.from(itemsInInventory).map((item) => {
     return (
       <div className="inventoryItem" key={item}>
-        <div key={item}>
-          {items[item].getDescription({
-            playerLocation: playerLocation,
-            gameState: gameState,
-            itemLocations: itemLocations,
-          })}
-        </div>
+        <div key={item}>{items[item].getDescription(gameState)}</div>
         <button
-          onClick={() => handleUse(item)}
+          onClick={() => {
+            dispatchGameState({ item: item, action: "useItem" });
+            setCurrentDisplay("consequence");
+          }}
           className="item-action"
           key={item + "-use"}
         >
-          {items[item].getUseVerb({
-            playerLocation: playerLocation,
-            gameState: gameState,
-            itemLocations: itemLocations,
-          })}
+          {items[item].getUseVerb(gameState)}
         </button>
         <button
-          onClick={() => handleDrop(item)}
+          onClick={() => {
+            dispatchGameState({ item: item, action: "dropItem" });
+            setCurrentDisplay("consequence");
+          }}
           className="item-action"
           key={item + "-drop"}
         >
           Drop
         </button>
         <button
-          disabled={
-            !locations[playerLocation].getSentient({
-              gameState: gameState,
-              playerLocation: playerLocation,
-              itemLocations: itemLocations,
-            })
-          }
-          onClick={() => handleGive(item)}
+          disabled={!locations[gameState.playerLocation].getSentient(gameState)}
+          onClick={() => {
+            dispatchGameState({ item: item, action: "giveItem" });
+            setCurrentDisplay("consequence");
+          }}
           className="item-action"
           key={item + "-give"}
         >
@@ -59,19 +45,10 @@ function InventoryItems({
 }
 
 export default function Inventory({
-  items,
-  itemLocations,
   gameState,
-  locations,
-  playerLocation,
   setCurrentDisplay,
-  handleUse,
-  handleDrop,
-  handleGive,
-  handlePay,
+  dispatchGameState,
 }) {
-  console.log(`in inv ${playerLocation}`);
-
   return (
     <div className="App">
       <div className="description" key="description">
@@ -79,27 +56,20 @@ export default function Inventory({
       </div>
       <div className="inventoryItems">
         <InventoryItems
-          itemsInInventory={itemLocations.inventory}
-          items={items}
-          itemLocations={itemLocations}
           gameState={gameState}
-          locations={locations}
-          playerLocation={playerLocation}
-          handleUse={handleUse}
-          handleDrop={handleDrop}
-          handleGive={handleGive}
+          dispatchGameState={dispatchGameState}
+          setCurrentDisplay={setCurrentDisplay}
         />
         <div className="inventoryItem" key="gold">
           <div key="gold">{gameState.gold + " gold"}</div>
           <button
             disabled={
-              !locations[playerLocation].getSentient({
-                gameState: gameState,
-                playerLocation: playerLocation,
-                itemLocations: itemLocations,
-              })
+              !locations[gameState.playerLocation].getSentient(gameState)
             }
-            onClick={() => handlePay()}
+            onClick={() => {
+              dispatchGameState({ action: "pay" });
+              setCurrentDisplay("consequence");
+            }}
             className="item-action"
             key={"gold-give"}
           >
