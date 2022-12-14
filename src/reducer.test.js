@@ -5158,7 +5158,7 @@ test("If you have not already made a deal with the wizard, paying the wizard wil
   expect(output.paidDebt).toBe(false);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then vanishes. "`
+    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`
   );
 });
 

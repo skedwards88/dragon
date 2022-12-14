@@ -731,8 +731,12 @@ const stream = new Location({
       A: [],
     };
   },
-  getDescription: function () {
-    return "You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. ";
+  getDescription: function (gameState) {
+    let text = "You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. ";
+    if (gameState.gotScoreByCredit && !gameState.paidDebt) {
+      text += "The air above the stream shimmers. "
+    }
+    return text
   },
 });
 
@@ -847,7 +851,7 @@ const wizard = new Location({
         gameState.itemLocations.wizard.includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
-        return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then vanishes. `;
+        return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. `;
       }
 
       if (

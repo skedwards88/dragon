@@ -14,5 +14,3 @@ Bold Reputation + and Gold +
 
 // todo make saves intentional and limited. when die allow to resume from last save
 // start with magic journal in inventory? can never give it or drop it? like Pay, but Save?
-
-// todo should the shimmering barrier not vanish until you pay debt?
