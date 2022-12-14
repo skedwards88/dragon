@@ -732,11 +732,12 @@ const stream = new Location({
     };
   },
   getDescription: function (gameState) {
-    let text = "You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. ";
+    let text =
+      "You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. ";
     if (gameState.gotScoreByCredit && !gameState.paidDebt) {
-      text += "The air above the stream shimmers. "
+      text += "The air above the stream shimmers. ";
     }
-    return text
+    return text;
   },
 });
 
