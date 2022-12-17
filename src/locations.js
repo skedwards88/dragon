@@ -60,7 +60,7 @@ const room = new Location({
     }
 
     if (gameState.manorFire) {
-      text += "You smell fire and hear screams in the distance. ";
+      text += "You smell smoke and hear screams in the distance. ";
     }
     return text;
   },
