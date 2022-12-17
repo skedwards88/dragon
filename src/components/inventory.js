@@ -60,22 +60,6 @@ export default function Inventory({
           dispatchGameState={dispatchGameState}
           setCurrentDisplay={setCurrentDisplay}
         />
-        <div className="inventoryItem" key="gold">
-          <div key="gold">{gameState.gold + " gold"}</div>
-          <button
-            disabled={
-              !locations[gameState.playerLocation].getSentient(gameState)
-            }
-            onClick={() => {
-              dispatchGameState({ action: "pay" });
-              setCurrentDisplay("consequence");
-            }}
-            className="item-action"
-            key={"gold-give"}
-          >
-            Pay
-          </button>
-        </div>
         <div className="inventoryItem" key="journal">
           <div key="journal">{`journal with ${gameState.journalPagesRemaining} pages left`}</div>
           <button
@@ -98,6 +82,22 @@ export default function Inventory({
             key={"journal-write"}
           >
             Write
+          </button>
+        </div>
+        <div className="inventoryItem" key="gold">
+          <div key="gold">{gameState.gold + " gold"}</div>
+          <button
+            disabled={
+              !locations[gameState.playerLocation].getSentient(gameState)
+            }
+            onClick={() => {
+              dispatchGameState({ action: "pay" });
+              setCurrentDisplay("consequence");
+            }}
+            className="item-action"
+            key={"gold-give"}
+          >
+            Pay
           </button>
         </div>
       </div>
