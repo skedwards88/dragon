@@ -112,3 +112,75 @@ test("Wardrobe description, clothes taken", () => {
     `"Inside the wardrobe, there is a mirror. "`
   );
 });
+
+test("Inn window description, manor on fire", () => {
+  const location = "window";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion. "`
+  );
+});
+
+test("Inn window description, manor not on fire", () => {
+  const location = "window";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"Through the window, you see the charred remains of a nearby mansion. "`
+  );
+});
+
+test("Room description, lute not taken", () => {
+  const location = "room";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are in a bedroom with a window, wardrobe, and door. A lute leans against the bed. You smell smoke and hear screams in the distance. "`
+  );
+});
+
+test("Room description, lute taken", () => {
+  const location = "room";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, room: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are in a bedroom with a window, wardrobe, and door. You smell smoke and hear screams in the distance. "`
+  );
+});
+
+test("Room description, lute not taken, no fire", () => {
+  const location = "room";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are in a bedroom with a window, wardrobe, and door. A lute leans against the bed. "`
+  );
+});
+
+test("Room description, lute taken", () => {
+  const location = "room";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+    itemLocations: { ...newGameState.itemLocations, room: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are in a bedroom with a window, wardrobe, and door. "`
+  );
+});
