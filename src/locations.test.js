@@ -184,3 +184,55 @@ test("Room description, lute taken", () => {
     `"You are in a bedroom with a window, wardrobe, and door. "`
   );
 });
+
+test("Courtyard description, fire, first time", () => {
+  const location = "courtyard";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. Beyond the fountain, you see flames and smoke. 
+
+    A youth runs from the fire, crying as they flee. They drop a handkerchief in their distress. "
+  `);
+});
+
+test("Courtyard description, fire, not first time", () => {
+  const location = "courtyard";
+  const gameState = {
+    ...newGameState,
+    firstCourtyardEntry: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. Beyond the fountain, you see flames and smoke. "`
+  );
+});
+
+test("Courtyard description, no fire, first time", () => {
+  const location = "courtyard";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. 
+
+    A youth runs from the fire, crying as they flee. They drop a handkerchief in their distress. "
+  `);
+});
+
+test("Courtyard description, no fire, not first time", () => {
+  const location = "courtyard";
+  const gameState = {
+    ...newGameState,
+    firstCourtyardEntry: false,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. "`
+  );
+});
