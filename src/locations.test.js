@@ -67,3 +67,25 @@ test("Inn description, apple not taken, clothed", () => {
     `"You enter what appears to be the common room of an inn. "`
   );
 });
+
+test("Mirror description, clothed", () => {
+  const location = "mirror";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are quite good looking, if you say so yourself. "`
+  );
+});
+
+test("Mirror description, not clothed", () => {
+  const location = "mirror";
+  const gameState = {
+    ...newGameState,
+    naked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`"You're naked!"`);
+});
