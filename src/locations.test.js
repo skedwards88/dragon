@@ -236,3 +236,106 @@ test("Courtyard description, no fire, not first time", () => {
     `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. "`
   );
 });
+
+test("Nursery description, fire, baby absent", () => {
+  const location = "nursery";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. "`
+  );
+});
+
+test("Nursery description, fire, baby present", () => {
+  const location = "nursery";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, nursery: ["baby"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. "`
+  );
+});
+
+test("Nursery description, no fire", () => {
+  const location = "nursery";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in the charred remains of a nursery. "`
+  );
+});
+
+test("Nursery window description, no fire", () => {
+  const location = "nurseryWindow";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You see the charred remains of the manor below you. "`
+  );
+});
+
+test("Nursery window description, fire", () => {
+  const location = "nurseryWindow";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"Below the window, you see the gathered crowd. "`
+  );
+});
+
+test("Smithy description, sword present", () => {
+  const location = "smithy";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. In front of the shop, you see a sword gleaming as if someone was recently polishing it. "`
+  );
+});
+
+test("Smithy description, sword absent", () => {
+  const location = "smithy";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. "`
+  );
+});
+
+// fountain
+// manor
+// blacksmith
+// pasture
+// gate
+// youth
+// road1
+// road2
+// road3
+// stream
+// clearing
+// squirrel
+// wizard
+// cliff
+// caveEntrance
+// defecatory
+// puddle
+// crevice
+// dung
+// lair
