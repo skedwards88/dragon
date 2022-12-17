@@ -76,6 +76,30 @@ export default function Inventory({
             Pay
           </button>
         </div>
+        <div className="inventoryItem" key="journal">
+          <div key="journal">{`journal with ${gameState.journalPagesRemaining} pages left`}</div>
+          <button
+            onClick={() => {
+              dispatchGameState({ action: "readJournal" });
+              setCurrentDisplay("consequence");
+            }}
+            className="item-action"
+            key={"journal-read"}
+          >
+            Read
+          </button>
+          <button
+            disabled={gameState.journalPagesRemaining <= 0}
+            onClick={() => {
+              dispatchGameState({ action: "writeJournal" });
+              setCurrentDisplay("consequence");
+            }}
+            className="item-action"
+            key={"journal-write"}
+          >
+            Write
+          </button>
+        </div>
       </div>
       <button
         key="back"

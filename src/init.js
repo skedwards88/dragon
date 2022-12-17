@@ -66,5 +66,8 @@ export function init() {
     locationConsequenceText: "",
 
     itemLocations: startingItemLocations,
+
+    journalPagesRemaining: 3,
+    journalEntry: null,
   };
 }
