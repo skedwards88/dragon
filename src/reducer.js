@@ -325,31 +325,32 @@ export function reducer(currentGameState, payload) {
     };
   } else if (payload.action === "readJournal") {
     if (currentGameState.journalEntry) {
-      const newConsequenceText = "As you read the text, words and memories whirl around you. When you reach the end of the entry, you know that you are in an earlier time."
+      const newConsequenceText =
+        "As you read the text, words and memories whirl around you. When you reach the end of the entry, you know that you are in an earlier time. ";
       return {
         ...currentGameState,
         ...currentGameState.journalEntry,
         journalEntry: currentGameState.journalEntry,
         journalPagesRemaining: currentGameState.journalPagesRemaining,
         consequenceText: newConsequenceText,
-      }
+      };
     } else {
-      const newConsequenceText = "The previous entries are faded. You get the feeling that if you could read them, you would be transported to another time."
-      return {...currentGameState,
-        consequenceText: newConsequenceText,
-      }
+      const newConsequenceText =
+        "The previous entries are faded. You get the feeling that if you could read them, you would be transported to another time. ";
+      return { ...currentGameState, consequenceText: newConsequenceText };
     }
-  }  else if (payload.action === "writeJournal") {
-    let text = "You record everything you can recall about your adventure."
+  } else if (payload.action === "writeJournal") {
+    let text = "You record everything you can recall about your adventure. ";
     if (currentGameState.journalEntry) {
-      text += "As you write, the previous entry fades, as if it was lost to time."
+      text +=
+        "As you write, the previous entry fades, as if it was lost to time. ";
     }
     return {
       ...currentGameState,
       journalPagesRemaining: currentGameState.journalPagesRemaining - 1,
       consequenceText: text,
-      journalEntry: JSON.parse(JSON.stringify(currentGameState))
-    }
+      journalEntry: JSON.parse(JSON.stringify(currentGameState)),
+    };
   } else {
     console.error("unknown action");
   }
