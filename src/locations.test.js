@@ -89,3 +89,26 @@ test("Mirror description, not clothed", () => {
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`"You're naked!"`);
 });
+
+test("Wardrobe description, clothes not taken", () => {
+  const location = "wardrobe";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"Inside the wardrobe, there is a mirror and a set of clothes. "`
+  );
+});
+
+test("Wardrobe description, clothes taken", () => {
+  const location = "wardrobe";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, wardrobe: ["lute"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"Inside the wardrobe, there is a mirror. "`
+  );
+});
