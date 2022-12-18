@@ -179,11 +179,11 @@ function handleShare() {
       }
     });
 
-    try {
-      window.gtag("event", "share", {})
-    } catch(error) {
-      console.log("tracking error", error)
-    }
+  try {
+    window.gtag("event", "share", {});
+  } catch (error) {
+    console.log("tracking error", error);
+  }
 }
 
 async function handleInstall(installPromptEvent, setInstallPromptEvent) {
@@ -193,6 +193,11 @@ async function handleInstall(installPromptEvent, setInstallPromptEvent) {
   const result = await installPromptEvent.userChoice;
   console.log(result);
   setInstallPromptEvent(null);
+  try {
+    window.gtag("event", "install", {});
+  } catch (error) {
+    console.log("tracking error", error);
+  }
 }
 
 export default function Location({
