@@ -10,6 +10,4 @@ use https://github.com/marketplace/actions/automated-version-bump or something s
 
 ---
 
-add install button
-add landscape small screen styling
 finish location tests
