@@ -385,28 +385,31 @@ test("Fountain description, no fire", () => {
 });
 
 test.each([
-  {naked: true, babyCough: true, playerCough: true },
-  {naked: false, babyCough: true, playerCough: true },
-  {naked: true, babyCough: false, playerCough: true },
-  {naked: true, babyCough: true, playerCough: false },
-  {naked: true, babyCough: false, playerCough: false },
-  {naked: false, babyCough: false, playerCough: true },
-  {naked: false, babyCough: true, playerCough: false },
-  {naked: false, babyCough: false, playerCough: false },
-])('Fountain description: naked $naked, babyCough $babyCough, playerCough $playerCough', ({naked, babyCough, playerCough}) => {
-  const location = "fountain";
-  const gameState = {
-    ...newGameState,
-    manorFire: true,
-    naked: naked,
-    savedBaby: true,
-    receivedBabyReward: false,
-    babyCough: babyCough,
-    playerCough: playerCough,
-  };
-  const description = locations[location].getDescription(gameState);
-  expect(description).toMatchSnapshot();
-});
+  { naked: true, babyCough: true, playerCough: true },
+  { naked: false, babyCough: true, playerCough: true },
+  { naked: true, babyCough: false, playerCough: true },
+  { naked: true, babyCough: true, playerCough: false },
+  { naked: true, babyCough: false, playerCough: false },
+  { naked: false, babyCough: false, playerCough: true },
+  { naked: false, babyCough: true, playerCough: false },
+  { naked: false, babyCough: false, playerCough: false },
+])(
+  "Fountain description: naked $naked, babyCough $babyCough, playerCough $playerCough",
+  ({ naked, babyCough, playerCough }) => {
+    const location = "fountain";
+    const gameState = {
+      ...newGameState,
+      manorFire: true,
+      naked: naked,
+      savedBaby: true,
+      receivedBabyReward: false,
+      babyCough: babyCough,
+      playerCough: playerCough,
+    };
+    const description = locations[location].getDescription(gameState);
+    expect(description).toMatchSnapshot();
+  }
+);
 
 //
 // manor
