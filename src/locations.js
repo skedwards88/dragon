@@ -209,7 +209,7 @@ const fountain = new Location({
 
     if (gameState.manorFire) {
       text +=
-        '\n\nBeyond the fountain, you see a burning manor surrounded by a crowd. ';
+        "\n\nBeyond the fountain, you see a burning manor surrounded by a crowd. ";
     } else {
       text +=
         "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
@@ -231,7 +231,7 @@ const lawn = new Location({
       E: "fountain",
       W: "",
       A: [],
-    }
+    };
   },
   getDescription: function (gameState) {
     let text = "";
@@ -261,8 +261,7 @@ const lawn = new Location({
       text +=
         "\n\nBehind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. ";
     } else {
-      text +=
-        "You stand in front of a framework of charred wood. ";
+      text += "You stand in front of a framework of charred wood. ";
     }
     return text;
   },
@@ -298,7 +297,7 @@ const lawn = new Location({
       };
     }
   },
-})
+});
 
 const entryway = new Location({
   id: "entryway",
