@@ -50,11 +50,11 @@ export default function Inventory({
   dispatchGameState,
 }) {
   return (
-    <div className="App">
+    <div className="App" id="inventory-display">
       <div className="description" key="description">
         Inventory
       </div>
-      <div className="inventoryItems">
+      <div id="inventoryItems">
         <InventoryItems
           gameState={gameState}
           dispatchGameState={dispatchGameState}
@@ -101,13 +101,15 @@ export default function Inventory({
           </button>
         </div>
       </div>
-      <button
-        key="back"
-        className="close"
-        onClick={() => setCurrentDisplay("location")}
-      >
-        Close Inventory
-      </button>
+      <div id="non-navigation-buttons" className="buttons">
+        <button
+          key="back"
+          className="close"
+          onClick={() => setCurrentDisplay("location")}
+        >
+          Close Inventory
+        </button>
+      </div>
     </div>
   );
 }

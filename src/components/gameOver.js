@@ -59,35 +59,37 @@ export default function GameOver({
   }
 
   return (
-    <div className="App">
+    <div className="App" id="gameOver-display">
+      <Stats gameState={gameState} />
       <div className="description">{gameEndText}</div>
-      <button
-        className="close"
-        onClick={() => {
-          dispatchGameState({ action: "newGame" });
-          setCurrentDisplay("location");
-        }}
-      >
-        PLAY AGAIN
-      </button>
-      {navigator.canShare && result === "win" ? (
+      <div id="non-navigation-buttons" className="buttons">
         <button
           className="close"
-          onClick={() =>
-            handleShareResults({
-              reputation: finalReputation,
-              maxReputation: gameState.maxReputation,
-              gold: gameState.gold,
-              maxGold: gameState.maxGold,
-            })
-          }
+          onClick={() => {
+            dispatchGameState({ action: "newGame" });
+            setCurrentDisplay("location");
+          }}
         >
-          SHARE
+          PLAY AGAIN
         </button>
-      ) : (
-        <></>
-      )}
-      <Stats gameState={gameState} />
+        {navigator.canShare && result === "win" ? (
+          <button
+            className="close"
+            onClick={() =>
+              handleShareResults({
+                reputation: finalReputation,
+                maxReputation: gameState.maxReputation,
+                gold: gameState.gold,
+                maxGold: gameState.maxGold,
+              })
+            }
+          >
+            SHARE
+          </button>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 }

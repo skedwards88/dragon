@@ -188,12 +188,30 @@ export default function Location({
   setShowMap,
 }) {
   return (
-    <div className="App" id="location-screen">
+    <div className="App" id="location-display">
+      <div id="controls">
+        <button
+          id="showMap"
+          className={"showMap " + showMap}
+          onClick={() => setShowMap(!showMap)}
+        ></button>
+        <button id="info" onClick={() => setCurrentDisplay("info")}></button>
+        <button
+          id="restart"
+          onClick={() => setCurrentDisplay("restart")}
+        ></button>
+        {navigator.canShare ? (
+          <button id="share" onClick={() => handleShare()}></button>
+        ) : (
+          <></>
+        )}
+      </div>
+      <Stats gameState={gameState} />
       <div className="description">
         {locations[gameState.playerLocation].getDescription(gameState)}
         {gameState.locationConsequenceText}
       </div>
-      <div id="non-description">
+      <div id="navigation">
         {showMap ? (
           <Map
             gameState={gameState}
@@ -213,32 +231,14 @@ export default function Location({
             />
           </>
         )}
-        <div className="buttons">
-          <button
-            className="inventory"
-            onClick={() => setCurrentDisplay("inventory")}
-          >
-            Inventory
-          </button>
-        </div>
-        <Stats gameState={gameState} />
-        <div id="non-game">
-          <button
-            id="showMap"
-            className={"showMap " + showMap}
-            onClick={() => setShowMap(!showMap)}
-          ></button>
-          <button id="info" onClick={() => setCurrentDisplay("info")}></button>
-          <button
-            id="restart"
-            onClick={() => setCurrentDisplay("restart")}
-          ></button>
-          {navigator.canShare ? (
-            <button id="share" onClick={() => handleShare()}></button>
-          ) : (
-            <></>
-          )}
-        </div>
+      </div>
+      <div id="non-navigation-buttons" className="buttons">
+        <button
+          className="inventory"
+          onClick={() => setCurrentDisplay("inventory")}
+        >
+          Inventory
+        </button>
       </div>
     </div>
   );
