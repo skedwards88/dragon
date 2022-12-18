@@ -180,13 +180,26 @@ function handleShare() {
     });
 }
 
+async function handleInstall(installPromptEvent, setInstallPromptEvent) {
+  console.log('handling install')
+  console.log(installPromptEvent)
+  installPromptEvent.prompt()
+  const result = await installPromptEvent.userChoice;
+  console.log(result)
+  setInstallPromptEvent(null)
+}
+
 export default function Location({
   gameState,
   dispatchGameState,
   setCurrentDisplay,
   showMap,
   setShowMap,
+  installPromptEvent,
+  showInstallButton,
+  setInstallPromptEvent,
 }) {
+  
   return (
     <div className="App" id="location-display">
       <div id="controls">
@@ -205,6 +218,7 @@ export default function Location({
         ) : (
           <></>
         )}
+        {showInstallButton && installPromptEvent ? <button id="install" onClick={() => handleInstall(installPromptEvent, setInstallPromptEvent)}></button> : <></>}
       </div>
       <Stats gameState={gameState} />
       <div className="description">

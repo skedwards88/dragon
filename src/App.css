@@ -204,6 +204,10 @@ button:disabled {
   background-image: url("./images/share.svg");
 }
 
+#install {
+  background-image: url("./images/install.svg");
+}
+
 #info {
   background-image: url("./images/info_icon.svg");
 }
