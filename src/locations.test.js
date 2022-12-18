@@ -319,8 +319,8 @@ test("Smithy description, sword absent", () => {
   );
 });
 
-test("Fountain description, fire, not saved baby, naked", () => {
-  const location = "fountain";
+test("Lawn description, fire, not saved baby, naked", () => {
+  const location = "lawn";
   const gameState = {
     ...newGameState,
     manorFire: true,
@@ -331,22 +331,19 @@ test("Fountain description, fire, not saved baby, naked", () => {
     playerCough: true,
     itemLocations: {
       ...newGameState.itemLocations,
-      nursery: ["baby"],
-      manor: ["baby"],
+      entryway: ["baby"],
     },
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
-    "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-    Beyond the fountain, you see a manor on fire. A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." 
+    "You stand in front of a burning manor. A crowd surrounds the manor, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." 
 
     In the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances."
   `);
 });
 
-test("Fountain description, fire, not saved baby, not naked", () => {
-  const location = "fountain";
+test("lawn description, fire, not saved baby, not naked", () => {
+  const location = "lawn";
   const gameState = {
     ...newGameState,
     manorFire: true,
@@ -357,31 +354,26 @@ test("Fountain description, fire, not saved baby, not naked", () => {
     playerCough: true,
     itemLocations: {
       ...newGameState.itemLocations,
-      nursery: ["baby"],
-      manor: ["baby"],
+      entryway: ["baby"],
     },
   };
   const description = locations[location].getDescription(gameState);
-  expect(description).toMatchInlineSnapshot(`
-    "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-    Beyond the fountain, you see a manor on fire. A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." "
-  `);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in front of a burning manor. A crowd surrounds the manor, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." "`
+  );
 });
 
-test("Fountain description, no fire", () => {
-  const location = "fountain";
+test("lawn description, no fire", () => {
+  const location = "lawn";
   const gameState = {
     ...newGameState,
     manorFire: false,
     naked: false,
   };
   const description = locations[location].getDescription(gameState);
-  expect(description).toMatchInlineSnapshot(`
-    "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-    Beyond the fountain, the manor is a framework of charred wood. "
-  `);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in front of a framework of charred wood. "`
+  );
 });
 
 test.each([
@@ -394,9 +386,9 @@ test.each([
   { naked: false, babyCough: true, playerCough: false },
   { naked: false, babyCough: false, playerCough: false },
 ])(
-  "Fountain description: naked $naked, babyCough $babyCough, playerCough $playerCough",
+  "lawn description: naked $naked, babyCough $babyCough, playerCough $playerCough",
   ({ naked, babyCough, playerCough }) => {
-    const location = "fountain";
+    const location = "lawn";
     const gameState = {
       ...newGameState,
       manorFire: true,
@@ -411,7 +403,7 @@ test.each([
   }
 );
 
-//
+// fountain
 // manor
 // blacksmith
 // pasture

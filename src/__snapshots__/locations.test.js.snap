@@ -1,71 +1,55 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Fountain description: naked false, babyCough false, playerCough false 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
+exports[`lawn description: naked false, babyCough false, playerCough false 1`] = `
+"You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked false, babyCough false, playerCough true 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
+exports[`lawn description: naked false, babyCough false, playerCough true 1`] = `
+"You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked false, babyCough true, playerCough false 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." 
+exports[`lawn description: naked false, babyCough true, playerCough false 1`] = `
+"You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked false, babyCough true, playerCough true 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." 
+exports[`lawn description: naked false, babyCough true, playerCough true 1`] = `
+"You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked true, babyCough false, playerCough false 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby! Please take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
+exports[`lawn description: naked true, babyCough false, playerCough false 1`] = `
+"You hear a voice: "My baby! You saved my baby! Please take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked true, babyCough false, playerCough true 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby! Please take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
+exports[`lawn description: naked true, babyCough false, playerCough true 1`] = `
+"You hear a voice: "My baby! You saved my baby! Please take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked true, babyCough true, playerCough false 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
+exports[`lawn description: naked true, babyCough true, playerCough false 1`] = `
+"You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`Fountain description: naked true, babyCough true, playerCough true 1`] = `
-"You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
-
-You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
+exports[`lawn description: naked true, babyCough true, playerCough true 1`] = `
+"You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
 

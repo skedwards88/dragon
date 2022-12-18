@@ -411,7 +411,7 @@ const handkerchief = new Item({
         : (text += "You tie the handkerchief around your nose and mouth. ");
 
       if (
-        ["manor", "nursery", "nurseryWindow"].includes(
+        ["entryway", "nursery", "nurseryWindow"].includes(
           gameState.playerLocation
         ) &&
         gameState.manorFire &&
@@ -427,7 +427,7 @@ const handkerchief = new Item({
       }
 
       if (
-        ["manor", "nursery", "nurseryWindow"].includes(
+        ["entryway", "nursery", "nurseryWindow"].includes(
           gameState.playerLocation
         ) &&
         gameState.manorFire &&
@@ -472,7 +472,7 @@ const handkerchief = new Item({
         let text = `You remove the handkerchief from your nose and mouth and drop it ${dropPreposition} the ${gameState.playerLocation}. `;
 
         if (
-          ["manor", "nursery", "nurseryWindow"].includes(
+          ["entryway", "nursery", "nurseryWindow"].includes(
             gameState.playerLocation
           ) &&
           gameState.manorFire &&

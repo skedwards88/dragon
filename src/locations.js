@@ -196,7 +196,7 @@ const fountain = new Location({
   dropPreposition: "in",
   getConnections: function () {
     return {
-      N: "manor",
+      N: "lawn",
       S: "",
       E: "courtyard",
       W: "",
@@ -207,18 +207,47 @@ const fountain = new Location({
     let text =
       "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. ";
 
+    if (gameState.manorFire) {
+      text +=
+        '\n\nBeyond the fountain, you see a burning manor surrounded by a crowd. ';
+    } else {
+      text +=
+        "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
+    }
+    return text;
+  },
+});
+
+const lawn = new Location({
+  id: "lawn",
+  getDisplayName: function () {
+    return "Manor";
+  },
+  dropPreposition: "at",
+  getConnections: function () {
+    return {
+      N: "entryway",
+      S: "",
+      E: "fountain",
+      W: "",
+      A: [],
+    }
+  },
+  getDescription: function (gameState) {
+    let text = "";
+
     if (!gameState.savedBaby && gameState.manorFire) {
       text +=
-        '\n\nBeyond the fountain, you see a manor on fire. A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." ';
+        'You stand in front of a burning manor. A crowd surrounds the manor, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." ';
       if (gameState.naked) {
         text += `\n\nIn the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances.`;
       }
     } else if (gameState.savedBaby && !gameState.receivedBabyReward) {
       if (gameState.babyCough) {
-        text += `\n\nYou hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks.`;
+        text += `You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks.`;
       } else {
         text +=
-          '\n\nYou hear a voice: "My baby! You saved my baby! Please take this gold as thanks.';
+          'You hear a voice: "My baby! You saved my baby! Please take this gold as thanks.';
       }
       if (gameState.naked) {
         text += ` And perhaps buy yourself some clothes," they say, eyeing your naked body. `;
@@ -233,7 +262,7 @@ const fountain = new Location({
         "\n\nBehind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. ";
     } else {
       text +=
-        "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
+        "You stand in front of a framework of charred wood. ";
     }
     return text;
   },
@@ -269,16 +298,15 @@ const fountain = new Location({
       };
     }
   },
-});
+})
 
-
-const manor = new Location({
-  id: "manor",
+const entryway = new Location({
+  id: "entryway",
   dropPreposition: "in",
   getConnections: function (gameState) {
     return {
       N: gameState.manorFire ? "nursery" : "",
-      S: "fountain",
+      S: "lawn",
       E: "",
       W: "",
       A: [],
@@ -339,7 +367,7 @@ const nursery = new Location({
   getConnections: function () {
     return {
       N: "nurseryWindow",
-      S: "manor",
+      S: "entryway",
       E: "",
       W: "",
       A: [],
@@ -1250,7 +1278,8 @@ export const locations = {
   inn: inn,
   courtyard: courtyard,
   fountain: fountain,
-  manor: manor,
+  lawn: lawn,
+  entryway: entryway,
   nursery: nursery,
   nurseryWindow: nurseryWindow,
   smithy: smithy,

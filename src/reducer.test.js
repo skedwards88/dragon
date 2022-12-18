@@ -37,6 +37,7 @@ test("New game resets state", () => {
         "crevice": [],
         "defecatory": [],
         "dung": [],
+        "entryway": [],
         "fountain": [],
         "gate": [],
         "inn": [
@@ -46,7 +47,7 @@ test("New game resets state", () => {
         "lair": [
           "treasure",
         ],
-        "manor": [],
+        "lawn": [],
         "mirror": [],
         "nursery": [
           "baby",
@@ -130,7 +131,8 @@ test("Resuming will apply saved state over new game state", () => {
           inn: ["apple"],
           inventory: [],
           lair: ["treasure"],
-          manor: ["lute"],
+          lawn: ["lute"],
+          entryway: [],
           mirror: [],
           nursery: ["baby"],
           nurseryWindow: [],
@@ -186,6 +188,7 @@ test("Resuming will apply saved state over new game state", () => {
         "crevice": [],
         "defecatory": [],
         "dung": [],
+        "entryway": [],
         "fountain": [],
         "gate": [],
         "inn": [
@@ -195,7 +198,7 @@ test("Resuming will apply saved state over new game state", () => {
         "lair": [
           "treasure",
         ],
-        "manor": [
+        "lawn": [
           "lute",
         ],
         "mirror": [],
@@ -453,7 +456,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 
-  location = "fountain";
+  location = "lawn";
   output = reducer(
     {
       ...newGameState,
@@ -1235,9 +1238,9 @@ test("Giving the apple to the squirrel will effectively drop it.", () => {
   );
 });
 
-test("Wearing handkerchief, not damp, in manor", () => {
+test("Wearing handkerchief, not damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1339,9 +1342,9 @@ test("Wearing handkerchief, not damp, in inn", () => {
   expect(output.playerMasked).toBe(true);
 });
 
-test("Wearing handkerchief, damp, in manor", () => {
+test("Wearing handkerchief, damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1443,9 +1446,9 @@ test("Wearing handkerchief, damp, in inn", () => {
   expect(output.playerMasked).toBe(true);
 });
 
-test("Removing handkerchief, not damp, in manor", () => {
+test("Removing handkerchief, not damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1469,9 +1472,9 @@ test("Removing handkerchief, not damp, in manor", () => {
   expect(output.playerMasked).toBe(false);
 });
 
-test("Removing handkerchief, damp, in manor", () => {
+test("Removing handkerchief, damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1495,9 +1498,9 @@ test("Removing handkerchief, damp, in manor", () => {
   expect(output.playerMasked).toBe(false);
 });
 
-test("Wearing handkerchief, not damp, in manor, no fire", () => {
+test("Wearing handkerchief, not damp, in entryway, no fire", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1522,9 +1525,9 @@ test("Wearing handkerchief, not damp, in manor, no fire", () => {
   expect(output.playerMasked).toBe(true);
 });
 
-test("Wearing handkerchief, damp, in manor, no fire", () => {
+test("Wearing handkerchief, damp, in entryway, no fire", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1603,7 +1606,7 @@ test("Removing handkerchief in cave", () => {
 
 test("Dropping handkerchief when wearing it in fire", () => {
   const item = "handkerchief";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1623,7 +1626,7 @@ test("Dropping handkerchief when wearing it in fire", () => {
     }
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth and drop it in the manor. The smoke fills your lungs, making you cough. "`
+    `"You remove the handkerchief from your nose and mouth and drop it in the entryway. The smoke fills your lungs, making you cough. "`
   );
   expect(output.playerMasked).toBe(false);
 });
@@ -1740,7 +1743,7 @@ test("Giving the handkerchief to youth once increases reputation and gives plot 
 
 test("The baby has no use", () => {
   const item = "baby";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1831,7 +1834,7 @@ test("Dropping the baby out the window saves it and removes it from game", () =>
 
 test("Dropping the baby away from the nursery/window just makes it cry more", () => {
   const item = "baby";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -1893,7 +1896,7 @@ test("Taking the baby from nursery gives cough hint", () => {
 
 test("Taking the baby from somewhere besides nursery does not give cough hint", () => {
   const item = "baby";
-  let location = "manor";
+  let location = "entryway";
 
   let output = reducer(
     {
@@ -3606,7 +3609,7 @@ test("Moving player, no consequences", () => {
 });
 
 test("Entering the inn when naked will lose reputation", () => {
-  let oldLocation = "fountain";
+  let oldLocation = "courtyard";
   let newLocation = "inn";
 
   let output = reducer(
@@ -3649,9 +3652,9 @@ test("Leaving the courtyard the first time is different", () => {
   expect(output.firstCourtyardEntry).toEqual(false);
 });
 
-test("Entering the fountain: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
 
   let output = reducer(
     {
@@ -3680,9 +3683,9 @@ test("Entering the fountain: saved baby, not rewarded yet, no cough, no baby cou
   `);
 });
 
-test("Entering the fountain: saved baby, not rewarded yet, cough, no baby cough, clothed", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, clothed", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
 
   let output = reducer(
     {
@@ -3711,9 +3714,9 @@ test("Entering the fountain: saved baby, not rewarded yet, cough, no baby cough,
   `);
 });
 
-test("Entering the fountain: saved baby, not rewarded yet, no cough, baby cough, clothed", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: saved baby, not rewarded yet, no cough, baby cough, clothed", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
 
   let output = reducer(
     {
@@ -3742,9 +3745,9 @@ test("Entering the fountain: saved baby, not rewarded yet, no cough, baby cough,
   `);
 });
 
-test("Entering the fountain: saved baby, not rewarded yet, no cough, no baby cough, not clothed", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, not clothed", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
 
   let output = reducer(
     {
@@ -3773,9 +3776,9 @@ test("Entering the fountain: saved baby, not rewarded yet, no cough, no baby cou
   `);
 });
 
-test("Entering the fountain: saved baby, not rewarded yet, cough, no baby cough, not clothed", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, not clothed", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
 
   let output = reducer(
     {
@@ -3804,9 +3807,9 @@ test("Entering the fountain: saved baby, not rewarded yet, cough, no baby cough,
   `);
 });
 
-test("Entering the fountain: saved baby, not rewarded yet, cough, baby cough, not clothed", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: saved baby, not rewarded yet, cough, baby cough, not clothed", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
 
   let output = reducer(
     {
@@ -3835,9 +3838,9 @@ test("Entering the fountain: saved baby, not rewarded yet, cough, baby cough, no
   `);
 });
 
-test("Entering the fountain: baby goes out of play", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: baby goes out of play", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
   let item = "baby";
 
   let output = reducer(
@@ -3874,9 +3877,9 @@ test("Entering the fountain: baby goes out of play", () => {
   );
 });
 
-test("Entering the fountain: baby goes out of play, does not error if baby already was out of play", () => {
-  let oldLocation = "manor";
-  let newLocation = "fountain";
+test("Entering the lawn: baby goes out of play, does not error if baby already was out of play", () => {
+  let oldLocation = "entryway";
+  let newLocation = "lawn";
   let item = "baby";
 
   let output = reducer(
@@ -3914,9 +3917,9 @@ test("Entering the fountain: baby goes out of play, does not error if baby alrea
   );
 });
 
-test("Exiting the fountain puts out the fire if the baby was saved", () => {
-  let oldLocation = "fountain";
-  let newLocation = "manor";
+test("Exiting the lawn puts out the fire if the baby was saved", () => {
+  let oldLocation = "lawn";
+  let newLocation = "entryway";
 
   let output = reducer(
     {
@@ -3937,9 +3940,9 @@ test("Exiting the fountain puts out the fire if the baby was saved", () => {
   expect(output.receivedBabyReward).toBe(true);
 });
 
-test("Exiting the fountain does not put out the fire if the baby was not saved", () => {
-  let oldLocation = "fountain";
-  let newLocation = "manor";
+test("Exiting the lawn does not put out the fire if the baby was not saved", () => {
+  let oldLocation = "lawn";
+  let newLocation = "entryway";
 
   let output = reducer(
     {
@@ -3960,9 +3963,9 @@ test("Exiting the fountain does not put out the fire if the baby was not saved",
   expect(output.receivedBabyReward).toBe(false);
 });
 
-test("Taking the baby into the manor gives it a cough", () => {
+test("Taking the baby into the entryway gives it a cough", () => {
   let oldLocation = "nursery";
-  let newLocation = "manor";
+  let newLocation = "entryway";
 
   let output = reducer(
     {
@@ -3987,7 +3990,7 @@ test("Taking the baby into the manor gives it a cough", () => {
 
 test("The baby doesn't develop a cough if you don't bring it with you", () => {
   let oldLocation = "nursery";
-  let newLocation = "manor";
+  let newLocation = "entryway";
 
   let output = reducer(
     {
@@ -4012,7 +4015,7 @@ test("The baby doesn't develop a cough if you don't bring it with you", () => {
 });
 
 test("If you get to the nursery without wearing the damp handkerchief, you get a cough", () => {
-  let oldLocation = "manor";
+  let oldLocation = "entryway";
   let newLocation = "nursery";
 
   let output = reducer(
@@ -4036,7 +4039,7 @@ test("If you get to the nursery without wearing the damp handkerchief, you get a
 });
 
 test("Wearing a dry handkerchief doesn't protect from cough", () => {
-  let oldLocation = "manor";
+  let oldLocation = "entryway";
   let newLocation = "nursery";
 
   let output = reducer(
@@ -4060,7 +4063,7 @@ test("Wearing a dry handkerchief doesn't protect from cough", () => {
 });
 
 test("Having but not wearing a damp handkerchief doesn't protect from cough", () => {
-  let oldLocation = "manor";
+  let oldLocation = "entryway";
   let newLocation = "nursery";
 
   let output = reducer(
@@ -4084,7 +4087,7 @@ test("Having but not wearing a damp handkerchief doesn't protect from cough", ()
 });
 
 test("Wearing a damp handkerchief protects from cough", () => {
-  let oldLocation = "manor";
+  let oldLocation = "entryway";
   let newLocation = "nursery";
 
   let output = reducer(
