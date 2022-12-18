@@ -227,6 +227,16 @@ export default function Location({
         ) : (
           <></>
         )}
+        <button
+          onClick={() =>
+            window.gtag("event", "test_click", {
+              app_name: "Dragon",
+              custom: "custom data",
+            })
+          }
+        >
+          H
+        </button>
       </div>
       <Stats gameState={gameState} />
       <div className="description">
