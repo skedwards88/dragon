@@ -121,7 +121,7 @@ test("Inn window description, manor on fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion. "`
+    `"Through the window, you see flames and smoke coming from a nearby manor. A crowd has gathered in front of the manor. "`
   );
 });
 
@@ -133,7 +133,7 @@ test("Inn window description, manor not on fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Through the window, you see the charred remains of a nearby mansion. "`
+    `"Through the window, you see the charred remains of a nearby manor. "`
   );
 });
 

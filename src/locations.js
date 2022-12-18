@@ -80,8 +80,8 @@ const window = new Location({
   dropPreposition: "at",
   getDescription: function (gameState) {
     return gameState.manorFire
-      ? "Through the window, you see flames and smoke coming from a nearby mansion. A crowd has gathered in front of the mansion. "
-      : "Through the window, you see the charred remains of a nearby mansion. ";
+      ? "Through the window, you see flames and smoke coming from a nearby manor. A crowd has gathered in front of the manor. "
+      : "Through the window, you see the charred remains of a nearby manor. ";
   },
 });
 
@@ -271,6 +271,7 @@ const fountain = new Location({
   },
 });
 
+
 const manor = new Location({
   id: "manor",
   dropPreposition: "in",
@@ -302,7 +303,7 @@ const manor = new Location({
       (!gameState.handkerchiefDamp || !gameState.playerMasked)
     ) {
       text +=
-        "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the mansion without protection. ";
+        "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. ";
     }
 
     if (
