@@ -205,24 +205,15 @@ const fountain = new Location({
   },
   getDescription: function (gameState) {
     let text =
-      "You stand at the edge of a fountain. In the center is a statue of a dragon surrounded by cowering people. ";
+      "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. ";
 
-    if (gameState.manorFire) {
-      text += "\n\nBeyond the fountain, you see a manor on fire. ";
-    } else {
+    if (!gameState.savedBaby && gameState.manorFire) {
       text +=
-        "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
-    }
-
-    if (gameState.itemLocations.nursery.includes("baby")) {
-      text +=
-        'A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped in the nursery. " ';
+        '\n\nBeyond the fountain, you see a manor on fire. A crowd surrounds the fountain, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." ';
       if (gameState.naked) {
         text += `\n\nIn the commotion, the crowd doesn't notice your lack of clothes, though surely this crowd will not be so understanding under other circumstances.`;
       }
-    }
-
-    if (gameState.savedBaby && !gameState.receivedBabyReward) {
+    } else if (gameState.savedBaby && !gameState.receivedBabyReward) {
       if (gameState.babyCough) {
         text += `\n\nYou hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks.`;
       } else {
@@ -240,6 +231,9 @@ const fountain = new Location({
       }
       text +=
         "\n\nBehind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. ";
+    } else {
+      text +=
+        "\n\nBeyond the fountain, the manor is a framework of charred wood. ";
     }
     return text;
   },
