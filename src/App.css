@@ -3,7 +3,6 @@ body,
 #root {
   background-color: rgb(240 240 241);
   height: 100vh;
-  width: 100vw;
 }
 
 .App {
@@ -11,14 +10,11 @@ body,
 
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
-  margin: auto;
   text-align: center;
   justify-items: center;
   white-space: pre-line;
   flex-direction: column;
-  max-width: 500px;
   height: 95%;
-  width: 100vw;
   font-size: var(--default-font-size);
 }
 
@@ -49,7 +45,6 @@ small {
     "inventoryItems"
     "non-navigation-buttons";
   grid-template-rows: auto 1fr auto;
-  width: 90vw;
 }
 
 #consequence-display {
@@ -58,7 +53,6 @@ small {
     "description"
     "non-navigation-buttons";
   grid-template-rows: 1fr auto;
-  width: 90vw;
 }
 
 #gameOver-display {
@@ -68,11 +62,6 @@ small {
     "description"
     "non-navigation-buttons";
   grid-template-rows: auto 1fr auto;
-  width: 90vw;
-}
-
-#inventoryItems {
-  width: 90vw;
 }
 
 #non-navigation-buttons {
@@ -118,7 +107,6 @@ small {
 .description {
   grid-area: description;
   padding: 20px 0;
-  width: 90vw;
   align-self: center;
 }
 
@@ -344,4 +332,17 @@ button:disabled {
 
 #map > #A > #squirrel {
   background-image: url("./images/squirrel.svg");
+}
+
+/* Wider screen */
+@media (min-width: 600px) {
+  .App {
+    max-width: 50vw;
+    margin: auto;
+  }
+
+  #non-navigation-buttons, #navigation, #stats, .description {
+    width: 50vw;
+  }
+
 }
