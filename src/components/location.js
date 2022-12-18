@@ -178,6 +178,12 @@ function handleShare() {
         console.log("Error copying", error);
       }
     });
+
+    try {
+      window.gtag("event", "share", {})
+    } catch(error) {
+      console.log("tracking error", error)
+    }
 }
 
 async function handleInstall(installPromptEvent, setInstallPromptEvent) {
@@ -227,16 +233,6 @@ export default function Location({
         ) : (
           <></>
         )}
-        <button
-          onClick={() =>
-            window.gtag("event", "test_click", {
-              app_name: "Dragon",
-              custom: "custom data",
-            })
-          }
-        >
-          H
-        </button>
       </div>
       <Stats gameState={gameState} />
       <div className="description">
