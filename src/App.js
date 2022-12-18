@@ -10,15 +10,18 @@ import Resume from "./components/resume";
 import { reducer } from "./reducer";
 import { init } from "./init";
 
-
-function handleBeforeInstallPrompt(event, setInstallPromptEvent, setShowInstallButton) {
-  console.log("handleBeforeInstallPrompt")
+function handleBeforeInstallPrompt(
+  event,
+  setInstallPromptEvent,
+  setShowInstallButton
+) {
+  console.log("handleBeforeInstallPrompt");
   if (event) setInstallPromptEvent(event);
   setShowInstallButton(true);
 }
 
 function handleAppInstalled(setInstallPromptEvent, setShowInstallButton) {
-  console.log("handleAppInstalled")
+  console.log("handleAppInstalled");
   setInstallPromptEvent(null);
   setShowInstallButton(false);
 }
@@ -33,13 +36,28 @@ function App() {
   const [showInstallButton, setShowInstallButton] = React.useState(true);
 
   React.useEffect(() => {
-    window.addEventListener('beforeinstallprompt', (event) => handleBeforeInstallPrompt(event, setInstallPromptEvent, setShowInstallButton));
-    return () => window.removeEventListener('beforeinstallprompt', (event) => handleBeforeInstallPrompt(event, setInstallPromptEvent, setShowInstallButton));
+    window.addEventListener("beforeinstallprompt", (event) =>
+      handleBeforeInstallPrompt(
+        event,
+        setInstallPromptEvent,
+        setShowInstallButton
+      )
+    );
+    return () =>
+      window.removeEventListener("beforeinstallprompt", (event) =>
+        handleBeforeInstallPrompt(
+          event,
+          setInstallPromptEvent,
+          setShowInstallButton
+        )
+      );
   }, []);
 
   React.useEffect(() => {
-    window.addEventListener('appinstalled', () => handleAppInstalled(setInstallPromptEvent, setShowInstallButton));
-    return () => window.removeEventListener('appinstalled', handleAppInstalled);
+    window.addEventListener("appinstalled", () =>
+      handleAppInstalled(setInstallPromptEvent, setShowInstallButton)
+    );
+    return () => window.removeEventListener("appinstalled", handleAppInstalled);
   }, []);
 
   React.useLayoutEffect(() => {
