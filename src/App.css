@@ -81,18 +81,25 @@ button:disabled {
 
 #non-navigation-buttons {
   grid-area: non-navigation-buttons;
+  display: flex;
+  flex-direction: column;
   width: 90vw;
+  align-items: center;
 }
 
 #navigation {
+  grid-area: navigation;
   display: flex;
   flex-direction: column;
-  grid-area: navigation;
   width: 90vw;
   align-items: center;
 }
 
 .navigation-list > button {
+  width: 90vw;
+}
+
+#non-navigation-buttons > button {
   width: 90vw;
 }
 
@@ -213,8 +220,8 @@ button:disabled {
   display: grid;
   border: 1px solid rgb(110 121 158);
   border-radius: 5px;
-  grid-template-columns: 50px 60vw 50px;
-  grid-template-rows: 50px 60vw 50px;
+  grid-template-columns: 10vw 70vw 10vw;
+  grid-template-rows: 10vw 70vw 10vw;
   margin: 5px;
   width: fit-content;
 }
@@ -339,9 +346,9 @@ button:disabled {
 }
 
 /* Wider screen */
-@media (min-width: 800px) {
+@media (min-width: 600px) {
   .App {
-    max-width: 50vw;
+    max-width: 60vw;
     margin: auto;
   }
 
@@ -349,15 +356,32 @@ button:disabled {
   #navigation,
   #stats,
   .description {
-    width: 50vw;
+    width: 60vw;
   }
 
   .navigation-list > button {
-    width: 50vw;
+    width: 60vw;
+  }
+
+  #non-navigation-buttons > button {
+    width: 60vw;
   }
 
   #map {
-    grid-template-columns: 50px 40vw 50px;
-    grid-template-rows: 50px 40vw 50px;
+    grid-template-columns: 5vw 30vw 5vw;
+    grid-template-rows: 5vw 30vw 5vw;
+  }
+}
+
+/* Wide and tall screen */
+@media (min-width: 800px) and (min-height: 600px) {
+  #map {
+    grid-template-columns: 5vmin 30vmin 5vmin;
+    grid-template-rows: 5vmin 30vmin 5vmin;
+  }
+
+  .navigation-list > button,
+  #non-navigation-buttons > button {
+    width: 40vmin;
   }
 }
