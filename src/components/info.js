@@ -15,6 +15,9 @@ export default function Info({ setCurrentDisplay }) {
         {`Story by Colin\nBuilt by Sarah\n\nWant more games?\nCheck `}
         <a href="https://skedwards88.github.io/portfolio/">these</a>
         {` out.`}
+        {<hr></hr>}
+        {`\n`}
+        <a href="./privacy.html">Privacy policy</a>
       </div>
       <button className="close" onClick={() => setCurrentDisplay("location")}>
         CLOSE

@@ -26,6 +26,7 @@ module.exports = (env, argv) => {
         to: "./assets/maskable_icon.png",
       },
       { from: "./src/manifest.json", to: "./assets/manifest.json" },
+      { from: "./src/privacy.html", to: "./privacy.html" },
     ],
     options: {
       concurrency: 100,
