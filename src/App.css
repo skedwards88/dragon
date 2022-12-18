@@ -341,8 +341,10 @@ button:disabled {
     margin: auto;
   }
 
-  #non-navigation-buttons, #navigation, #stats, .description {
+  #non-navigation-buttons,
+  #navigation,
+  #stats,
+  .description {
     width: 50vw;
   }
-
 }
