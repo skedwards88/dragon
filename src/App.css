@@ -93,7 +93,6 @@ small {
 }
 
 #stats {
-  justify-content: space-around;
   white-space: pre;
   grid-area: stats;
   display: flex;
