@@ -27,6 +27,21 @@ small {
   font-size: calc(var(--default-font-size) * 0.6);
 }
 
+button {
+  border-radius: 5px;
+  border: 1px solid;
+  padding: 10px;
+  margin: 5px;
+  text-transform: capitalize;
+  font-size: var(--default-font-size);
+}
+
+button:disabled {
+  opacity: 0.2;
+  color: white;
+  touch-action: none;
+}
+
 #location-display {
   display: grid;
   grid-template-areas:
@@ -74,7 +89,7 @@ small {
   flex-direction: column;
   grid-area: navigation;
   width: 90vw;
-  align-items: center
+  align-items: center;
 }
 
 .navigation-list > button {
@@ -134,21 +149,6 @@ small {
   border-color: rgb(38 36 129);
   color: rgb(240 240 241);
   border-width: 5px 15px;
-}
-
-button {
-  border-radius: 5px;
-  border: 1px solid;
-  padding: 10px;
-  margin: 5px;
-  text-transform: capitalize;
-  font-size: var(--default-font-size);
-}
-
-button:disabled {
-  opacity: 0.2;
-  color: white;
-  touch-action: none;
 }
 
 .inventoryItem {
