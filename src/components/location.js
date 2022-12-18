@@ -211,7 +211,7 @@ export default function Location({
         {locations[gameState.playerLocation].getDescription(gameState)}
         {gameState.locationConsequenceText}
       </div>
-      <div id="navigation">
+      <div id="navigation" className={showMap ? "navigation-map" : "navigation-list"}>
         {showMap ? (
           <Map
             gameState={gameState}
