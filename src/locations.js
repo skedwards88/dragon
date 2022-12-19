@@ -556,7 +556,7 @@ const pasture = new Location({
     if (
       gameState.itemLocations.pasture.includes("horse") &&
       !gameState.horseDead &&
-      !gameState.tethered
+      !gameState.horseTethered
     ) {
       text += `\n\nA horse is grazing in the field. A sign reads: "Free horse (if you can catch it)." `;
     }

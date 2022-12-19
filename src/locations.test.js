@@ -791,7 +791,73 @@ test("blacksmith description, sword present, not clothed, not masked, upped cost
   `);
 });
 
-// pasture
+test("pasture description, horse present, not dead, not tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You are standing in a wide field just outside the city gates. 
+
+    A horse is grazing in the field. A sign reads: "Free horse (if you can catch it)." "
+  `);
+});
+
+test("pasture description, horse absent, not dead, not tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, pasture: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are standing in a wide field just outside the city gates. "`
+  );
+});
+
+test("pasture description, horse present, dead, not tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    horseDead: true,
+    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are standing in a wide field just outside the city gates. "`
+  );
+});
+
+test("pasture description, horse present, not dead, tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    horseTethered: true,
+    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are standing in a wide field just outside the city gates. "`
+  );
+});
+
+test("pasture description, horse present, dead, tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    horseDead: true,
+    horseTethered: true,
+    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You are standing in a wide field just outside the city gates. "`
+  );
+});
+
+// todo where does apple go after the horse eats it?
+
 // gate
 // youth
 // road1
