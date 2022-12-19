@@ -919,15 +919,17 @@ test("pasture name/sentient, horse present, dead, tethered", () => {
   expect(sentient).toMatchInlineSnapshot(`false`);
 });
 
-
 test("gate description, not played for youth", () => {
   const location = "gate";
   const gameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
-  expect(description).toMatchInlineSnapshot(
-  );
+  expect(description).toMatchInlineSnapshot(`
+    "You are standing at the city gate. You see a pasture and a road leading up a mountain. 
+
+    The youth that you saw earlier stands at the gate, crying. "
+  `);
 });
 
 test("gate description, played for youth", () => {
@@ -937,13 +939,63 @@ test("gate description, played for youth", () => {
     playedForYouth: true,
   };
   const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You are standing at the city gate. You see a pasture and a road leading up a mountain. 
+
+    The youth that you saw earlier stands at the gate. "
+  `);
+});
+
+test("youth description, played for youth, clothed", () => {
+  const location = "youth";
+  const gameState = {
+    ...newGameState,
+    playedForYouth: true,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
+    `"The youth stands by the city gates crying. "`
+  );
+});
+
+test("youth description, played for youth, not clothed", () => {
+  const location = "youth";
+  const gameState = {
+    ...newGameState,
+    playedForYouth: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The youth stands by the city gates crying. "Ack! Where are your clothes?!""`
+  );
+});
+
+test("youth description, not played for youth, clothed", () => {
+  const location = "youth";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The youth stands by the city gates. "`
+  );
+});
+
+test("youth description, not played for youth, not clothed", () => {
+  const location = "youth";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The youth stands by the city gates. "Ack! Where are your clothes?!""`
   );
 });
 
 // todo where does apple go after the horse eats it?
 
-// gate
 // youth
 // road1
 // road2
