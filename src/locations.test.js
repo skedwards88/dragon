@@ -571,6 +571,43 @@ test("entryway description, fire, baby not in nursery, damp and masked", () => {
   `);
 });
 
+test("nursery description, fire, baby not in nursery", () => {
+  const location = "nursery";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. "`
+  );
+});
+
+test("nursery description, fire, baby in nursery", () => {
+  const location = "nursery";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. "`
+  );
+});
+
+test("nursery description, no fire", () => {
+  const location = "nursery";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in the charred remains of a nursery. "`
+  );
+});
+
 // blacksmith
 // pasture
 // gate
