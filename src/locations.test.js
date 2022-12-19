@@ -1234,12 +1234,6 @@ test("clearing description, not cursed, squirrel not dead", () => {
     A squirrel scampers around a tree. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "wizard",
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
 });
 
@@ -1259,11 +1253,6 @@ test("clearing description, cursed, squirrel not dead", () => {
     A squirrel scampers around a tree. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["squirrel"]));
   expect(connections.A).toEqual(expect.not.arrayContaining(["wizard"]));
 });
@@ -1284,12 +1273,6 @@ test("clearing description, not cursed, squirrel dead", () => {
     A dead squirrel lies at the base of a tree. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "wizard",
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
 });
 
@@ -1309,11 +1292,6 @@ test("clearing description, cursed, squirrel dead", () => {
     A dead squirrel lies at the base of a tree. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["squirrel"]));
   expect(connections.A).toEqual(expect.not.arrayContaining(["wizard"]));
 });
@@ -1335,12 +1313,6 @@ test("clearing description, not cursed, squirrel dead, horse dead but not here",
     A squirrel scampers around a tree. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "wizard",
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
 });
 
@@ -1364,12 +1336,6 @@ test("clearing description, not cursed, squirrel dead, horse dead here", () => {
     A dead horse lies on the ground, foam and partially chewed berries coming from its mouth. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "wizard",
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
 });
 
@@ -1391,19 +1357,43 @@ test("clearing description, not cursed, squirrel dead, horse here not dead", () 
     A squirrel scampers around a tree. "
   `);
   const connections = locations[location].getConnections(gameState);
-  expect(connections.A).toMatchInlineSnapshot(`
-    [
-      "wizard",
-      "squirrel",
-    ]
-  `);
   expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
+});
+
+test("squirrel description, not dead", () => {
+  const location = "squirrel";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You approach the squirrel. It pauses, perhaps curious if you will feed it, before scampering up the tree. "`
+  );
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toBe(true);
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"squirrel"`);
+});
+
+test("squirrel description, dead", () => {
+  const location = "squirrel";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The squirrel lies dead on the ground. "`
+  );
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toBe(false);
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"dead squirrel"`);
 });
 
 // todo where does apple go after the horse eats it?
 // todo catch cases where try to get prop from game state that doesn't exist
 
-// squirrel
 // wizard
 // cliff
 // caveEntrance
