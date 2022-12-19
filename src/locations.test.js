@@ -1220,10 +1220,189 @@ test("stream description, paid debt", () => {
   );
 });
 
-// todo where does apple go after the horse eats it?
+test("clearing description, not cursed, squirrel not dead", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
 
-// stream
-// clearing
+    A man stands in the middle of the clearing. His long white beard, pointed hat, and staff mark him as a wizard.  
+
+    A squirrel scampers around a tree. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "wizard",
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
+});
+
+test("clearing description, cursed, squirrel not dead", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: false,
+    cursed: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
+
+    A black patch marks where the wizard vanished.  
+
+    A squirrel scampers around a tree. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["squirrel"]));
+  expect(connections.A).toEqual(expect.not.arrayContaining(["wizard"]));
+});
+
+test("clearing description, not cursed, squirrel dead", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: true,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
+
+    A man stands in the middle of the clearing. His long white beard, pointed hat, and staff mark him as a wizard.  
+
+    A dead squirrel lies at the base of a tree. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "wizard",
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
+});
+
+test("clearing description, cursed, squirrel dead", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: true,
+    cursed: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
+
+    A black patch marks where the wizard vanished.  
+
+    A dead squirrel lies at the base of a tree. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["squirrel"]));
+  expect(connections.A).toEqual(expect.not.arrayContaining(["wizard"]));
+});
+
+test("clearing description, not cursed, squirrel dead, horse dead but not here", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: false,
+    cursed: false,
+    horseDead: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
+
+    A man stands in the middle of the clearing. His long white beard, pointed hat, and staff mark him as a wizard.  
+
+    A squirrel scampers around a tree. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "wizard",
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
+});
+
+test("clearing description, not cursed, squirrel dead, horse dead here", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: false,
+    cursed: false,
+    horseDead: true,
+    itemLocations: { ...newGameState.itemLocations, clearing: ["horse"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
+
+    A man stands in the middle of the clearing. His long white beard, pointed hat, and staff mark him as a wizard.  
+
+    A squirrel scampers around a tree. 
+
+    A dead horse lies on the ground, foam and partially chewed berries coming from its mouth. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "wizard",
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
+});
+
+test("clearing description, not cursed, squirrel dead, horse here not dead", () => {
+  const location = "clearing";
+  const gameState = {
+    ...newGameState,
+    squirrelDead: false,
+    cursed: false,
+    horseDead: false,
+    itemLocations: { ...newGameState.itemLocations, clearing: ["horse"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. 
+
+    A man stands in the middle of the clearing. His long white beard, pointed hat, and staff mark him as a wizard.  
+
+    A squirrel scampers around a tree. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.A).toMatchInlineSnapshot(`
+    [
+      "wizard",
+      "squirrel",
+    ]
+  `);
+  expect(connections.A).toEqual(expect.arrayContaining(["wizard", "squirrel"]));
+});
+
+// todo where does apple go after the horse eats it?
+// todo catch cases where try to get prop from game state that doesn't exist
+
 // squirrel
 // wizard
 // cliff
