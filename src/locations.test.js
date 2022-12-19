@@ -856,6 +856,69 @@ test("pasture description, horse present, dead, tethered", () => {
   );
 });
 
+test("pasture name/sentient, horse present, not dead, not tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+  };
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"horse"`);
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toMatchInlineSnapshot(`true`);
+});
+
+test("pasture name/sentient, horse absent, not dead, not tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, pasture: [] },
+  };
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"pasture"`);
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toMatchInlineSnapshot(`false`);
+});
+
+test("pasture name/sentient, horse present, dead, not tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    horseDead: true,
+    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+  };
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"pasture"`);
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toMatchInlineSnapshot(`false`);
+});
+
+test("pasture name/sentient, horse present, not dead, tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    horseTethered: true,
+    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+  };
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"horse"`);
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toMatchInlineSnapshot(`true`);
+});
+
+test("pasture name/sentient, horse present, dead, tethered", () => {
+  const location = "pasture";
+  const gameState = {
+    ...newGameState,
+    horseDead: true,
+    horseTethered: true,
+    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+  };
+  const name = locations[location].getDisplayName(gameState);
+  expect(name).toMatchInlineSnapshot(`"pasture"`);
+  const sentient = locations[location].getSentient(gameState);
+  expect(sentient).toMatchInlineSnapshot(`false`);
+});
+
 // todo where does apple go after the horse eats it?
 
 // gate
