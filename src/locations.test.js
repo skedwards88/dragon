@@ -919,6 +919,28 @@ test("pasture name/sentient, horse present, dead, tethered", () => {
   expect(sentient).toMatchInlineSnapshot(`false`);
 });
 
+
+test("gate description, not played for youth", () => {
+  const location = "gate";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+  );
+});
+
+test("gate description, played for youth", () => {
+  const location = "gate";
+  const gameState = {
+    ...newGameState,
+    playedForYouth: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+  );
+});
+
 // todo where does apple go after the horse eats it?
 
 // gate
