@@ -1562,12 +1562,38 @@ test("wizard description, not naked, got score by credit, paid debt, treasure", 
   );
 });
 
+test("cliff description, no horse", () => {
+  const location = "cliff";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You scramble on the rocky cliff. Above you is the entrance to a cave. Below you is a clearing next to a stream. "`
+  );
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toEqual("caveEntrance");
+});
+
+test("cliff description, horse", () => {
+  const location = "cliff";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, inventory: ["horse"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The horse cannot make it up the rocky cliff. You must return to the clearing. "`
+  );
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toEqual("");
+});
+
 // todo where does apple go after the horse eats it?
 // todo catch cases where try to get prop from game state that doesn't exist
 // todo if you get 1 treasure by poisoning dragon, you can then go get score and then immediately repay score
 // todo you can repay wizard at lower treasure level then collect more treasure
 
-// cliff
 // caveEntrance
 // defecatory
 // puddle
