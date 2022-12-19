@@ -1163,9 +1163,65 @@ test("road3 description, paid to prevent curse", () => {
   );
 });
 
+test("stream description, not in debt", () => {
+  const location = "stream";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: false,
+    paidDebt: false,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`
+  );
+});
+
+test("stream description, in debt", () => {
+  const location = "stream";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: false,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. 
+
+    The air above the stream shimmers. "
+  `);
+});
+test("stream description, in debt but already cursed", () => {
+  const location = "stream";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: false,
+    cursed: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`
+  );
+});
+
+test("stream description, paid debt", () => {
+  const location = "stream";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: true,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`
+  );
+});
+
 // todo where does apple go after the horse eats it?
 
-// road3
 // stream
 // clearing
 // squirrel
