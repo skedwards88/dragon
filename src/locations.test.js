@@ -608,7 +608,59 @@ test("nursery description, no fire", () => {
   );
 });
 
-// blacksmith
+test("blacksmith description, sword absent, clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. "`
+  );
+});
+
+test("blacksmith description, sword absent, not clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." "`
+  );
+});
+
+test("blacksmith description, sword absent, clothed, masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    playerMasked: true,
+    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it."`
+  );
+});
+
+test("blacksmith description, sword absent, not clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: true,
+    playerMasked: true,
+    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it."`
+  );
+});
+
 // pasture
 // gate
 // youth
