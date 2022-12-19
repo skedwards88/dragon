@@ -1391,10 +1391,182 @@ test("squirrel description, dead", () => {
   expect(name).toMatchInlineSnapshot(`"dead squirrel"`);
 });
 
+test("wizard description, naked, score on offer", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The wizard looks at you though bushy eyebrows. "Ah, a naturalist," he comments, eyeing your lack of clothes.
+
+    "I have a musical score that will be useful. I would trade it for gold," the wizard says. 
+
+    "Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" 
+
+    "However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." 
+
+    "All promised payments are final. All payments completed at time of purchase are refundable." "
+  `);
+});
+
+test("wizard description, naked, score on offer, you have score", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    itemLocations: { ...newGameState.itemLocations, inventory: ["sword"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The wizard looks at you though bushy eyebrows. "Ah, a naturalist," he comments, eyeing your lack of clothes.
+
+    "I have a musical score that will be useful. I would trade it for your fine sword or gold," the wizard says. 
+
+    "Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" 
+
+    "However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." 
+
+    "All promised payments are final. All payments completed at time of purchase are refundable." "
+  `);
+});
+
+test("wizard description, not naked, score on offer", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The wizard looks at you though bushy eyebrows. 
+
+    "I have a musical score that will be useful. I would trade it for gold," the wizard says. 
+
+    "Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" 
+
+    "However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." 
+
+    "All promised payments are final. All payments completed at time of purchase are refundable." "
+  `);
+});
+
+test("wizard description, not naked, score by trade", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByTrade: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
+test("wizard description, not naked, score by credit", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByCredit: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
+test("wizard description, not naked, score at wizard but you own it by credit", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByCredit: true,
+    itemLocations: { ...newGameState.itemLocations, wizard: ["score"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
+test("wizard description, not naked, score at wizard but you own it by trade", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByTrade: true,
+    itemLocations: { ...newGameState.itemLocations, wizard: ["score"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
+test("wizard description, not naked, score not at wizard", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
+test("wizard description, not naked, got score by credit, did not pay debt, no treasure", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByCredit: true,
+    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
+test("wizard description, not naked, got score by credit, did not pay debt, treasure", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByCredit: true,
+    treasureLevel: 1,
+    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "Are you here to give me my share of the treasure? ""`
+  );
+});
+
+test("wizard description, not naked, got score by credit, paid debt, treasure", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByCredit: true,
+    treasureLevel: 1,
+    paidDebt: true,
+    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
 // todo where does apple go after the horse eats it?
 // todo catch cases where try to get prop from game state that doesn't exist
+// todo if you get 1 treasure by poisoning dragon, you can then go get score and then immediately repay score
+// todo you can repay wizard at lower treasure level then collect more treasure
 
-// wizard
 // cliff
 // caveEntrance
 // defecatory
