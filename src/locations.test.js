@@ -661,6 +661,63 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
   );
 });
 
+test("blacksmith description, sword present but already bought, clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    ownSword: true,
+    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. "`
+  );
+});
+
+test("blacksmith description, sword present but already bought, not clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    ownSword: true,
+    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." "`
+  );
+});
+
+test("blacksmith description, sword present but already bought, clothed, masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    playerMasked: true,
+    ownSword: true,
+    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it."`
+  );
+});
+
+test("blacksmith description, sword present but already bought, not clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: true,
+    playerMasked: true,
+    ownSword: true,
+    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it."`
+  );
+});
+
 test("blacksmith description, sword present, clothed, not masked", () => {
   const location = "blacksmith";
   const gameState = {
@@ -675,7 +732,7 @@ test("blacksmith description, sword present, clothed, not masked", () => {
   `);
 });
 
-test("blacksmith description, sword absent, not clothed, not masked", () => {
+test("blacksmith description, sword present, not clothed, not masked", () => {
   const location = "blacksmith";
   const gameState = {
     ...newGameState,
@@ -688,7 +745,7 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
   `);
 });
 
-test("blacksmith description, sword absent, clothed, masked", () => {
+test("blacksmith description, sword present, clothed, masked", () => {
   const location = "blacksmith";
   const gameState = {
     ...newGameState,
@@ -703,7 +760,7 @@ test("blacksmith description, sword absent, clothed, masked", () => {
   `);
 });
 
-test("blacksmith description, sword absent, not clothed, not masked", () => {
+test("blacksmith description, sword present, not clothed, not masked", () => {
   const location = "blacksmith";
   const gameState = {
     ...newGameState,
@@ -715,6 +772,22 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
     "The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it.
 
     "Are you interested in buying that sword?" they ask. "It costs 40 gold. " "
+  `);
+});
+
+test("blacksmith description, sword present, not clothed, not masked, upped cost", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: true,
+    playerMasked: true,
+    swordCost: 200,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it.
+
+    "Are you interested in buying that sword?" they ask. "It costs 200 gold. " "
   `);
 });
 
