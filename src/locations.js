@@ -312,36 +312,27 @@ const entryway = new Location({
     };
   },
   getDescription: function (gameState) {
-    
     if (!gameState.manorFire) {
-      return "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. "
+      return "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. ";
     }
-    
+
     let text = "You stand in the entrance of the burning manor. ";
 
     if (gameState.itemLocations.nursery.includes("baby")) {
       text += "You hear a baby crying upstairs. ";
     }
 
-    if (
-      !gameState.handkerchiefDamp || !gameState.playerMasked
-    ) {
+    if (!gameState.handkerchiefDamp || !gameState.playerMasked) {
       text +=
         "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. ";
     }
 
-    if (
-      gameState.handkerchiefDamp &&
-      gameState.playerMasked
-    ) {
+    if (gameState.handkerchiefDamp && gameState.playerMasked) {
       text +=
         "\n\nAlthough the smoke is thick, the damp handkerchief over your mouth helps you breathe. ";
     }
 
-    if (
-      !gameState.handkerchiefDamp &&
-      gameState.playerMasked
-    ) {
+    if (!gameState.handkerchiefDamp && gameState.playerMasked) {
       text +=
         "\n\nOn its own, the handkerchief does little to block the smoke. ";
     }
@@ -604,7 +595,7 @@ const youth = new Location({
   },
   getDescription: function (gameState) {
     let text = `The youth stands by the city gates${
-      gameState.playedForYouth ? " crying" : ""
+      gameState.playedForYouth ? "" : " crying"
     }. `;
     if (gameState.naked) {
       text += `"Ack! Where are your clothes?!"`;
@@ -636,12 +627,12 @@ const road1 = new Location({
     };
   },
   getDescription: function (gameState) {
-    return `You stand at the end of a long road that stretches from the city gate to mountains. 
-    ${
-      gameState.horseMounted
-        ? "\n\nThankfully, the horse lets you travel quickly. "
-        : ""
-    }`;
+    let text =
+      "You stand at the end of a long road that stretches from the city gate to mountains. ";
+    if (gameState.horseMounted) {
+      text += "\n\nThankfully, the horse lets you travel quickly. ";
+    }
+    return text;
   },
 });
 
@@ -661,12 +652,14 @@ const road2 = new Location({
     };
   },
   getDescription: function (gameState) {
-    return `You are halfway along a long road that stretches from the city gate to mountains. 
-    ${
-      gameState.horseMounted
-        ? "\n\nThankfully, the horse lets you travel faster. "
-        : "\n\nThis would be much easier if you were riding a horse. "
-    }`;
+    let text =
+      "You are halfway along a long road that stretches from the city gate to mountains. ";
+    if (gameState.horseMounted) {
+      text += "\n\nThankfully, the horse lets you travel faster. ";
+    } else {
+      text += "\n\nThis would be much easier if you were riding a horse. ";
+    }
+    return text;
   },
 });
 

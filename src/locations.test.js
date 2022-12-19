@@ -955,7 +955,7 @@ test("youth description, played for youth, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates crying. "`
+    `"The youth stands by the city gates. "`
   );
 });
 
@@ -967,7 +967,7 @@ test("youth description, played for youth, not clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates crying. "Ack! Where are your clothes?!""`
+    `"The youth stands by the city gates. "Ack! Where are your clothes?!""`
   );
 });
 
@@ -979,7 +979,7 @@ test("youth description, not played for youth, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates. "`
+    `"The youth stands by the city gates crying. "`
   );
 });
 
@@ -990,15 +990,181 @@ test("youth description, not played for youth, not clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates. "Ack! Where are your clothes?!""`
+    `"The youth stands by the city gates crying. "Ack! Where are your clothes?!""`
+  );
+});
+
+test("road1 description, not mounted", () => {
+  const location = "road1";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+  );
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toMatchInlineSnapshot(`"road2"`);
+  expect(connections.S).toMatchInlineSnapshot(`"gate"`);
+});
+
+test("road1 description, mounted", () => {
+  const location = "road1";
+  const gameState = {
+    ...newGameState,
+    horseMounted: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand at the end of a long road that stretches from the city gate to mountains. 
+
+    Thankfully, the horse lets you travel quickly. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toMatchInlineSnapshot(`"stream"`);
+  expect(connections.S).toMatchInlineSnapshot(`"gate"`);
+});
+
+test("road2 description, not mounted", () => {
+  const location = "road2";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You are halfway along a long road that stretches from the city gate to mountains. 
+
+    This would be much easier if you were riding a horse. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toMatchInlineSnapshot(`"road3"`);
+  expect(connections.S).toMatchInlineSnapshot(`"road1"`);
+});
+
+test("road2 description, mounted", () => {
+  const location = "road2";
+  const gameState = {
+    ...newGameState,
+    horseMounted: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You are halfway along a long road that stretches from the city gate to mountains. 
+
+    Thankfully, the horse lets you travel faster. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toMatchInlineSnapshot(`"stream"`);
+  expect(connections.S).toMatchInlineSnapshot(`"gate"`);
+});
+
+test("road3 description, not mounted", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+  );
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toMatchInlineSnapshot(`"stream"`);
+  expect(connections.S).toMatchInlineSnapshot(`"road2"`);
+});
+
+test("road3 description, mounted", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+    horseMounted: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand at the end of a long road that stretches from the city gate to mountains. 
+
+    Thankfully, the horse lets you travel quickly. "
+  `);
+  const connections = locations[location].getConnections(gameState);
+  expect(connections.N).toMatchInlineSnapshot(`"stream"`);
+  expect(connections.S).toMatchInlineSnapshot(`"gate"`);
+});
+
+test("road3 description, getting cursed", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: false,
+    treasureLevel: 2,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke."`
+  );
+});
+
+test("road3 description, not in debt", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: false,
+    paidDebt: false,
+    treasureLevel: 2,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+  );
+});
+
+test("road3 description, no treasure so won't get cursed", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: false,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+  );
+});
+
+test("road3 description, already cursed", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: false,
+    treasureLevel: 2,
+    cursed: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+  );
+});
+
+test("road3 description, paid to prevent curse", () => {
+  const location = "road3";
+  const gameState = {
+    ...newGameState,
+    gotScoreByCredit: true,
+    paidDebt: true,
+    treasureLevel: 2,
+    cursed: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
   );
 });
 
 // todo where does apple go after the horse eats it?
 
-// youth
-// road1
-// road2
 // road3
 // stream
 // clearing
