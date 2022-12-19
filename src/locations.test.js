@@ -661,6 +661,63 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
   );
 });
 
+test("blacksmith description, sword present, clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The blacksmith looks up as you approach. 
+
+    "Are you interested in buying that sword?" they ask. "It costs 40 gold. " "
+  `);
+});
+
+test("blacksmith description, sword absent, not clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." 
+
+    "Are you interested in buying that sword?" they ask. "It costs 40 gold. " "
+  `);
+});
+
+test("blacksmith description, sword absent, clothed, masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    playerMasked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it.
+
+    "Are you interested in buying that sword?" they ask. "It costs 40 gold. " "
+  `);
+});
+
+test("blacksmith description, sword absent, not clothed, not masked", () => {
+  const location = "blacksmith";
+  const gameState = {
+    ...newGameState,
+    naked: true,
+    playerMasked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it.
+
+    "Are you interested in buying that sword?" they ask. "It costs 40 gold. " "
+  `);
+});
+
 // pasture
 // gate
 // youth
