@@ -11,4 +11,4 @@ use https://github.com/marketplace/actions/automated-version-bump or something s
 ---
 
 finish location tests
-privacy policy
+track number of completed quests?

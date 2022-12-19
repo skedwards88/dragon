@@ -312,29 +312,25 @@ const entryway = new Location({
     };
   },
   getDescription: function (gameState) {
-    let text = "";
-
-    if (gameState.manorFire) {
-      text += "You stand in the entrance of the burning manor. ";
-    } else {
-      text +=
-        "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. ";
+    
+    if (!gameState.manorFire) {
+      return "You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. "
     }
+    
+    let text = "You stand in the entrance of the burning manor. ";
 
     if (gameState.itemLocations.nursery.includes("baby")) {
       text += "You hear a baby crying upstairs. ";
     }
 
     if (
-      gameState.manorFire &&
-      (!gameState.handkerchiefDamp || !gameState.playerMasked)
+      !gameState.handkerchiefDamp || !gameState.playerMasked
     ) {
       text +=
         "\n\nYour throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. ";
     }
 
     if (
-      gameState.manorFire &&
       gameState.handkerchiefDamp &&
       gameState.playerMasked
     ) {
@@ -343,7 +339,6 @@ const entryway = new Location({
     }
 
     if (
-      gameState.manorFire &&
       !gameState.handkerchiefDamp &&
       gameState.playerMasked
     ) {

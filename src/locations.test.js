@@ -403,8 +403,174 @@ test.each([
   }
 );
 
-// fountain
-// manor
+test("fountain description, fire", () => {
+  const location = "fountain";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
+
+    Beyond the fountain, you see a burning manor surrounded by a crowd. "
+  `);
+});
+
+test("fountain description, no fire", () => {
+  const location = "fountain";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand at the edge of a fountain. In the center is a statue of a dragon and cowering people. 
+
+    Beyond the fountain, the manor is a framework of charred wood. "
+  `);
+});
+
+test("entryway description, no fire", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. "`
+  );
+});
+
+test("entryway description, fire, baby in nursery, not masked", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. You hear a baby crying upstairs. 
+
+    Your throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. "
+  `);
+});
+
+test("entryway description, fire, baby in nursery, masked not damp", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    playerMasked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. You hear a baby crying upstairs. 
+
+    Your throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. 
+
+    On its own, the handkerchief does little to block the smoke. "
+  `);
+});
+
+test("entryway description, fire, baby in nursery, damp not masked", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    handkerchiefDamp: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. You hear a baby crying upstairs. 
+
+    Your throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. "
+  `);
+});
+
+test("entryway description, fire, baby in nursery, damp and masked", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    handkerchiefDamp: true,
+    playerMasked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. You hear a baby crying upstairs. 
+
+    Although the smoke is thick, the damp handkerchief over your mouth helps you breathe. "
+  `);
+});
+
+test("entryway description, fire, baby not in nursery, not masked", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. 
+
+    Your throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. "
+  `);
+});
+
+test("entryway description, fire, baby not in nursery, masked not damp", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    playerMasked: true,
+    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. 
+
+    Your throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. 
+
+    On its own, the handkerchief does little to block the smoke. "
+  `);
+});
+
+test("entryway description, fire, baby not in nursery, damp not masked", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    handkerchiefDamp: true,
+    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. 
+
+    Your throat burns from the smoke and heat. You can't breath this air. You will surely develop a nasty cough if you go further into the manor without protection. "
+  `);
+});
+
+test("entryway description, fire, baby not in nursery, damp and masked", () => {
+  const location = "entryway";
+  const gameState = {
+    ...newGameState,
+    manorFire: true,
+    handkerchiefDamp: true,
+    playerMasked: true,
+    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of the burning manor. 
+
+    Although the smoke is thick, the damp handkerchief over your mouth helps you breathe. "
+  `);
+});
+
 // blacksmith
 // pasture
 // gate
