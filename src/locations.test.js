@@ -1546,6 +1546,22 @@ test("wizard description, not naked, got score by credit, did not pay debt, trea
   );
 });
 
+test("wizard description, not naked, got score by credit, did not pay debt, treasure but not more than what had when made deal", () => {
+  const location = "wizard";
+  const gameState = {
+    ...newGameState,
+    naked: false,
+    gotScoreByCredit: true,
+    treasureLevel: 1,
+    preCreditTreasureLevel: 1,
+    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"The wizard looks at you though bushy eyebrows. "`
+  );
+});
+
 test("wizard description, not naked, got score by credit, paid debt, treasure", () => {
   const location = "wizard";
   const gameState = {
@@ -1588,6 +1604,7 @@ test("cliff description, horse", () => {
   const connections = locations[location].getConnections(gameState);
   expect(connections.N).toEqual("");
 });
+
 
 // todo where does apple go after the horse eats it?
 // todo catch cases where try to get prop from game state that doesn't exist

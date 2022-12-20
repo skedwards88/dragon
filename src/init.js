@@ -51,6 +51,7 @@ export function init() {
     dragonDead: false,
     treasureAmount: 300,
     treasureLevel: 0,
+    preCreditTreasureLevel: 0,
     singeCount: 0,
     gotScoreByCredit: false,
     paidDebt: false,

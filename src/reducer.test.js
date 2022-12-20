@@ -94,6 +94,7 @@ test("New game resets state", () => {
       "playerLocation": "room",
       "playerMasked": false,
       "playerPoisoned": false,
+      "preCreditTreasureLevel": 0,
       "receivedBabyReward": false,
       "reputation": 10,
       "savedBaby": false,
@@ -245,6 +246,7 @@ test("Resuming will apply saved state over new game state", () => {
       "playerLocation": "room",
       "playerMasked": false,
       "playerPoisoned": false,
+      "preCreditTreasureLevel": 0,
       "receivedBabyReward": false,
       "reputation": 10,
       "savedBaby": false,
@@ -5164,6 +5166,41 @@ test("If you have not already made a deal with the wizard, paying the wizard wil
   expect(output.gotScoreByCredit).toBe(true);
   expect(output.paidDebt).toBe(false);
   expect(output.gold).toEqual(startingGold);
+  expect(output.preCreditTreasureLevel).toEqual(0);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`
+  );
+});
+
+test("If you have not already made a deal with the wizard, paying the wizard will give you the score and lock you into debt. It you already earned treasure, that will be recorded as pre-debt", () => {
+  let location = "wizard";
+  let item = "score";
+  let startingGold = 0;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gold: startingGold,
+      gotScoreByCredit: false,
+      gotScoreByTrade: false,
+      treasureLevel: 1,
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.itemLocations.inventory).toEqual(
+    expect.arrayContaining([item])
+  );
+  expect(output.itemLocations[location]).toEqual(
+    expect.not.arrayContaining([item])
+  );
+  expect(output.gotScoreByCredit).toBe(true);
+  expect(output.paidDebt).toBe(false);
+  expect(output.preCreditTreasureLevel).toEqual(1);
+  expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`
   );
@@ -5256,6 +5293,33 @@ test("If you are in debt and earned treasure level 1", () => {
   `);
 });
 
+test("If you are in debt and earned treasure level 1 but already had treasure level 1, debt is not paid", () => {
+  let location = "wizard";
+  let startingGold = 120;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gold: startingGold,
+      treasureLevel: 1,
+      preCreditTreasureLevel: 1,
+      gotScoreByCredit: true,
+      gotScoreByTrade: false,
+      paidDebt: false,
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.paidDebt).toBe(false);
+  expect(output.gold).toEqual(startingGold);
+  expect(output.consequenceText).toMatchInlineSnapshot(
+    `""Hmm...You have not earned any more treasure. Use your wits!""`
+  );
+});
+
 test("If you are in debt and earned treasure level 2", () => {
   let location = "wizard";
   let startingGold = 220;
@@ -5284,6 +5348,35 @@ test("If you are in debt and earned treasure level 2", () => {
   `);
 });
 
+test("If you are in debt and earned treasure level 2 but had level 1 pre-debt", () => {
+  let location = "wizard";
+  let startingGold = 220;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gold: startingGold,
+      treasureLevel: 2,
+      gotScoreByCredit: true,
+      gotScoreByTrade: false,
+      paidDebt: false,
+      preCreditTreasureLevel: 1,
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.paidDebt).toBe(true);
+  expect(output.gold).toEqual(startingGold - 50);
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+
+    Gold -50"
+  `);
+});
+
 test("If you are in debt and earned treasure level 3", () => {
   let location = "wizard";
   let startingGold = 320;
@@ -5309,6 +5402,35 @@ test("If you are in debt and earned treasure level 3", () => {
     ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
 
     Gold -150"
+  `);
+});
+
+test("If you are in debt and earned treasure level 3 but had level 1 pre-debt", () => {
+  let location = "wizard";
+  let startingGold = 320;
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: location,
+      gold: startingGold,
+      treasureLevel: 3,
+      gotScoreByCredit: true,
+      gotScoreByTrade: false,
+      paidDebt: false,
+      preCreditTreasureLevel: 1,
+    },
+    {
+      action: "pay",
+    }
+  );
+
+  expect(output.paidDebt).toBe(true);
+  expect(output.gold).toEqual(startingGold - 100);
+  expect(output.consequenceText).toMatchInlineSnapshot(`
+    ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
+
+    Gold -100"
   `);
 });
 

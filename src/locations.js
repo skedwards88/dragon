@@ -853,7 +853,7 @@ const wizard = new Location({
     if (
       gameState.gotScoreByCredit &&
       !gameState.paidDebt &&
-      gameState.treasureLevel
+      gameState.preCreditTreasureLevel < gameState.treasureLevel
     ) {
       text += `"Are you here to give me my share of the treasure? "`;
     }
@@ -872,7 +872,8 @@ const wizard = new Location({
       if (
         gameState.gotScoreByCredit &&
         !gameState.paidDebt &&
-        gameState.treasureLevel
+        gameState.treasureLevel &&
+        gameState.preCreditTreasureLevel < gameState.treasureLevel
       ) {
         let text = "";
         if (gameState.treasureLevel === 3) {
@@ -889,9 +890,13 @@ const wizard = new Location({
       if (
         gameState.gotScoreByCredit &&
         !gameState.paidDebt &&
-        !gameState.treasureLevel
+        !(gameState.preCreditTreasureLevel < gameState.treasureLevel)
       ) {
-        return `"Hmm...You have not earned any treasure. Use your wits!"`;
+        if (gameState.preCreditTreasureLevel) {
+          return `"Hmm...You have not earned any more treasure. Use your wits!"`;
+        } else {
+          return `"Hmm...You have not earned any treasure. Use your wits!"`;
+        }
       }
 
       return `"Although I would like your gold, you have no debts to me."`;
@@ -905,20 +910,24 @@ const wizard = new Location({
         return {
           gotScoreByCredit: true,
           paidDebt: false,
+          preCreditTreasureLevel: gameState.treasureLevel,
         };
       }
 
       if (
         gameState.gotScoreByCredit &&
         !gameState.paidDebt &&
-        gameState.treasureLevel
+        gameState.treasureLevel &&
+        // You only can pay the debt if you have earned any treasure post-deal
+        gameState.preCreditTreasureLevel < gameState.treasureLevel
       ) {
-        const treasureTaken =
-          gameState.treasureAmount * (gameState.treasureLevel / 3);
+        // The wizard only takes the half of the gold that you earned in the time after promising them treasure
+        const treasureTakenPostDeal =
+          gameState.treasureAmount * ((gameState.treasureLevel - gameState.preCreditTreasureLevel) / 3);
 
         return {
           paidDebt: true,
-          gold: gameState.gold - treasureTaken / 2,
+          gold: gameState.gold - treasureTakenPostDeal / 2,
         };
       }
     }
