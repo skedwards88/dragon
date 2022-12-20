@@ -1605,7 +1605,6 @@ test("cliff description, horse", () => {
   expect(connections.N).toEqual("");
 });
 
-
 // todo where does apple go after the horse eats it?
 // todo catch cases where try to get prop from game state that doesn't exist
 // todo if you get 1 treasure by poisoning dragon, you can then go get score and then immediately repay score

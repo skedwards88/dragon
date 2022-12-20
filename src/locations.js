@@ -923,7 +923,8 @@ const wizard = new Location({
       ) {
         // The wizard only takes the half of the gold that you earned in the time after promising them treasure
         const treasureTakenPostDeal =
-          gameState.treasureAmount * ((gameState.treasureLevel - gameState.preCreditTreasureLevel) / 3);
+          gameState.treasureAmount *
+          ((gameState.treasureLevel - gameState.preCreditTreasureLevel) / 3);
 
         return {
           paidDebt: true,
