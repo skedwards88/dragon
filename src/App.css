@@ -83,7 +83,6 @@ button:disabled {
   grid-area: non-navigation-buttons;
   display: flex;
   flex-direction: column;
-  width: 90vw;
   align-items: center;
 }
 
