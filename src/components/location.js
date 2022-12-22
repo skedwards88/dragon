@@ -21,6 +21,33 @@ function LocationItems({ gameState, dispatchGameState, setCurrentDisplay }) {
   });
 }
 
+function NavigationList({
+  showPhoto,
+  gameState,
+  dispatchGameState,
+  setCurrentDisplay,
+  locationName,
+}) {
+  return (
+    <div id="navigation" className="navigation-list">
+      {showPhoto ? (
+        <div className={"listNavigationImage " + locationName}></div>
+      ) : (
+        <></>
+      )}
+      <LocationItems
+        gameState={gameState}
+        dispatchGameState={dispatchGameState}
+        setCurrentDisplay={setCurrentDisplay}
+      />
+      <Connections
+        dispatchGameState={dispatchGameState}
+        gameState={gameState}
+      />
+    </div>
+  );
+}
+
 function Connections({ gameState, dispatchGameState }) {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
@@ -122,39 +149,41 @@ function Map({ gameState, dispatchGameState, setCurrentDisplay, showPhoto }) {
   const locationName =
     locations[gameState.playerLocation].getBackgroundName(gameState);
   return (
-    <div id="map">
-      {MapLocation({
-        direction: "N",
-        connections: connections,
-        gameState: gameState,
-        dispatchGameState: dispatchGameState,
-      })}
-      {MapLocation({
-        direction: "W",
-        connections: connections,
-        gameState: gameState,
-        dispatchGameState: dispatchGameState,
-      })}
-      <div id="A" className={showPhoto ? locationName : ""}>
-        {MapInteractions({
+    <div id="navigation" className="navigation-map">
+      <div id="map">
+        {MapLocation({
+          direction: "N",
           connections: connections,
+          gameState: gameState,
           dispatchGameState: dispatchGameState,
-          itemsAtLocation: itemsAtLocation,
-          setCurrentDisplay: setCurrentDisplay,
+        })}
+        {MapLocation({
+          direction: "W",
+          connections: connections,
+          gameState: gameState,
+          dispatchGameState: dispatchGameState,
+        })}
+        <div id="A" className={showPhoto ? locationName : ""}>
+          {MapInteractions({
+            connections: connections,
+            dispatchGameState: dispatchGameState,
+            itemsAtLocation: itemsAtLocation,
+            setCurrentDisplay: setCurrentDisplay,
+          })}
+        </div>
+        {MapLocation({
+          direction: "E",
+          connections: connections,
+          gameState: gameState,
+          dispatchGameState: dispatchGameState,
+        })}
+        {MapLocation({
+          direction: "S",
+          connections: connections,
+          gameState: gameState,
+          dispatchGameState: dispatchGameState,
         })}
       </div>
-      {MapLocation({
-        direction: "E",
-        connections: connections,
-        gameState: gameState,
-        dispatchGameState: dispatchGameState,
-      })}
-      {MapLocation({
-        direction: "S",
-        connections: connections,
-        gameState: gameState,
-        dispatchGameState: dispatchGameState,
-      })}
     </div>
   );
 }
@@ -256,36 +285,22 @@ export default function Location({
         {locations[gameState.playerLocation].getDescription(gameState)}
         {gameState.locationConsequenceText}
       </div>
-      <div
-        id="navigation"
-        className={showMap ? "navigation-map" : "navigation-list"}
-      >
-        {showMap ? (
-          <Map
-            gameState={gameState}
-            dispatchGameState={dispatchGameState}
-            setCurrentDisplay={setCurrentDisplay}
-            showPhoto={showPhoto}
-          />
-        ) : (
-          <>
-            {showPhoto ? (
-              <div className={"listNavigationImage " + locationName}></div>
-            ) : (
-              <></>
-            )}
-            <LocationItems
-              gameState={gameState}
-              dispatchGameState={dispatchGameState}
-              setCurrentDisplay={setCurrentDisplay}
-            />
-            <Connections
-              dispatchGameState={dispatchGameState}
-              gameState={gameState}
-            />
-          </>
-        )}
-      </div>
+      {showMap ? (
+        <Map
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+          setCurrentDisplay={setCurrentDisplay}
+          showPhoto={showPhoto}
+        />
+      ) : (
+        <NavigationList
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+          setCurrentDisplay={setCurrentDisplay}
+          showPhoto={showPhoto}
+          locationName={locationName}
+        />
+      )}
       <div id="non-navigation-buttons" className="buttons">
         <button
           className="inventory"
