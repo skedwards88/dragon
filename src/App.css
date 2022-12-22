@@ -220,6 +220,14 @@ button:disabled {
   background-image: url("./images/compass.svg");
 }
 
+.showPhoto.true {
+  background-image: url("./images/no-photo.svg");
+}
+
+.showPhoto.false {
+  background-image: url("./images/photo.svg");
+}
+
 #map {
   display: grid;
   border: 1px solid rgb(110 121 158);
@@ -262,11 +270,176 @@ button:disabled {
 #A {
   grid-column-start: 2;
   grid-row-start: 2;
-  margin: 20px;
   display: flex;
   align-content: center;
   justify-content: center;
   flex-wrap: wrap;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#A.room,
+.listNavigationImage.room {
+  background-image: url("./images/room.png");
+}
+
+#A.wardrobe,
+.listNavigationImage.wardrobe {
+  background-image: url("./images/wardrobe.png");
+}
+
+#A.inn,
+.listNavigationImage.inn {
+  background-image: url("./images/inn.png");
+}
+
+#A.fountain,
+.listNavigationImage.fountain {
+  background-image: url("./images/fountain.png");
+}
+
+#A.nursery,
+.listNavigationImage.nursery {
+  background-image: url("./images/nursery.png");
+}
+
+#A.wizard,
+.listNavigationImage.wizard {
+  background-image: url("./images/wizard.png");
+}
+
+#A.stream,
+.listNavigationImage.stream {
+  background-image: url("./images/stream.png");
+}
+
+#A.youth,
+.listNavigationImage.youth {
+  background-image: url("./images/youth.png");
+}
+
+#A.squirrel,
+.listNavigationImage.squirrel {
+  background-image: url("./images/squirrel.png");
+}
+
+#A.squirrelDead,
+.listNavigationImage.squirrelDead {
+  background-image: url("./images/squirrel.png");
+}
+
+#A.smithy,
+.listNavigationImage.smithy {
+  background-image: url("./images/smithy.png");
+}
+
+#A.gate,
+.listNavigationImage.gate {
+  background-image: url("./images/gate.png");
+}
+
+#A.nurseryWindow,
+.listNavigationImage.nurseryWindow {
+  background-image: url("./images/nurseryWindow.png");
+}
+
+#A.blacksmith,
+.listNavigationImage.blacksmith {
+  background-image: url("./images/blacksmith.png");
+}
+
+#A.cliff,
+.listNavigationImage.cliff {
+  background-image: url("./images/cliff.png");
+}
+
+#A.clearing,
+.listNavigationImage.clearing {
+  background-image: url("./images/clearing.png");
+}
+
+#A.mirror,
+.listNavigationImage.mirror {
+  background-image: url("./images/mirror.png");
+}
+
+#A.window,
+.listNavigationImage.window {
+  background-image: url("./images/window.png");
+}
+
+#A.lair,
+.listNavigationImage.lair {
+  background-image: url("./images/lair.png");
+}
+
+#A.lawnFire,
+.listNavigationImage.lawnFire {
+  background-image: url("./images/lawnFire.png");
+}
+
+#A.lawnNoFire,
+.listNavigationImage.lawnNoFire {
+  background-image: url("./images/lawnNoFire.png");
+}
+
+#A.road,
+.listNavigationImage.road {
+  background-image: url("./images/road.png");
+}
+
+#A.dung,
+.listNavigationImage.dung {
+  background-image: url("./images/dung.png");
+}
+
+#A.puddle,
+.listNavigationImage.puddle {
+  background-image: url("./images/puddle.png");
+}
+
+#A.crevice,
+.listNavigationImage.crevice {
+  background-image: url("./images/crevice.png");
+}
+
+#A.defecatory,
+.listNavigationImage.defecatory {
+  background-image: url("./images/defecatory.png");
+}
+
+#A.caveEntrance,
+.listNavigationImage.caveEntrance {
+  background-image: url("./images/caveEntrance.png");
+}
+
+#A.entrywayFire,
+.listNavigationImage.entrywayFire {
+  background-image: url("./images/entrywayFire.png");
+}
+
+#A.entrywayNoFire,
+.listNavigationImage.entrywayNoFire {
+  background-image: url("./images/entrywayNoFire.png");
+}
+
+#A.pasture,
+.listNavigationImage.pasture {
+  background-image: url("./images/pasture.png");
+}
+
+#A.courtyard,
+.listNavigationImage.courtyard {
+  background-image: url("./images/courtyard.png");
+}
+
+.listNavigationImage {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 50vw;
+  height: 50vw;
 }
 
 #map > .connection {

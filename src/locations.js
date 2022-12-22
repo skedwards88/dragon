@@ -6,6 +6,9 @@ class Location {
     getDisplayName = function () {
       return id;
     },
+    getBackgroundName = function () {
+      return id;
+    },
     getConnections = function () {
       return {};
     },
@@ -27,6 +30,7 @@ class Location {
   }) {
     this.id = id;
     this.getDisplayName = getDisplayName;
+    this.getBackgroundName = getBackgroundName;
     this.getSentient = getSentient;
     this.getHuman = getHuman;
     this.dropPreposition = dropPreposition;
@@ -223,6 +227,13 @@ const lawn = new Location({
   getDisplayName: function () {
     return "Manor";
   },
+  getBackgroundName: function(gameState) {
+    if (gameState.manorFire) {
+      return "lawnFire"
+    } else {
+      return "lawnNoFire"
+    }
+  },
   dropPreposition: "at",
   getConnections: function () {
     return {
@@ -302,6 +313,13 @@ const lawn = new Location({
 const entryway = new Location({
   id: "entryway",
   dropPreposition: "in",
+  getBackgroundName: function(gameState) {
+    if (gameState.manorFire) {
+      return "entrywayFire"
+    } else {
+      return "entrywayNoFire"
+    }
+  },
   getConnections: function (gameState) {
     return {
       N: gameState.manorFire ? "nursery" : "",
@@ -617,6 +635,9 @@ const road1 = new Location({
   getDisplayName: function () {
     return "Long road (South end)";
   },
+  getBackgroundName: function() {
+    return "road"
+  },
   getConnections: function (gameState) {
     return {
       N: gameState.horseMounted ? "stream" : "road2",
@@ -641,6 +662,9 @@ const road2 = new Location({
   dropPreposition: "on",
   getDisplayName: function () {
     return "Long road (middle)";
+  },
+  getBackgroundName: function() {
+    return "road"
   },
   getConnections: function (gameState) {
     return {
@@ -668,6 +692,9 @@ const road3 = new Location({
   dropPreposition: "on",
   getDisplayName: function () {
     return "Long road (North end)";
+  },
+  getBackgroundName: function() {
+    return "road"
   },
   getConnections: function (gameState) {
     return {
@@ -796,6 +823,13 @@ const squirrel = new Location({
   },
   getSentient: function (gameState) {
     return !gameState.squirrelDead;
+  },
+  getBackgroundName: function(gameState) {
+    if (gameState.squirrelDead) {
+      return "squirrelDead"
+    } else {
+      return "squirrel"
+    }
   },
   dropPreposition: "by",
   getConnections: function () {

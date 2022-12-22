@@ -31,6 +31,7 @@ function App() {
 
   const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart | resume
   const [showMap, setShowMap] = useState(true);
+  const [showPhoto, setShowPhoto] = useState(true);
 
   const [installPromptEvent, setInstallPromptEvent] = React.useState();
   const [showInstallButton, setShowInstallButton] = React.useState(true);
@@ -81,6 +82,7 @@ function App() {
     // If yes, update state
     dispatchGameState({ action: "resume", savedState: savedState });
     setShowMap(savedState.showMap ?? true);
+    setShowPhoto(savedState.showPhoto ?? true);
 
     // Ask if want to continue from last point or start a new game
     // todo It seems hacky to 1) make new game 2) overwrite with saved state 3) ask for input, then potentially overwrite with new game.
@@ -92,10 +94,11 @@ function App() {
       gameState: gameState,
       currentDisplay: currentDisplay,
       showMap: showMap,
+      showPhoto: showPhoto,
     };
 
     window.localStorage.setItem("dragonHeroState", JSON.stringify(stateToSave));
-  }, [gameState, currentDisplay, showMap]);
+  }, [gameState, currentDisplay, showMap, showPhoto]);
 
   if (gameState.reputation <= 0) {
     return (
@@ -162,6 +165,8 @@ function App() {
           setCurrentDisplay={setCurrentDisplay}
           showMap={showMap}
           setShowMap={setShowMap}
+          showPhoto={showPhoto}
+          setShowPhoto={setShowPhoto}
         />
       );
   }

@@ -114,11 +114,12 @@ function MapLocation({ direction, connections, gameState, dispatchGameState }) {
   );
 }
 
-function Map({ gameState, dispatchGameState, setCurrentDisplay }) {
+function Map({ gameState, dispatchGameState, setCurrentDisplay,showPhoto }) {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
+  const locationName = locations[gameState.playerLocation].getBackgroundName(gameState)
   return (
     <div id="map">
       {MapLocation({
@@ -133,7 +134,7 @@ function Map({ gameState, dispatchGameState, setCurrentDisplay }) {
         gameState: gameState,
         dispatchGameState: dispatchGameState,
       })}
-      <div id="A">
+      <div id="A" className={showPhoto ? locationName : ""}>
         {MapInteractions({
           connections: connections,
           dispatchGameState: dispatchGameState,
@@ -206,10 +207,14 @@ export default function Location({
   setCurrentDisplay,
   showMap,
   setShowMap,
+  showPhoto,
+  setShowPhoto,
   installPromptEvent,
   showInstallButton,
   setInstallPromptEvent,
 }) {
+  const locationName = locations[gameState.playerLocation].getBackgroundName(gameState)
+
   return (
     <div className="App" id="location-display">
       <div id="controls">
@@ -217,6 +222,11 @@ export default function Location({
           id="showMap"
           className={"showMap " + showMap}
           onClick={() => setShowMap(!showMap)}
+        ></button>
+        <button
+          id="showPhoto"
+          className={"showPhoto " + showPhoto}
+          onClick={() => setShowPhoto(!showPhoto)}
         ></button>
         <button id="info" onClick={() => setCurrentDisplay("info")}></button>
         <button
@@ -253,9 +263,11 @@ export default function Location({
             gameState={gameState}
             dispatchGameState={dispatchGameState}
             setCurrentDisplay={setCurrentDisplay}
+            showPhoto={showPhoto}
           />
         ) : (
           <>
+          {showPhoto?<div className={"listNavigationImage " + locationName}></div>:<></>}
             <LocationItems
               gameState={gameState}
               dispatchGameState={dispatchGameState}
