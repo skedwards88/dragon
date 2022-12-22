@@ -8,15 +8,18 @@ export default function Info({ setCurrentDisplay }) {
       <div className="description">
         <h1>Dragon Hero</h1>
         <small>{`version ${packageJson.version}\n\n`}</small>
-        {`a text adventure puzzle game\n\nThanks for playing! We'd love to hear your feedback, especially if you find a logical discrepancy or bug. To leave feedback, `}
+        {`a text adventure puzzle game`}
+        {<hr></hr>}
+        {`Thanks for playing! We'd love to hear your feedback, especially if you find a logical discrepancy or bug. To leave feedback, `}
         <a href={feedbackLink}>open an issue</a>
         {" on GitHub."}
         {<hr></hr>}
-        {`Story by Colin\nBuilt by Sarah\n\nWant more games?\nCheck `}
+        {`Want more games? Check `}
         <a href="https://skedwards88.github.io/portfolio/">these</a>
         {` out.`}
         {<hr></hr>}
-        {`\n`}
+        {`Story by Colin\nBuilt by Sarah\nArtwork by Dall-e`}
+        {<hr></hr>}
         <a href="./privacy.html">Privacy policy</a>
       </div>
       <button className="close" onClick={() => setCurrentDisplay("location")}>
