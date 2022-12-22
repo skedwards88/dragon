@@ -227,11 +227,11 @@ const lawn = new Location({
   getDisplayName: function () {
     return "Manor";
   },
-  getBackgroundName: function(gameState) {
+  getBackgroundName: function (gameState) {
     if (gameState.manorFire) {
-      return "lawnFire"
+      return "lawnFire";
     } else {
-      return "lawnNoFire"
+      return "lawnNoFire";
     }
   },
   dropPreposition: "at",
@@ -313,11 +313,11 @@ const lawn = new Location({
 const entryway = new Location({
   id: "entryway",
   dropPreposition: "in",
-  getBackgroundName: function(gameState) {
+  getBackgroundName: function (gameState) {
     if (gameState.manorFire) {
-      return "entrywayFire"
+      return "entrywayFire";
     } else {
-      return "entrywayNoFire"
+      return "entrywayNoFire";
     }
   },
   getConnections: function (gameState) {
@@ -635,8 +635,8 @@ const road1 = new Location({
   getDisplayName: function () {
     return "Long road (South end)";
   },
-  getBackgroundName: function() {
-    return "road"
+  getBackgroundName: function () {
+    return "road";
   },
   getConnections: function (gameState) {
     return {
@@ -663,8 +663,8 @@ const road2 = new Location({
   getDisplayName: function () {
     return "Long road (middle)";
   },
-  getBackgroundName: function() {
-    return "road"
+  getBackgroundName: function () {
+    return "road";
   },
   getConnections: function (gameState) {
     return {
@@ -693,8 +693,8 @@ const road3 = new Location({
   getDisplayName: function () {
     return "Long road (North end)";
   },
-  getBackgroundName: function() {
-    return "road"
+  getBackgroundName: function () {
+    return "road";
   },
   getConnections: function (gameState) {
     return {
@@ -824,11 +824,11 @@ const squirrel = new Location({
   getSentient: function (gameState) {
     return !gameState.squirrelDead;
   },
-  getBackgroundName: function(gameState) {
+  getBackgroundName: function (gameState) {
     if (gameState.squirrelDead) {
-      return "squirrelDead"
+      return "squirrelDead";
     } else {
-      return "squirrel"
+      return "squirrel";
     }
   },
   dropPreposition: "by",

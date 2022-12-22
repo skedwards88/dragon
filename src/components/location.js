@@ -114,12 +114,13 @@ function MapLocation({ direction, connections, gameState, dispatchGameState }) {
   );
 }
 
-function Map({ gameState, dispatchGameState, setCurrentDisplay,showPhoto }) {
+function Map({ gameState, dispatchGameState, setCurrentDisplay, showPhoto }) {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
-  const locationName = locations[gameState.playerLocation].getBackgroundName(gameState)
+  const locationName =
+    locations[gameState.playerLocation].getBackgroundName(gameState);
   return (
     <div id="map">
       {MapLocation({
@@ -213,7 +214,8 @@ export default function Location({
   showInstallButton,
   setInstallPromptEvent,
 }) {
-  const locationName = locations[gameState.playerLocation].getBackgroundName(gameState)
+  const locationName =
+    locations[gameState.playerLocation].getBackgroundName(gameState);
 
   return (
     <div className="App" id="location-display">
@@ -267,7 +269,11 @@ export default function Location({
           />
         ) : (
           <>
-          {showPhoto?<div className={"listNavigationImage " + locationName}></div>:<></>}
+            {showPhoto ? (
+              <div className={"listNavigationImage " + locationName}></div>
+            ) : (
+              <></>
+            )}
             <LocationItems
               gameState={gameState}
               dispatchGameState={dispatchGameState}
