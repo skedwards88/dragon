@@ -60,7 +60,7 @@ export function init() {
     maxGold: 310,
     appleBitesRemaining: 5,
 
-    playerLocation: "room",
+    playerLocation: "gate",
 
     consequenceText: "",
 
