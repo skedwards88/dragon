@@ -1605,6 +1605,78 @@ test("cliff description, horse", () => {
   expect(connections.N).toEqual("");
 });
 
+test("caveEntrance description, dragon not asleep, clothes not poopy not worn", () => {
+  const location = "caveEntrance";
+  const gameState = {
+    ...newGameState,
+    clothesPoopy: false,
+    naked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. 
+
+    You hear coins clanking from the glittering room, as if a large beast is rolling in piles of gold. From that room, voice booms "WHO DO I SMELL?""
+  `);
+});
+
+test("caveEntrance description, dragon not asleep, clothes poopy but not worn", () => {
+  const location = "caveEntrance";
+  const gameState = {
+    ...newGameState,
+    clothesPoopy: true,
+    naked: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. 
+
+    You hear coins clanking from the glittering room, as if a large beast is rolling in piles of gold. From that room, voice booms "WHO DO I SMELL?""
+  `);
+});
+
+test("caveEntrance description, dragon not asleep, clothes not poopy but worn", () => {
+  const location = "caveEntrance";
+  const gameState = {
+    ...newGameState,
+    clothesPoopy: false,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. 
+
+    You hear coins clanking from the glittering room, as if a large beast is rolling in piles of gold. From that room, voice booms "WHO DO I SMELL?""
+  `);
+});
+
+test("caveEntrance description, dragon not asleep, clothes poopy and worn", () => {
+  const location = "caveEntrance";
+  const gameState = {
+    ...newGameState,
+    clothesPoopy: true,
+    naked: false,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. 
+
+    You hear coins clanking from the glittering room, as if a large beast is rolling in piles of gold. "
+  `);
+});
+
+test("caveEntrance description, dragon asleep", () => {
+  const location = "caveEntrance";
+  const gameState = {
+    ...newGameState,
+    dragonAsleep: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. "`
+  );
+});
+
 // todo where does apple go after the horse eats it?
 // todo catch cases where try to get prop from game state that doesn't exist
 // todo if you get 1 treasure by poisoning dragon, you can then go get score and then immediately repay score
