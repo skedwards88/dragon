@@ -543,6 +543,11 @@ button:disabled {
     width: 60vw;
   }
 
+  .listNavigationImage {
+    width: 40vw;
+    height: 40vw;
+  }
+
   #map {
     grid-template-columns: 5vw 30vw 5vw;
     grid-template-rows: 5vw 30vw 5vw;
@@ -554,6 +559,11 @@ button:disabled {
   #map {
     grid-template-columns: 5vmin 30vmin 5vmin;
     grid-template-rows: 5vmin 30vmin 5vmin;
+  }
+
+  .listNavigationImage {
+    width: 40vmin;
+    height: 40vmin;
   }
 
   .navigation-list > button,
