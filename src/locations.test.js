@@ -1682,7 +1682,6 @@ test("caveEntrance description, dragon asleep", () => {
 // todo if you get 1 treasure by poisoning dragon, you can then go get score and then immediately repay score
 // todo you can repay wizard at lower treasure level then collect more treasure
 
-// caveEntrance
 // defecatory
 // puddle
 // crevice

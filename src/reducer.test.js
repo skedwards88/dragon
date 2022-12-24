@@ -3249,7 +3249,7 @@ test("If the dragon is dead, you take all the treasure", () => {
     }
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You scoop all of the treasure into your bag, avoiding the gore from the severed dragon head. 
+    "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
 
     Gold +300"
   `);
@@ -3573,7 +3573,7 @@ test("You can take the treasure in increments, getting singed along the way", ()
     }
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You scoop all of the treasure into your bag, avoiding the gore from the severed dragon head. 
+    "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
 
     Gold +100"
   `);

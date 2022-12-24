@@ -1001,7 +1001,7 @@ const treasure = new Item({
   getCustomTake: function (gameState) {
     function writeDescription(gameState) {
       if (gameState.dragonDead) {
-        return "You scoop all of the treasure into your bag, avoiding the gore from the severed dragon head. ";
+        return "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. ";
       }
 
       if (gameState.dragonAsleep && !gameState.dragonDead) {
