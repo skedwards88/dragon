@@ -28,6 +28,7 @@ small {
 }
 
 button {
+  background-color: transparent;
   border-radius: 5px;
   border: 1px solid;
   padding: 10px;
