@@ -6,7 +6,7 @@ body,
 }
 
 .App {
-  --default-font-size: min(0.6cm, 5vmin);
+  --default-font-size: min(0.7cm, 5vmin);
 
   font-family: Arial, Helvetica, sans-serif;
   display: flex;
@@ -556,6 +556,10 @@ button:disabled {
 
 /* Wide and tall screen */
 @media (min-width: 800px) and (min-height: 600px) {
+  .App {
+    --default-font-size: min(0.6cm, 5vmin);
+  }
+
   #map {
     grid-template-columns: 5vmin 30vmin 5vmin;
     grid-template-rows: 5vmin 30vmin 5vmin;
