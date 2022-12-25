@@ -21,7 +21,6 @@ images:
 
 ----
 
-- make font bigger (revert latest change and apply to large screen only instead)
 - make dragon poisoned/sleep/severed image
 - make control icons more consistent
 - change maskable icon to have black background with white dragon

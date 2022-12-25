@@ -1,7 +1,7 @@
 html,
 body,
 #root {
-  background-color: rgb(240 240 241);
+  background-color: #f0f0f1;
   height: 100vh;
 }
 
@@ -196,35 +196,35 @@ button:disabled {
 }
 
 #restart {
-  background-image: url("./images/new_game_icon.svg");
+  background-image: url("./images/control_icons/new_game_icon.svg");
 }
 
 #share {
-  background-image: url("./images/share.svg");
+  background-image: url("./images/control_icons/share.svg");
 }
 
 #install {
-  background-image: url("./images/install.svg");
+  background-image: url("./images/control_icons/install.svg");
 }
 
 #info {
-  background-image: url("./images/info_icon.svg");
+  background-image: url("./images/control_icons/info_icon.svg");
 }
 
 .showMap.true {
-  background-image: url("./images/list.svg");
+  background-image: url("./images/control_icons/list.svg");
 }
 
 .showMap.false {
-  background-image: url("./images/compass.svg");
+  background-image: url("./images/control_icons/compass.svg");
 }
 
 .showPhoto.true {
-  background-image: url("./images/no-photo.svg");
+  background-image: url("./images/control_icons/no-photo.svg");
 }
 
 .showPhoto.false {
-  background-image: url("./images/photo.svg");
+  background-image: url("./images/control_icons/photo.svg");
 }
 
 #map {
@@ -280,157 +280,157 @@ button:disabled {
 
 #A.room,
 .listNavigationImage.room {
-  background-image: url("./images/room.png");
+  background-image: url("./images/background_images/room.png");
 }
 
 #A.wardrobe,
 .listNavigationImage.wardrobe {
-  background-image: url("./images/wardrobe.png");
+  background-image: url("./images/background_images/wardrobe.png");
 }
 
 #A.inn,
 .listNavigationImage.inn {
-  background-image: url("./images/inn.png");
+  background-image: url("./images/background_images/inn.png");
 }
 
 #A.fountain,
 .listNavigationImage.fountain {
-  background-image: url("./images/fountain.png");
+  background-image: url("./images/background_images/fountain.png");
 }
 
 #A.nursery,
 .listNavigationImage.nursery {
-  background-image: url("./images/nursery.png");
+  background-image: url("./images/background_images/nursery.png");
 }
 
 #A.wizard,
 .listNavigationImage.wizard {
-  background-image: url("./images/wizard.png");
+  background-image: url("./images/background_images/wizard.png");
 }
 
 #A.stream,
 .listNavigationImage.stream {
-  background-image: url("./images/stream.png");
+  background-image: url("./images/background_images/stream.png");
 }
 
 #A.youth,
 .listNavigationImage.youth {
-  background-image: url("./images/youth.png");
+  background-image: url("./images/background_images/youth.png");
 }
 
 #A.squirrel,
 .listNavigationImage.squirrel {
-  background-image: url("./images/squirrel.png");
+  background-image: url("./images/background_images/squirrel.png");
 }
 
 #A.squirrelDead,
 .listNavigationImage.squirrelDead {
-  background-image: url("./images/squirrel.png");
+  background-image: url("./images/background_images/squirrel.png");
 }
 
 #A.smithy,
 .listNavigationImage.smithy {
-  background-image: url("./images/smithy.png");
+  background-image: url("./images/background_images/smithy.png");
 }
 
 #A.gate,
 .listNavigationImage.gate {
-  background-image: url("./images/gate.png");
+  background-image: url("./images/background_images/gate.png");
 }
 
 #A.nurseryWindow,
 .listNavigationImage.nurseryWindow {
-  background-image: url("./images/nurseryWindow.png");
+  background-image: url("./images/background_images/nurseryWindow.png");
 }
 
 #A.blacksmith,
 .listNavigationImage.blacksmith {
-  background-image: url("./images/blacksmith.png");
+  background-image: url("./images/background_images/blacksmith.png");
 }
 
 #A.cliff,
 .listNavigationImage.cliff {
-  background-image: url("./images/cliff.png");
+  background-image: url("./images/background_images/cliff.png");
 }
 
 #A.clearing,
 .listNavigationImage.clearing {
-  background-image: url("./images/clearing.png");
+  background-image: url("./images/background_images/clearing.png");
 }
 
 #A.mirror,
 .listNavigationImage.mirror {
-  background-image: url("./images/mirror.png");
+  background-image: url("./images/background_images/mirror.png");
 }
 
 #A.window,
 .listNavigationImage.window {
-  background-image: url("./images/window.png");
+  background-image: url("./images/background_images/window.png");
 }
 
 #A.lair,
 .listNavigationImage.lair {
-  background-image: url("./images/lair.png");
+  background-image: url("./images/background_images/lair.png");
 }
 
 #A.lawnFire,
 .listNavigationImage.lawnFire {
-  background-image: url("./images/lawnFire.png");
+  background-image: url("./images/background_images/lawnFire.png");
 }
 
 #A.lawnNoFire,
 .listNavigationImage.lawnNoFire {
-  background-image: url("./images/lawnNoFire.png");
+  background-image: url("./images/background_images/lawnNoFire.png");
 }
 
 #A.road,
 .listNavigationImage.road {
-  background-image: url("./images/road.png");
+  background-image: url("./images/background_images/road.png");
 }
 
 #A.dung,
 .listNavigationImage.dung {
-  background-image: url("./images/dung.png");
+  background-image: url("./images/background_images/dung.png");
 }
 
 #A.puddle,
 .listNavigationImage.puddle {
-  background-image: url("./images/puddle.png");
+  background-image: url("./images/background_images/puddle.png");
 }
 
 #A.crevice,
 .listNavigationImage.crevice {
-  background-image: url("./images/crevice.png");
+  background-image: url("./images/background_images/crevice.png");
 }
 
 #A.defecatory,
 .listNavigationImage.defecatory {
-  background-image: url("./images/defecatory.png");
+  background-image: url("./images/background_images/defecatory.png");
 }
 
 #A.caveEntrance,
 .listNavigationImage.caveEntrance {
-  background-image: url("./images/caveEntrance.png");
+  background-image: url("./images/background_images/caveEntrance.png");
 }
 
 #A.entrywayFire,
 .listNavigationImage.entrywayFire {
-  background-image: url("./images/entrywayFire.png");
+  background-image: url("./images/background_images/entrywayFire.png");
 }
 
 #A.entrywayNoFire,
 .listNavigationImage.entrywayNoFire {
-  background-image: url("./images/entrywayNoFire.png");
+  background-image: url("./images/background_images/entrywayNoFire.png");
 }
 
 #A.pasture,
 .listNavigationImage.pasture {
-  background-image: url("./images/pasture.png");
+  background-image: url("./images/background_images/pasture.png");
 }
 
 #A.courtyard,
 .listNavigationImage.courtyard {
-  background-image: url("./images/courtyard.png");
+  background-image: url("./images/background_images/courtyard.png");
 }
 
 .listNavigationImage {
@@ -466,59 +466,59 @@ button:disabled {
 }
 
 #map > #A > #lute {
-  background-image: url("./images/lute.svg");
+  background-image: url("./images/item_icons/lute.svg");
 }
 
 #map > #A > #baby {
-  background-image: url("./images/baby.svg");
+  background-image: url("./images/item_icons/baby.svg");
 }
 
 #map > #A > #berries {
-  background-image: url("./images/berries.svg");
+  background-image: url("./images/item_icons/berries.svg");
 }
 
 #map > #A > #clothes {
-  background-image: url("./images/clothes.svg");
+  background-image: url("./images/item_icons/clothes.svg");
 }
 
 #map > #A > #handkerchief {
-  background-image: url("./images/handkerchief.svg");
+  background-image: url("./images/item_icons/handkerchief.svg");
 }
 
 #map > #A > #horse {
-  background-image: url("./images/horse.svg");
+  background-image: url("./images/item_icons/horse.svg");
 }
 
 #map > #A > #score {
-  background-image: url("./images/score.svg");
+  background-image: url("./images/item_icons/score.svg");
 }
 
 #map > #A > #sword {
-  background-image: url("./images/sword.svg");
+  background-image: url("./images/item_icons/sword.svg");
 }
 
 #map > #A > #treasure {
-  background-image: url("./images/treasure.svg");
+  background-image: url("./images/item_icons/treasure.svg");
 }
 
 #map > #A > #apple {
-  background-image: url("./images/apple.svg");
+  background-image: url("./images/item_icons/apple.svg");
 }
 
 #map > #A > #wizard {
-  background-image: url("./images/wizard.svg");
+  background-image: url("./images/item_icons/wizard.svg");
 }
 
 #map > #A > #blacksmith {
-  background-image: url("./images/blacksmith.svg");
+  background-image: url("./images/item_icons/blacksmith.svg");
 }
 
 #map > #A > #youth {
-  background-image: url("./images/youth.svg");
+  background-image: url("./images/item_icons/youth.svg");
 }
 
 #map > #A > #squirrel {
-  background-image: url("./images/squirrel.svg");
+  background-image: url("./images/item_icons/squirrel.svg");
 }
 
 /* Wider screen */
