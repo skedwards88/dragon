@@ -1737,6 +1737,19 @@ test("lair description, dragon not poisoned, dragon not asleep, dragon not dead"
   `);
 });
 
+test("defecatory description, dragon not poisoned, dragon not asleep, dragon not dead", () => {
+  const location = "defecatory";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(
+    `"You stand in a large, foul smelling cavern. There is a puddle of clear water, a crevice, and a pile of dragon dung. "`
+  );
+});
+
+
+
 // todo catch cases where try to get prop from game state that doesn't exist
 
 // defecatory
