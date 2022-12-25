@@ -280,7 +280,12 @@ export default function Location({
           <></>
         )}
       </div>
-      <Stats gameState={gameState} />
+      <Stats
+        reputation={gameState.reputation}
+        maxReputation={gameState.maxReputation}
+        gold={gameState.gold}
+        maxGold={gameState.maxGold}
+      />
       <div className="description">
         {locations[gameState.playerLocation].getDescription(gameState)}
         {gameState.locationConsequenceText}

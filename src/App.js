@@ -3,7 +3,8 @@ import "./App.css";
 import Inventory from "./components/inventory";
 import Location from "./components/location";
 import Consequence from "./components/consequence";
-import GameOver from "./components/gameOver";
+import GameWon from "./components/gameWon";
+import GameLost from "./components/gameLost";
 import Info from "./components/info";
 import Restart from "./components/restart";
 import Resume from "./components/resume";
@@ -102,8 +103,7 @@ function App() {
 
   if (gameState.reputation <= 0) {
     return (
-      <GameOver
-        result="lose"
+      <GameLost
         dispatchGameState={dispatchGameState}
         gameState={gameState}
         setCurrentDisplay={setCurrentDisplay}
@@ -113,7 +113,7 @@ function App() {
 
   if (gameState.playerLocation === "gate" && gameState.treasureLevel) {
     return (
-      <GameOver
+      <GameWon
         result="win"
         dispatchGameState={dispatchGameState}
         gameState={gameState}
