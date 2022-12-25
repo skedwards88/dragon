@@ -1677,13 +1677,69 @@ test("caveEntrance description, dragon asleep", () => {
   );
 });
 
-// todo where does apple go after the horse eats it?
+test("lair description, dragon poisoned, dragon asleep, dragon dead", () => {
+  const location = "lair";
+  const gameState = {
+    ...newGameState,
+    dragonPoisoned: true,
+    dragonAsleep: true,
+    dragonDead: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a room full of gold and gems. 
+
+    The dragon's body lies severed from its head. The treasure it was guarding is now accessible. "
+  `);
+});
+
+test("lair description, dragon poisoned, dragon asleep, dragon not dead", () => {
+  const location = "lair";
+  const gameState = {
+    ...newGameState,
+    dragonPoisoned: true,
+    dragonAsleep: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a room full of gold and gems. 
+
+    The dragon lies in a deep slumber atop the pile of treasure, periodically snoring flames of fire. "
+  `);
+});
+
+test("lair description, dragon poisoned, dragon not asleep, dragon not dead", () => {
+  const location = "lair";
+  const gameState = {
+    ...newGameState,
+    dragonPoisoned: true,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a room full of gold and gems. 
+
+    The dragon looks half dead from the poison but still shoots flame as you approach it and its pile of treasure. 
+
+    The flame is no longer strong enough to harm you from the entrance to the lair, but it will surely singe you if you get closer. "
+  `);
+});
+
+test("lair description, dragon not poisoned, dragon not asleep, dragon not dead", () => {
+  const location = "lair";
+  const gameState = {
+    ...newGameState,
+  };
+  const description = locations[location].getDescription(gameState);
+  expect(description).toMatchInlineSnapshot(`
+    "You stand in a room full of gold and gems. 
+
+    A dragon sits atop the pile of treasure. It shoots fire as you approach, singing you. You cannot go closer without getting badly burnt. "
+  `);
+});
+
 // todo catch cases where try to get prop from game state that doesn't exist
-// todo if you get 1 treasure by poisoning dragon, you can then go get score and then immediately repay score
-// todo you can repay wizard at lower treasure level then collect more treasure
 
 // defecatory
 // puddle
 // crevice
 // dung
-// lair
