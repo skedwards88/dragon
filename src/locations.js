@@ -633,7 +633,7 @@ const road1 = new Location({
   id: "road1",
   dropPreposition: "on",
   getDisplayName: function () {
-    return "Long road (South end)";
+    return "Long road";
   },
   getBackgroundName: function () {
     return "road";
@@ -661,7 +661,7 @@ const road2 = new Location({
   id: "road2",
   dropPreposition: "on",
   getDisplayName: function () {
-    return "Long road (middle)";
+    return "Long road";
   },
   getBackgroundName: function () {
     return "road";
@@ -691,7 +691,7 @@ const road3 = new Location({
   id: "road3",
   dropPreposition: "on",
   getDisplayName: function () {
-    return "Long road (North end)";
+    return "Long road";
   },
   getBackgroundName: function () {
     return "road";

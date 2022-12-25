@@ -6,7 +6,7 @@ body,
 }
 
 .App {
-  --default-font-size: min(0.7cm, 5vmin);
+  --default-font-size: min(0.6cm, 5vmin);
 
   font-family: Arial, Helvetica, sans-serif;
   display: flex;

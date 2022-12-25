@@ -1748,8 +1748,6 @@ test("defecatory description, dragon not poisoned, dragon not asleep, dragon not
   );
 });
 
-
-
 // todo catch cases where try to get prop from game state that doesn't exist
 
 // defecatory
