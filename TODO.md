@@ -10,18 +10,7 @@ use https://github.com/marketplace/actions/automated-version-bump or something s
 
 ---
 
-finish location tests
 track number of completed quests?
 
-images:
-
-- youth
-- **lair** -- **need 2** w/ w/o treasure
-
-
-----
-
 - make dragon poisoned/sleep/severed image
-- make control icons more consistent
-- change maskable icon to have black background with white dragon
 - last few tests
