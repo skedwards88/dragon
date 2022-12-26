@@ -1991,5 +1991,3 @@ test.each([
     expect(description).toMatchSnapshot();
   }
 );
-
-// todo catch cases where try to get prop from game state that doesn't exist

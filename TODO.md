@@ -13,5 +13,4 @@ use https://github.com/marketplace/actions/automated-version-bump or something s
 track number of completed quests?
 
 - make dragon poisoned/sleep/severed image
-- last few tests
 - bump version
