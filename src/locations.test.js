@@ -1757,6 +1757,10 @@ test.each([
   { timeInCave: 1, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
   { timeInCave: 2, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
   { timeInCave: 3, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
+  { timeInCave: 0, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
+  { timeInCave: 1, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
+  { timeInCave: 2, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
+  { timeInCave: 3, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
 ])(
   "dragon description: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
   ({ timeInCave, dragonPoisoned, clothesPoopy, naked, playerLocation, berryLocation }) => {

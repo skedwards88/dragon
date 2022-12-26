@@ -2,13 +2,37 @@
 
 exports[`dragon description: timeInCave 0, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
+exports[`dragon description: timeInCave 0, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+"You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
+
+The dragon prowls into the cavern. It seems unaware of your location. 
+
+The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
+`;
+
 exports[`dragon description: timeInCave 0, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
 exports[`dragon description: timeInCave 1, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `"You hear coins clanking from the other room, as if a large beast is rising from a sea of treasure. "`;
 
+exports[`dragon description: timeInCave 1, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+"You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
+
+The dragon prowls into the cavern. It seems unaware of your location. 
+
+The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
+`;
+
 exports[`dragon description: timeInCave 1, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
 exports[`dragon description: timeInCave 2, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `"You hear the dragon just outside. "`;
+
+exports[`dragon description: timeInCave 2, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+"You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
+
+The dragon prowls into the cavern. It seems unaware of your location. 
+
+The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
+`;
 
 exports[`dragon description: timeInCave 2, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
@@ -16,6 +40,12 @@ exports[`dragon description: timeInCave 3, dragonPoisoned false, clothesPoopy fa
 "The dragon prowls into the cavern. "I KNEW I SMELT A HUMAN." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. 
 
 As you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure."
+`;
+
+exports[`dragon description: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+"The dragon prowls into the cavern. It seems unaware of your location. 
+
+The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
 `;
 
 exports[`dragon description: timeInCave 3, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
