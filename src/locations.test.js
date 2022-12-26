@@ -1749,21 +1749,49 @@ test("defecatory description, dragon not poisoned, dragon not asleep, dragon not
 });
 
 test.each([
-  { timeInCave: 0, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 1, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 2, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 3, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 0, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 1, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 2, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 3, dragonPoisoned: true, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
-  { timeInCave: 0, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
-  { timeInCave: 1, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
-  { timeInCave: 2, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
-  { timeInCave: 3, dragonPoisoned: false, clothesPoopy: true, naked: false, playerLocation: "crevice", berryLocation: "puddle"  },
+  // increasing time, dragon poisoned
+  {
+    timeInCave: 0,
+    dragonPoisoned: true,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+  {
+    timeInCave: 1,
+    dragonPoisoned: true,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+  {
+    timeInCave: 2,
+    dragonPoisoned: true,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+  {
+    timeInCave: 3,
+    dragonPoisoned: true,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
 ])(
-  "dragon description: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
-  ({ timeInCave, dragonPoisoned, clothesPoopy, naked, playerLocation, berryLocation }) => {
+  "dragon description when dragon poisoned: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  ({
+    timeInCave,
+    dragonPoisoned,
+    clothesPoopy,
+    naked,
+    playerLocation,
+    berryLocation,
+  }) => {
     const gameState = {
       ...newGameState,
       timeInCave: timeInCave,
@@ -1771,7 +1799,193 @@ test.each([
       clothesPoopy: clothesPoopy,
       naked: naked,
       playerLocation: playerLocation,
-      itemLocations: { ...newGameState.itemLocations, [berryLocation]: ["berries"] },
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [berryLocation]: ["berries"],
+      },
+    };
+    const description = dragonDescription(gameState);
+    expect(description).toEqual("");
+  }
+);
+
+test.each([
+  // increasing time, conditions met
+  {
+    timeInCave: 0,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: false,
+    playerLocation: "crevice",
+    berryLocation: "puddle",
+  },
+  {
+    timeInCave: 1,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: false,
+    playerLocation: "crevice",
+    berryLocation: "puddle",
+  },
+  {
+    timeInCave: 2,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: false,
+    playerLocation: "crevice",
+    berryLocation: "puddle",
+  },
+  {
+    timeInCave: 3,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: false,
+    playerLocation: "crevice",
+    berryLocation: "puddle",
+  },
+])(
+  "dragon description when conditions met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  ({
+    timeInCave,
+    dragonPoisoned,
+    clothesPoopy,
+    naked,
+    playerLocation,
+    berryLocation,
+  }) => {
+    const gameState = {
+      ...newGameState,
+      timeInCave: timeInCave,
+      dragonPoisoned: dragonPoisoned,
+      clothesPoopy: clothesPoopy,
+      naked: naked,
+      playerLocation: playerLocation,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [berryLocation]: ["berries"],
+      },
+    };
+    const description = dragonDescription(gameState);
+    expect(description).toMatchSnapshot();
+  }
+);
+
+test.each([
+  // increasing time, conditions not met
+  {
+    timeInCave: 0,
+    dragonPoisoned: false,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+  {
+    timeInCave: 1,
+    dragonPoisoned: false,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+  {
+    timeInCave: 2,
+    dragonPoisoned: false,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+  {
+    timeInCave: 3,
+    dragonPoisoned: false,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "inventory",
+  },
+])(
+  "dragon description with increasing time when conditions not met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  ({
+    timeInCave,
+    dragonPoisoned,
+    clothesPoopy,
+    naked,
+    playerLocation,
+    berryLocation,
+  }) => {
+    const gameState = {
+      ...newGameState,
+      timeInCave: timeInCave,
+      dragonPoisoned: dragonPoisoned,
+      clothesPoopy: clothesPoopy,
+      naked: naked,
+      playerLocation: playerLocation,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [berryLocation]: ["berries"],
+      },
+    };
+    const description = dragonDescription(gameState);
+    expect(description).toMatchSnapshot();
+  }
+);
+
+test.each([
+  // time up, conditions not met
+  {
+    timeInCave: 3,
+    dragonPoisoned: false,
+    clothesPoopy: false,
+    naked: false,
+    playerLocation: "crevice",
+    berryLocation: "puddle",
+  },
+  {
+    timeInCave: 3,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: true,
+    playerLocation: "crevice",
+    berryLocation: "puddle",
+  },
+  {
+    timeInCave: 3,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: false,
+    playerLocation: "dung",
+    berryLocation: "puddle",
+  },
+  {
+    timeInCave: 3,
+    dragonPoisoned: false,
+    clothesPoopy: true,
+    naked: false,
+    playerLocation: "crevice",
+    berryLocation: "dung",
+  },
+])(
+  "dragon description with time up when conditions are not met in different ways: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  ({
+    timeInCave,
+    dragonPoisoned,
+    clothesPoopy,
+    naked,
+    playerLocation,
+    berryLocation,
+  }) => {
+    const gameState = {
+      ...newGameState,
+      timeInCave: timeInCave,
+      dragonPoisoned: dragonPoisoned,
+      clothesPoopy: clothesPoopy,
+      naked: naked,
+      playerLocation: playerLocation,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        [berryLocation]: ["berries"],
+      },
     };
     const description = dragonDescription(gameState);
     expect(description).toMatchSnapshot();
@@ -1779,8 +1993,3 @@ test.each([
 );
 
 // todo catch cases where try to get prop from game state that doesn't exist
-
-// defecatory
-// puddle
-// crevice
-// dung
