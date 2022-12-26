@@ -1233,7 +1233,7 @@ const lair = new Location({
   },
 });
 
-function dragonDescription(gameState) {
+export function dragonDescription(gameState) {
   const timeInterval = gameState.timeInCave % 4;
 
   let text = "";

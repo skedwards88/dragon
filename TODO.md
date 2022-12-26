@@ -14,3 +14,4 @@ track number of completed quests?
 
 - make dragon poisoned/sleep/severed image
 - last few tests
+- bump version

@@ -1,4 +1,4 @@
-import { locations } from "./locations";
+import { locations, dragonDescription } from "./locations";
 import { init } from "./init";
 
 const newGameState = init();
@@ -1747,6 +1747,28 @@ test("defecatory description, dragon not poisoned, dragon not asleep, dragon not
     `"You stand in a large, foul smelling cavern. There is a puddle of clear water, a crevice, and a pile of dragon dung. "`
   );
 });
+
+test.each([
+  { timeInCave: 0, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
+  { timeInCave: 1, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
+  { timeInCave: 2, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
+  { timeInCave: 3, dragonPoisoned: false, clothesPoopy: false, naked: false, playerLocation: "dung", berryLocation: "inventory"  },
+])(
+  "dragon description: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  ({ timeInCave, dragonPoisoned, clothesPoopy, naked, playerLocation, berryLocation }) => {
+    const gameState = {
+      ...newGameState,
+      timeInCave: timeInCave,
+      dragonPoisoned: dragonPoisoned,
+      clothesPoopy: clothesPoopy,
+      naked: naked,
+      playerLocation: playerLocation,
+      itemLocations: { ...newGameState.itemLocations, [berryLocation]: ["berries"] },
+    };
+    const description = dragonDescription(gameState);
+    expect(description).toMatchSnapshot();
+  }
+);
 
 // todo catch cases where try to get prop from game state that doesn't exist
 
