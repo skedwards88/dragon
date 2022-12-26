@@ -2,15 +2,23 @@
 
 exports[`dragon description: timeInCave 0, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
+exports[`dragon description: timeInCave 0, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
+
 exports[`dragon description: timeInCave 1, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `"You hear coins clanking from the other room, as if a large beast is rising from a sea of treasure. "`;
 
+exports[`dragon description: timeInCave 1, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
+
 exports[`dragon description: timeInCave 2, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `"You hear the dragon just outside. "`;
+
+exports[`dragon description: timeInCave 2, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
 exports[`dragon description: timeInCave 3, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `
 "The dragon prowls into the cavern. "I KNEW I SMELT A HUMAN." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. 
 
 As you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure."
 `;
+
+exports[`dragon description: timeInCave 3, dragonPoisoned true, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
 
 exports[`lawn description: naked false, babyCough false, playerCough false 1`] = `
 "You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
