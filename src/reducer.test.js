@@ -1,5 +1,12 @@
 import { init } from "./init";
 import { reducer } from "./reducer";
+import { sendAnalytics } from "./sendAnalytics.js";
+
+jest.mock("./sendAnalytics");
+
+beforeEach(() => {
+  sendAnalytics.mockClear();
+});
 
 const newGameState = init();
 
@@ -106,6 +113,7 @@ test("New game resets state", () => {
       "treasureLevel": 0,
     }
   `);
+  expect(sendAnalytics).not.toHaveBeenCalled();
 });
 
 test("Resuming will apply saved state over new game state", () => {
@@ -258,6 +266,7 @@ test("Resuming will apply saved state over new game state", () => {
       "treasureLevel": 0,
     }
   `);
+  expect(sendAnalytics).not.toHaveBeenCalled();
 });
 
 test("Taking the sword from the smithy increases sword cost (once) and reduces reputation (every time)", () => {
@@ -322,7 +331,7 @@ test("Playing the lute for the youth will boost reputation only once", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`11`);
-  expect(output.playedForYouth).toMatchInlineSnapshot(`true`);
+  expect(output.playedForYouth).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
@@ -341,7 +350,7 @@ test("Playing the lute for the youth will boost reputation only once", () => {
   });
 
   expect(output2.reputation).toMatchInlineSnapshot(`11`);
-  expect(output2.playedForYouth).toMatchInlineSnapshot(`true`);
+  expect(output2.playedForYouth).toBe(true);
   expect(output2.consequenceText).toMatchInlineSnapshot(
     `"They appreciate the music, but don't seem keen to listen all day. "`
   );
@@ -365,7 +374,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
@@ -393,7 +402,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
@@ -421,7 +430,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
@@ -449,7 +458,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
@@ -473,7 +482,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.arrayContaining([item])
   );
@@ -501,7 +510,7 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -529,7 +538,7 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -557,7 +566,7 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -585,7 +594,7 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -611,7 +620,7 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -639,8 +648,10 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toMatchInlineSnapshot(`true`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.clothesPoopy).toBe(true);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("clothesPoopy");
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -660,8 +671,10 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toMatchInlineSnapshot(`true`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.clothesPoopy).toBe(true);
+  // if the clothes are already poopy, doesn't send analytics again
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -680,6 +693,7 @@ test("Dropping clothes in water will make them not poopy", () => {
     {
       ...newGameState,
       playerLocation: location,
+      clothesPoopy: true,
       itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
@@ -689,8 +703,10 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.clothesPoopy).toBe(false);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -707,6 +723,7 @@ test("Dropping clothes in water will make them not poopy", () => {
     {
       ...newGameState,
       playerLocation: location,
+      clothesPoopy: true,
       itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
@@ -716,8 +733,10 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+  expect(output.clothesPoopy).toBe(false);
+  expect(sendAnalytics).toHaveBeenCalledTimes(2);
+  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -734,6 +753,7 @@ test("Dropping clothes in water will make them not poopy", () => {
     {
       ...newGameState,
       playerLocation: location,
+      clothesPoopy: true,
       itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
@@ -743,8 +763,10 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+
+  expect(sendAnalytics).toHaveBeenCalledTimes(3);
+  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -761,6 +783,7 @@ test("Dropping clothes in water will make them not poopy", () => {
     {
       ...newGameState,
       playerLocation: location,
+      clothesPoopy: true,
       itemLocations: { ...newGameState.itemLocations, inventory: [item] },
     },
     {
@@ -770,8 +793,10 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toMatchInlineSnapshot(`false`);
-  expect(output.naked).toMatchInlineSnapshot(`true`);
+
+  expect(sendAnalytics).toHaveBeenCalledTimes(4);
+  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item])
   );
@@ -1687,6 +1712,8 @@ test("Dropping handkerchief when wearing it in fountain", () => {
   );
   expect(output.playerMasked).toBe(false);
   expect(output.handkerchiefDamp).toBe(true);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("handkerchiefDamp");
 });
 
 test("Giving the handkerchief to youth once increases reputation and gives plot details. Giving again does nothing.", () => {
@@ -1959,6 +1986,9 @@ test("Using the sword to on sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(true);
   expect(output.dragonDead).toBe(true);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("dragonDead");
+
   expect(output.reputation).toEqual(newGameState.reputation + 2);
 });
 
@@ -1996,6 +2026,7 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(true);
+  expect(sendAnalytics).not.toHaveBeenCalled();
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.singeCount).toEqual(1);
@@ -2035,6 +2066,7 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
+  expect(sendAnalytics).not.toHaveBeenCalled();
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.singeCount).toEqual(1);
@@ -2072,6 +2104,7 @@ test("Using the sword not on dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
+  expect(sendAnalytics).not.toHaveBeenCalled();
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(0);
@@ -3645,6 +3678,8 @@ test("Leaving the courtyard the first time is different", () => {
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("firstCourtyardEntry");
 
   output = reducer(output, {
     action: "movePlayer",
@@ -3652,6 +3687,8 @@ test("Leaving the courtyard the first time is different", () => {
   });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
+  // analytics not called again
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
@@ -3940,6 +3977,11 @@ test("Exiting the lawn puts out the fire if the baby was saved", () => {
   expect(output.savedBaby).toBe(true);
   expect(output.manorFire).toBe(false);
   expect(output.receivedBabyReward).toBe(true);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("savedBaby", {
+    throughWindow: true,
+    woreDampMask: true,
+  });
 });
 
 test("Exiting the lawn does not put out the fire if the baby was not saved", () => {
@@ -3963,6 +4005,7 @@ test("Exiting the lawn does not put out the fire if the baby was not saved", () 
   expect(output.savedBaby).toBe(false);
   expect(output.manorFire).toBe(true);
   expect(output.receivedBabyReward).toBe(false);
+  expect(sendAnalytics).not.toHaveBeenCalled();
 });
 
 test("Taking the baby into the entryway gives it a cough", () => {
@@ -4718,6 +4761,9 @@ test("When exit crevice, if berries are in the puddle and you are wearing poopy 
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(true);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("dragonPoisoned");
+
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
@@ -4749,6 +4795,7 @@ test("When exit crevice, if berries are in the puddle but you are not wearing po
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
+  expect(sendAnalytics).not.toHaveBeenCalled();
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
@@ -4780,6 +4827,7 @@ test("When exit crevice, if you are wearing poopy clothes but clothes aren't in 
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
+  expect(sendAnalytics).not.toHaveBeenCalled();
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
@@ -4811,6 +4859,7 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
+  expect(sendAnalytics).not.toHaveBeenCalled();
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
