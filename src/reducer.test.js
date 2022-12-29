@@ -4191,6 +4191,113 @@ test("Talking to the youth when naked will lose reputation", () => {
   expect(output.reputation).toEqual(newGameState.reputation - 1);
 });
 
+test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked.", () => {
+  let oldLocation = "road1";
+  let newLocation = "gate";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
+    gold: 110,
+    reputation: newGameState.reputation - 1,
+  });
+});
+
+test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if wearing poopy clothes.", () => {
+  let oldLocation = "road1";
+  let newLocation = "gate";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+      naked: false,
+      clothesPoopy: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
+    gold: 110,
+    reputation: newGameState.reputation - 1,
+  });
+});
+
+test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked, but extra points not lost if clothes poopy.", () => {
+  let oldLocation = "road1";
+  let newLocation = "gate";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+      naked: true,
+      clothesPoopy: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation - 1);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
+    gold: 110,
+    reputation: newGameState.reputation - 1,
+  });
+});
+
+test("Moving to the gate when treasure is earned will trigger game end changes. Points gained if mounted.", () => {
+  let oldLocation = "road1";
+  let newLocation = "gate";
+
+  let output = reducer(
+    {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+      naked: false,
+      clothesPoopy: false,
+      horseMounted: true,
+    },
+    {
+      action: "movePlayer",
+      newLocation: newLocation,
+    }
+  );
+  expect(output.playerLocation).toEqual(newLocation);
+  expect(output.reputation).toEqual(newGameState.reputation + 1);
+  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
+    gold: 110,
+    reputation: newGameState.reputation + 1,
+  });
+});
+
 test("If you cross the stream without repaying the wizard, you get cursed", () => {
   let oldLocation = "stream";
   let newLocation = "road3";

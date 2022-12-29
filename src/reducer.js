@@ -20,9 +20,6 @@ function recordKeyEvents(oldState, newState) {
   if (!oldState.receivedBabyReward && newState.receivedBabyReward) {
     // dropped baby out of window
     // Wore damp handkerchief in fire
-    console.log("%%%%");
-    console.log(newState.babyCough);
-    console.log(newState.playerCough);
     sendAnalytics("savedBaby", {
       throughWindow: !newState.babyCough,
       woreDampMask: !newState.playerCough,
@@ -390,6 +387,14 @@ export function reducer(currentGameState, payload) {
       ...currentGameState,
       ...gameStateChanges,
     });
+
+    // if the game is won
+    if (newLocation === "gate" && currentGameState.treasureLevel) {
+      sendAnalytics("wonGame", {
+        reputation: { ...currentGameState, ...gameStateChanges }.reputation,
+        gold: { ...currentGameState, ...gameStateChanges }.gold,
+      });
+    }
 
     return {
       ...currentGameState,

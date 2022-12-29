@@ -591,6 +591,19 @@ const gate = new Location({
       !gameState.playedForYouth ? ", crying" : ""
     }. `;
   },
+  onEnterGameStateEffect: function (gameState) {
+    // game over if enter this location and have earned treasure
+    if (gameState.treasureLevel) {
+      let reputationChange = 0;
+      if (gameState.horseMounted) reputationChange += 1;
+      if (gameState.naked) reputationChange -= 1;
+      if (gameState.clothesPoopy && !gameState.naked) reputationChange -= 1;
+      // Not losing reputation for being poisoned or singed since that happens when the event occurs
+      return {
+        reputation: gameState.reputation + reputationChange,
+      };
+    }
+  },
 });
 
 const youth = new Location({

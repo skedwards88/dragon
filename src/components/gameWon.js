@@ -6,13 +6,6 @@ export default function GameWon({
   gameState,
   setCurrentDisplay,
 }) {
-  let reputationChange = 0;
-  if (gameState.horseMounted) reputationChange += 1;
-  if (gameState.naked) reputationChange -= 1;
-  if (gameState.clothesPoopy && !gameState.naked) reputationChange -= 1;
-  // Not losing reputation for being poisoned or singed since that happens when the event occurs
-  let finalReputation = gameState.reputation + reputationChange;
-
   let gameEndText;
   gameEndText = `You arrive at the city gates ${
     gameState.horseMounted
@@ -43,7 +36,7 @@ export default function GameWon({
   }${
     gameState.dragonDead
       ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${
-          finalReputation === gameState.maxReputation
+          gameState.reputation === gameState.maxReputation
             ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot."
             : ""
         }`
@@ -53,7 +46,7 @@ export default function GameWon({
   return (
     <div className="App" id="gameOver-display">
       <Stats
-        reputation={finalReputation}
+        reputation={gameState.reputation}
         maxReputation={gameState.maxReputation}
         gold={gameState.gold}
         maxGold={gameState.maxGold}
@@ -74,7 +67,7 @@ export default function GameWon({
             className="close"
             onClick={() =>
               handleShareResults({
-                reputation: finalReputation,
+                reputation: gameState.reputation,
                 maxReputation: gameState.maxReputation,
                 gold: gameState.gold,
                 maxGold: gameState.maxGold,
