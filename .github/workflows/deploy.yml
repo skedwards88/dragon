@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # Required for bumping version (read-only required for deployment)
+  contents: write # Required for pushing changes (read-only required for deployment)
   pages: write # Required for deployment
   id-token: write # Required for deployment
 
