@@ -11,7 +11,8 @@
     "lint": "npx eslint --ignore-path .gitignore .",
     "style": "npx stylelint --fix \"**/*.css\"",
     "prettier": "npx prettier --ignore-path .gitignore --write .",
-    "compressImages": "for FILE in src/images/background_images_raw/*; do cwebp -q 75 $FILE -o src/images/background_images/$(basename $FILE '.png').webp ; done"
+    "compressImages": "for FILE in src/images/background_images_raw/*; do cwebp -q 75 $FILE -o src/images/background_images/$(basename $FILE '.png').webp ; done",
+    "prebuild": "npm run compressImages"
   },
   "repository": {
     "type": "git",
