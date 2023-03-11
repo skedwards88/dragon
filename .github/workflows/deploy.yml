@@ -20,15 +20,11 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: macos-latest
+    runs-on: macos-latest # I'm not sure how to install the webp tool on ubuntu, so using mac instead
     steps:
       - name: Install webp compression tool
         run: |
           curl https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-1.3.0-mac-arm64.tar.gz | tar zvxf -
-          cd libwebp-1.3.0-mac-arm64
-          ls
-          cd ..
-          cwebp -h
       - name: Checkout
         uses: actions/checkout@v3
 
