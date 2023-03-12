@@ -39,5 +39,63 @@
     }
   ],
   "shortcuts": [],
-  "categories": ["games", "entertainment"]
+  "categories": ["games", "entertainment"],
+  "screenshots": [
+    {
+      "src": "screenshot_newGame_phone.png",
+      "sizes": "750x1344",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "New game of Dragon Hero"
+    },
+    {
+      "src": "screenshot_window_phone.png",
+      "sizes": "750x1344",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "In progress game of Dragon Hero"
+    },
+    {
+      "src": "screenshot_cave_phone.png",
+      "sizes": "750x1344",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "In progress game of Dragon Hero"
+    },
+    {
+      "src": "screenshot_inventory_phone.png",
+      "sizes": "750x1344",
+      "type": "image/png",
+      "platform": "narrow",
+      "label": "Dragon Hero inventory"
+    },
+    {
+      "src": "screenshot_newGame_tablet.png",
+      "sizes": "1080x1080",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "New game of Dragon Hero"
+    },
+    {
+      "src": "screenshot_window_tablet.png",
+      "sizes": "1080x1080",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "In progress game of Dragon Hero"
+    },
+    {
+      "src": "screenshot_cave_tablet.png",
+      "sizes": "1080x1080",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "In progress game of Dragon Hero"
+    },
+    {
+      "src": "screenshot_inventory_tablet.png",
+      "sizes": "1080x1080",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Dragon Hero inventory"
+    }
+  ]
 }
