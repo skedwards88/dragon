@@ -1,6 +1,6 @@
 [{
         "relation": ["delegate_permission/common.handle_all_urls"],
         "target" : { "namespace": "android_app", "package_name": "dragon.io.github.skedwards88.twa",
-                     "sha256_cert_fingerprints": ["76:CC:5C:C0:11:1A:7D:D8:E2:79:42:E2:BC:CF:12:3E:0B:80:3B:4B:DF:95:EF:04:AF:09:E9:1A:76:26:23:6C"] }
+                     "sha256_cert_fingerprints": ["2A:4F:34:73:F7:AC:D6:C6:C6:2C:87:9D:8B:14:31:F7:FC:F1:9F:A3:67:0E:F7:5C:ED:9A:C4:46:DF:68:40:08"] }
       }
 ]
