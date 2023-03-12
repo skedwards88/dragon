@@ -27,6 +27,7 @@ module.exports = (env, argv) => {
       },
       { from: "./src/manifest.json", to: "./assets/manifest.json" },
       { from: "./src/privacy.html", to: "./privacy.html" },
+      { from: "./src/assetlinks.json", to: "./.well-known/assetlinks.json" },
     ],
     options: {
       concurrency: 100,
