@@ -15,7 +15,7 @@ export default function Info({ setCurrentDisplay }) {
         {" on GitHub."}
         {<hr></hr>}
         {`Want more games? Check `}
-        <a href="https://skedwards88.github.io/portfolio/">these</a>
+        <a href="https://skedwards88.github.io/">these</a>
         {` out.`}
         {<hr></hr>}
         {`Story by Colin\nBuilt by Sarah\nArtwork by Dall-e`}
