@@ -1,7 +1,7 @@
-import { init } from "./init.js";
-import { items } from "./items.js";
-import { locations } from "./locations.js";
-import { sendAnalytics } from "./sendAnalytics.js";
+import {init} from "./init.js";
+import {items} from "./items.js";
+import {locations} from "./locations.js";
+import {sendAnalytics} from "./sendAnalytics.js";
 
 function recordKeyEvents(oldState, newState) {
   // game progressed beyond inn
@@ -78,11 +78,11 @@ function appendConsequenceToDescription({
   return description;
 }
 
-function updateLocations({ itemMovements, newGameState }) {
+function updateLocations({itemMovements, newGameState}) {
   let itemLocations = newGameState.itemLocations;
 
   for (let index = 0; index < itemMovements.length; index++) {
-    const { item, oldLocation, newLocation } = itemMovements[index];
+    const {item, oldLocation, newLocation} = itemMovements[index];
     if (oldLocation === newLocation) continue;
 
     let updatedItemsAtOld = new Set(itemLocations[oldLocation]);
@@ -116,7 +116,7 @@ export function reducer(currentGameState, payload) {
     const playerLocation = currentGameState.playerLocation;
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
-    let { gameEffect, description, targetItemDestination, itemMovements } =
+    let {gameEffect, description, targetItemDestination, itemMovements} =
       items[item].getCustomTake(newGameState);
 
     itemMovements.push({
@@ -128,7 +128,7 @@ export function reducer(currentGameState, payload) {
     if (!description) {
       description = `You now have ${
         ["a", "e", "i", "o", "u"].includes(
-          items[item].getDescription(newGameState)[0].toLowerCase()
+          items[item].getDescription(newGameState)[0].toLowerCase(),
         )
           ? "an"
           : "a"
@@ -146,7 +146,7 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, { ...currentGameState, ...gameEffect });
+    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -159,7 +159,7 @@ export function reducer(currentGameState, payload) {
     const item = payload.item;
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
-    let { gameEffect, description, targetItemDestination, itemMovements } =
+    let {gameEffect, description, targetItemDestination, itemMovements} =
       items[item].getCustomUse(newGameState);
 
     itemMovements.push({
@@ -183,7 +183,7 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, { ...currentGameState, ...gameEffect });
+    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -197,7 +197,7 @@ export function reducer(currentGameState, payload) {
     const playerLocation = currentGameState.playerLocation;
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
-    let { gameEffect, description, targetItemDestination, itemMovements } =
+    let {gameEffect, description, targetItemDestination, itemMovements} =
       items[item].getCustomDrop(newGameState);
     itemMovements.push({
       item: item,
@@ -224,7 +224,7 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, { ...currentGameState, ...gameEffect });
+    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -237,7 +237,7 @@ export function reducer(currentGameState, payload) {
     const playerLocation = currentGameState.playerLocation;
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
-    let { gameEffect, description, itemMovements } =
+    let {gameEffect, description, itemMovements} =
       locations[playerLocation].getCustomPay(newGameState);
 
     if (description) {
@@ -263,7 +263,7 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, { ...currentGameState, ...gameEffect });
+    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -277,7 +277,7 @@ export function reducer(currentGameState, payload) {
     const playerLocation = currentGameState.playerLocation;
     let newGameState = JSON.parse(JSON.stringify(currentGameState));
 
-    let { gameEffect, description, targetItemDestination, itemMovements } =
+    let {gameEffect, description, targetItemDestination, itemMovements} =
       items[item].getCustomGive(newGameState);
 
     itemMovements.push({
@@ -298,13 +298,13 @@ export function reducer(currentGameState, payload) {
       description = `The ${locations[playerLocation]
         .getDisplayName(newGameState)
         .toLowerCase()} does not want your ${items[item].getDescription(
-        newGameState
+        newGameState,
       )} but agrees to hold it for you.`;
     } else {
       description = `The ${locations[playerLocation]
         .getDisplayName(newGameState)
         .toLowerCase()} does not want your ${items[item].getDescription(
-        newGameState
+        newGameState,
       )}.`;
     }
 
@@ -319,7 +319,7 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, { ...currentGameState, ...gameEffect });
+    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -339,12 +339,12 @@ export function reducer(currentGameState, payload) {
     const customExitStateEffect =
       locations[oldLocation].onExitGameStateEffect &&
       locations[oldLocation].onExitGameStateEffect(newGameState);
-    gameStateChanges = { ...gameStateChanges, ...customExitStateEffect };
+    gameStateChanges = {...gameStateChanges, ...customExitStateEffect};
 
     const customEnterStateEffect =
       locations[newLocation].onEnterGameStateEffect &&
       locations[newLocation].onEnterGameStateEffect(newGameState);
-    gameStateChanges = { ...gameStateChanges, ...customEnterStateEffect };
+    gameStateChanges = {...gameStateChanges, ...customEnterStateEffect};
 
     // update location consequence text
     let consequence = "";
@@ -391,8 +391,8 @@ export function reducer(currentGameState, payload) {
     // if the game is won
     if (newLocation === "gate" && currentGameState.treasureLevel) {
       sendAnalytics("wonGame", {
-        reputation: { ...currentGameState, ...gameStateChanges }.reputation,
-        gold: { ...currentGameState, ...gameStateChanges }.gold,
+        reputation: {...currentGameState, ...gameStateChanges}.reputation,
+        gold: {...currentGameState, ...gameStateChanges}.gold,
       });
     }
 
@@ -418,7 +418,7 @@ export function reducer(currentGameState, payload) {
     } else {
       const newConsequenceText =
         "The previous entries are faded. You get the feeling that if you could read them, you would be transported to another time. ";
-      return { ...currentGameState, consequenceText: newConsequenceText };
+      return {...currentGameState, consequenceText: newConsequenceText};
     }
   } else if (payload.action === "writeJournal") {
     let text = "You record everything you can recall about your adventure. ";

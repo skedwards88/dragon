@@ -1,7 +1,7 @@
 import React from "react";
 import packageJson from "../../package.json";
 
-export default function Info({ setCurrentDisplay }) {
+export default function Info({setCurrentDisplay}) {
   const feedbackLink = `https://github.com/skedwards88/dragon/issues/new?body=Dragon+Hero+version+${packageJson.version}`;
   return (
     <div className="App">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, {useState} from "react";
 import "./App.css";
 import Inventory from "./components/inventory";
 import Location from "./components/location";
@@ -8,13 +8,13 @@ import GameLost from "./components/gameLost";
 import Info from "./components/info";
 import Restart from "./components/restart";
 import Resume from "./components/resume";
-import { reducer } from "./reducer";
-import { init } from "./init";
+import {reducer} from "./reducer";
+import {init} from "./init";
 
 function handleBeforeInstallPrompt(
   event,
   setInstallPromptEvent,
-  setShowInstallButton
+  setShowInstallButton,
 ) {
   console.log("handleBeforeInstallPrompt");
   if (event) setInstallPromptEvent(event);
@@ -42,22 +42,22 @@ function App() {
       handleBeforeInstallPrompt(
         event,
         setInstallPromptEvent,
-        setShowInstallButton
-      )
+        setShowInstallButton,
+      ),
     );
     return () =>
       window.removeEventListener("beforeinstallprompt", (event) =>
         handleBeforeInstallPrompt(
           event,
           setInstallPromptEvent,
-          setShowInstallButton
-        )
+          setShowInstallButton,
+        ),
       );
   }, []);
 
   React.useEffect(() => {
     window.addEventListener("appinstalled", () =>
-      handleAppInstalled(setInstallPromptEvent, setShowInstallButton)
+      handleAppInstalled(setInstallPromptEvent, setShowInstallButton),
     );
     return () => window.removeEventListener("appinstalled", handleAppInstalled);
   }, []);
@@ -81,7 +81,7 @@ function App() {
     }
 
     // If yes, update state
-    dispatchGameState({ action: "resume", savedState: savedState });
+    dispatchGameState({action: "resume", savedState: savedState});
     setShowMap(savedState.showMap ?? true);
     setShowPhoto(savedState.showPhoto ?? true);
 

@@ -1,5 +1,5 @@
-import { locations } from "./locations.js";
-import { items } from "./items.js";
+import {locations} from "./locations.js";
+import {items} from "./items.js";
 
 function buildStartingLocations() {
   const startingItemLocations = {
@@ -8,7 +8,7 @@ function buildStartingLocations() {
   };
 
   Object.keys(locations).forEach(
-    (location) => (startingItemLocations[location] = [])
+    (location) => (startingItemLocations[location] = []),
   );
 
   for (const [item, itemInfo] of Object.entries(items)) {

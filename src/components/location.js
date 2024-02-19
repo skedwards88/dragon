@@ -1,15 +1,15 @@
 import React from "react";
-import { locations } from "../../src/locations";
+import {locations} from "../../src/locations";
 import Stats from "./stats";
-import { items } from "../items";
+import {items} from "../items";
 
-function LocationItems({ gameState, dispatchGameState, setCurrentDisplay }) {
+function LocationItems({gameState, dispatchGameState, setCurrentDisplay}) {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
   return Array.from(itemsAtLocation).map((item) => {
     return (
       <button
         onClick={() => {
-          dispatchGameState({ action: "takeItem", item: item });
+          dispatchGameState({action: "takeItem", item: item});
           setCurrentDisplay("consequence");
         }}
         className="item"
@@ -48,7 +48,7 @@ function NavigationList({
   );
 }
 
-function Connections({ gameState, dispatchGameState }) {
+function Connections({gameState, dispatchGameState}) {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
   const connectionValues = Object.values(connections).flatMap((i) => i);
@@ -59,7 +59,7 @@ function Connections({ gameState, dispatchGameState }) {
           className="connection"
           key={connection}
           onClick={() =>
-            dispatchGameState({ action: "movePlayer", newLocation: connection })
+            dispatchGameState({action: "movePlayer", newLocation: connection})
           }
         >
           {locations[connection].getDisplayName(gameState)}
@@ -100,7 +100,7 @@ function MapInteractions({
     return (
       <button
         onClick={() => {
-          dispatchGameState({ action: "takeItem", item: item });
+          dispatchGameState({action: "takeItem", item: item});
           setCurrentDisplay("consequence");
         }}
         className="item"
@@ -118,7 +118,7 @@ function MapInteractions({
   );
 }
 
-function MapLocation({ direction, connections, gameState, dispatchGameState }) {
+function MapLocation({direction, connections, gameState, dispatchGameState}) {
   if (!connections[direction]) {
     return <button className="connection" id={direction} disabled></button>;
   }
@@ -141,7 +141,7 @@ function MapLocation({ direction, connections, gameState, dispatchGameState }) {
   );
 }
 
-function Map({ gameState, dispatchGameState, setCurrentDisplay, showPhoto }) {
+function Map({gameState, dispatchGameState, setCurrentDisplay, showPhoto}) {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 

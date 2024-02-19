@@ -1,5 +1,5 @@
-import { locations, dragonDescription } from "./locations";
-import { init } from "./init";
+import {locations, dragonDescription} from "./locations";
+import {init} from "./init";
 
 const newGameState = init();
 
@@ -24,7 +24,7 @@ test("Inn description, apple not taken, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You enter what appears to be the common room of an inn. A complementary apple rests on the table. "`
+    `"You enter what appears to be the common room of an inn. A complementary apple rests on the table. "`,
   );
 });
 
@@ -37,7 +37,7 @@ test("Inn description, apple not taken but partially eaten, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You enter what appears to be the common room of an inn. "`
+    `"You enter what appears to be the common room of an inn. "`,
   );
 });
 
@@ -45,7 +45,7 @@ test("Inn description, apple taken, not clothed", () => {
   const location = "inn";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, inn: ["lute"] },
+    itemLocations: {...newGameState.itemLocations, inn: ["lute"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -60,11 +60,11 @@ test("Inn description, apple not taken, clothed", () => {
   const gameState = {
     ...newGameState,
     naked: false,
-    itemLocations: { ...newGameState.itemLocations, inn: ["lute"] },
+    itemLocations: {...newGameState.itemLocations, inn: ["lute"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You enter what appears to be the common room of an inn. "`
+    `"You enter what appears to be the common room of an inn. "`,
   );
 });
 
@@ -76,7 +76,7 @@ test("Mirror description, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are quite good looking, if you say so yourself. "`
+    `"You are quite good looking, if you say so yourself. "`,
   );
 });
 
@@ -97,7 +97,7 @@ test("Wardrobe description, clothes not taken", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Inside the wardrobe, there is a mirror and a set of clothes. "`
+    `"Inside the wardrobe, there is a mirror and a set of clothes. "`,
   );
 });
 
@@ -105,11 +105,11 @@ test("Wardrobe description, clothes taken", () => {
   const location = "wardrobe";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, wardrobe: ["lute"] },
+    itemLocations: {...newGameState.itemLocations, wardrobe: ["lute"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Inside the wardrobe, there is a mirror. "`
+    `"Inside the wardrobe, there is a mirror. "`,
   );
 });
 
@@ -121,7 +121,7 @@ test("Inn window description, manor on fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Through the window, you see flames and smoke coming from a nearby manor. A crowd has gathered in front of the manor. "`
+    `"Through the window, you see flames and smoke coming from a nearby manor. A crowd has gathered in front of the manor. "`,
   );
 });
 
@@ -133,7 +133,7 @@ test("Inn window description, manor not on fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Through the window, you see the charred remains of a nearby manor. "`
+    `"Through the window, you see the charred remains of a nearby manor. "`,
   );
 });
 
@@ -144,7 +144,7 @@ test("Room description, lute not taken", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are in a bedroom with a window, wardrobe, and door. A lute leans against the bed. You smell smoke and hear screams in the distance. "`
+    `"You are in a bedroom with a window, wardrobe, and door. A lute leans against the bed. You smell smoke and hear screams in the distance. "`,
   );
 });
 
@@ -152,11 +152,11 @@ test("Room description, lute taken", () => {
   const location = "room";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, room: [] },
+    itemLocations: {...newGameState.itemLocations, room: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are in a bedroom with a window, wardrobe, and door. You smell smoke and hear screams in the distance. "`
+    `"You are in a bedroom with a window, wardrobe, and door. You smell smoke and hear screams in the distance. "`,
   );
 });
 
@@ -168,7 +168,7 @@ test("Room description, lute not taken, no fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are in a bedroom with a window, wardrobe, and door. A lute leans against the bed. "`
+    `"You are in a bedroom with a window, wardrobe, and door. A lute leans against the bed. "`,
   );
 });
 
@@ -177,11 +177,11 @@ test("Room description, lute taken", () => {
   const gameState = {
     ...newGameState,
     manorFire: false,
-    itemLocations: { ...newGameState.itemLocations, room: [] },
+    itemLocations: {...newGameState.itemLocations, room: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are in a bedroom with a window, wardrobe, and door. "`
+    `"You are in a bedroom with a window, wardrobe, and door. "`,
   );
 });
 
@@ -206,7 +206,7 @@ test("Courtyard description, fire, not first time", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. Beyond the fountain, you see flames and smoke. "`
+    `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. Beyond the fountain, you see flames and smoke. "`,
   );
 });
 
@@ -233,7 +233,7 @@ test("Courtyard description, no fire, not first time", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. "`
+    `"You are in a small courtyard that connects to the inn. You can see a fountain and hear sounds of a blacksmith shop. "`,
   );
 });
 
@@ -241,11 +241,11 @@ test("Nursery description, fire, baby absent", () => {
   const location = "nursery";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+    itemLocations: {...newGameState.itemLocations, nursery: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. "`
+    `"You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. "`,
   );
 });
 
@@ -253,11 +253,11 @@ test("Nursery description, fire, baby present", () => {
   const location = "nursery";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, nursery: ["baby"] },
+    itemLocations: {...newGameState.itemLocations, nursery: ["baby"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. "`
+    `"You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. "`,
   );
 });
 
@@ -269,7 +269,7 @@ test("Nursery description, no fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in the charred remains of a nursery. "`
+    `"You stand in the charred remains of a nursery. "`,
   );
 });
 
@@ -281,7 +281,7 @@ test("Nursery window description, no fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You see the charred remains of the manor below you. "`
+    `"You see the charred remains of the manor below you. "`,
   );
 });
 
@@ -292,7 +292,7 @@ test("Nursery window description, fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"Below the window, you see the gathered crowd. "`
+    `"Below the window, you see the gathered crowd. "`,
   );
 });
 
@@ -303,7 +303,7 @@ test("Smithy description, sword present", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. In front of the shop, you see a sword gleaming as if someone was recently polishing it. "`
+    `"You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. In front of the shop, you see a sword gleaming as if someone was recently polishing it. "`,
   );
 });
 
@@ -311,11 +311,11 @@ test("Smithy description, sword absent", () => {
   const location = "smithy";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+    itemLocations: {...newGameState.itemLocations, smithy: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. "`
+    `"You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. "`,
   );
 });
 
@@ -359,7 +359,7 @@ test("lawn description, fire, not saved baby, not naked", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in front of a burning manor. A crowd surrounds the manor, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." "`
+    `"You stand in front of a burning manor. A crowd surrounds the manor, surveying the fire. You hear a voice sobbing, "My baby! My baby is trapped inside." "`,
   );
 });
 
@@ -372,22 +372,22 @@ test("lawn description, no fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in front of a framework of charred wood. "`
+    `"You stand in front of a framework of charred wood. "`,
   );
 });
 
 test.each([
-  { naked: true, babyCough: true, playerCough: true },
-  { naked: false, babyCough: true, playerCough: true },
-  { naked: true, babyCough: false, playerCough: true },
-  { naked: true, babyCough: true, playerCough: false },
-  { naked: true, babyCough: false, playerCough: false },
-  { naked: false, babyCough: false, playerCough: true },
-  { naked: false, babyCough: true, playerCough: false },
-  { naked: false, babyCough: false, playerCough: false },
+  {naked: true, babyCough: true, playerCough: true},
+  {naked: false, babyCough: true, playerCough: true},
+  {naked: true, babyCough: false, playerCough: true},
+  {naked: true, babyCough: true, playerCough: false},
+  {naked: true, babyCough: false, playerCough: false},
+  {naked: false, babyCough: false, playerCough: true},
+  {naked: false, babyCough: true, playerCough: false},
+  {naked: false, babyCough: false, playerCough: false},
 ])(
   "lawn description: naked $naked, babyCough $babyCough, playerCough $playerCough",
-  ({ naked, babyCough, playerCough }) => {
+  ({naked, babyCough, playerCough}) => {
     const location = "lawn";
     const gameState = {
       ...newGameState,
@@ -400,7 +400,7 @@ test.each([
     };
     const description = locations[location].getDescription(gameState);
     expect(description).toMatchSnapshot();
-  }
+  },
 );
 
 test("fountain description, fire", () => {
@@ -439,7 +439,7 @@ test("entryway description, no fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. "`
+    `"You stand in the charred remains of the manor. The stairs to the nursery are blocked by rubble. "`,
   );
 });
 
@@ -510,7 +510,7 @@ test("entryway description, fire, baby not in nursery, not masked", () => {
   const gameState = {
     ...newGameState,
     manorFire: true,
-    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+    itemLocations: {...newGameState.itemLocations, nursery: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -526,7 +526,7 @@ test("entryway description, fire, baby not in nursery, masked not damp", () => {
     ...newGameState,
     manorFire: true,
     playerMasked: true,
-    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+    itemLocations: {...newGameState.itemLocations, nursery: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -544,7 +544,7 @@ test("entryway description, fire, baby not in nursery, damp not masked", () => {
     ...newGameState,
     manorFire: true,
     handkerchiefDamp: true,
-    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+    itemLocations: {...newGameState.itemLocations, nursery: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -561,7 +561,7 @@ test("entryway description, fire, baby not in nursery, damp and masked", () => {
     manorFire: true,
     handkerchiefDamp: true,
     playerMasked: true,
-    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+    itemLocations: {...newGameState.itemLocations, nursery: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -576,11 +576,11 @@ test("nursery description, fire, baby not in nursery", () => {
   const gameState = {
     ...newGameState,
     manorFire: true,
-    itemLocations: { ...newGameState.itemLocations, nursery: [] },
+    itemLocations: {...newGameState.itemLocations, nursery: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. "`
+    `"You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. "`,
   );
 });
 
@@ -592,7 +592,7 @@ test("nursery description, fire, baby in nursery", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. "`
+    `"You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. "`,
   );
 });
 
@@ -604,7 +604,7 @@ test("nursery description, no fire", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in the charred remains of a nursery. "`
+    `"You stand in the charred remains of a nursery. "`,
   );
 });
 
@@ -613,11 +613,11 @@ test("blacksmith description, sword absent, clothed, not masked", () => {
   const gameState = {
     ...newGameState,
     naked: false,
-    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+    itemLocations: {...newGameState.itemLocations, smithy: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. "`
+    `"The blacksmith looks up as you approach. "`,
   );
 });
 
@@ -625,11 +625,11 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
   const location = "blacksmith";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+    itemLocations: {...newGameState.itemLocations, smithy: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." "`
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." "`,
   );
 });
 
@@ -639,11 +639,11 @@ test("blacksmith description, sword absent, clothed, masked", () => {
     ...newGameState,
     naked: false,
     playerMasked: true,
-    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+    itemLocations: {...newGameState.itemLocations, smithy: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it."`
+    `"The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it."`,
   );
 });
 
@@ -653,11 +653,11 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
     ...newGameState,
     naked: true,
     playerMasked: true,
-    itemLocations: { ...newGameState.itemLocations, smithy: [] },
+    itemLocations: {...newGameState.itemLocations, smithy: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it."`
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it."`,
   );
 });
 
@@ -667,11 +667,11 @@ test("blacksmith description, sword present but already bought, clothed, not mas
     ...newGameState,
     naked: false,
     ownSword: true,
-    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+    itemLocations: {...newGameState.itemLocations, smithy: ["sword"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. "`
+    `"The blacksmith looks up as you approach. "`,
   );
 });
 
@@ -680,11 +680,11 @@ test("blacksmith description, sword present but already bought, not clothed, not
   const gameState = {
     ...newGameState,
     ownSword: true,
-    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+    itemLocations: {...newGameState.itemLocations, smithy: ["sword"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." "`
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." "`,
   );
 });
 
@@ -695,11 +695,11 @@ test("blacksmith description, sword present but already bought, clothed, masked"
     naked: false,
     playerMasked: true,
     ownSword: true,
-    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+    itemLocations: {...newGameState.itemLocations, smithy: ["sword"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it."`
+    `"The blacksmith looks up as you approach. They eye the handkerchief tied over your face warily, but don't comment on it."`,
   );
 });
 
@@ -710,11 +710,11 @@ test("blacksmith description, sword present but already bought, not clothed, not
     naked: true,
     playerMasked: true,
     ownSword: true,
-    itemLocations: { ...newGameState.itemLocations, smithy: ["sword"] },
+    itemLocations: {...newGameState.itemLocations, smithy: ["sword"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it."`
+    `"The blacksmith looks up as you approach. "No clothes? You best stay away from the furnace lest you burn something important." They eye the handkerchief tied over your face warily, but don't comment on it."`,
   );
 });
 
@@ -808,11 +808,11 @@ test("pasture description, horse absent, not dead, not tethered", () => {
   const location = "pasture";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, pasture: [] },
+    itemLocations: {...newGameState.itemLocations, pasture: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are standing in a wide field just outside the city gates. "`
+    `"You are standing in a wide field just outside the city gates. "`,
   );
 });
 
@@ -821,11 +821,11 @@ test("pasture description, horse present, dead, not tethered", () => {
   const gameState = {
     ...newGameState,
     horseDead: true,
-    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are standing in a wide field just outside the city gates. "`
+    `"You are standing in a wide field just outside the city gates. "`,
   );
 });
 
@@ -834,11 +834,11 @@ test("pasture description, horse present, not dead, tethered", () => {
   const gameState = {
     ...newGameState,
     horseTethered: true,
-    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are standing in a wide field just outside the city gates. "`
+    `"You are standing in a wide field just outside the city gates. "`,
   );
 });
 
@@ -848,11 +848,11 @@ test("pasture description, horse present, dead, tethered", () => {
     ...newGameState,
     horseDead: true,
     horseTethered: true,
-    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You are standing in a wide field just outside the city gates. "`
+    `"You are standing in a wide field just outside the city gates. "`,
   );
 });
 
@@ -871,7 +871,7 @@ test("pasture name/sentient, horse absent, not dead, not tethered", () => {
   const location = "pasture";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, pasture: [] },
+    itemLocations: {...newGameState.itemLocations, pasture: []},
   };
   const name = locations[location].getDisplayName(gameState);
   expect(name).toMatchInlineSnapshot(`"pasture"`);
@@ -884,7 +884,7 @@ test("pasture name/sentient, horse present, dead, not tethered", () => {
   const gameState = {
     ...newGameState,
     horseDead: true,
-    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
   };
   const name = locations[location].getDisplayName(gameState);
   expect(name).toMatchInlineSnapshot(`"pasture"`);
@@ -897,7 +897,7 @@ test("pasture name/sentient, horse present, not dead, tethered", () => {
   const gameState = {
     ...newGameState,
     horseTethered: true,
-    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
   };
   const name = locations[location].getDisplayName(gameState);
   expect(name).toMatchInlineSnapshot(`"horse"`);
@@ -911,7 +911,7 @@ test("pasture name/sentient, horse present, dead, tethered", () => {
     ...newGameState,
     horseDead: true,
     horseTethered: true,
-    itemLocations: { ...newGameState.itemLocations, pasture: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
   };
   const name = locations[location].getDisplayName(gameState);
   expect(name).toMatchInlineSnapshot(`"pasture"`);
@@ -955,7 +955,7 @@ test("youth description, played for youth, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates. "`
+    `"The youth stands by the city gates. "`,
   );
 });
 
@@ -967,7 +967,7 @@ test("youth description, played for youth, not clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates. "Ack! Where are your clothes?!""`
+    `"The youth stands by the city gates. "Ack! Where are your clothes?!""`,
   );
 });
 
@@ -979,7 +979,7 @@ test("youth description, not played for youth, clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates crying. "`
+    `"The youth stands by the city gates crying. "`,
   );
 });
 
@@ -990,7 +990,7 @@ test("youth description, not played for youth, not clothed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The youth stands by the city gates crying. "Ack! Where are your clothes?!""`
+    `"The youth stands by the city gates crying. "Ack! Where are your clothes?!""`,
   );
 });
 
@@ -1001,7 +1001,7 @@ test("road1 description, not mounted", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`,
   );
   const connections = locations[location].getConnections(gameState);
   expect(connections.N).toMatchInlineSnapshot(`"road2"`);
@@ -1065,7 +1065,7 @@ test("road3 description, not mounted", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`,
   );
   const connections = locations[location].getConnections(gameState);
   expect(connections.N).toMatchInlineSnapshot(`"stream"`);
@@ -1100,7 +1100,7 @@ test("road3 description, getting cursed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke."`
+    `"As you cross the stream, a flash of lightning hits you, knocking you onto your back. "WHERE IS MY TREASURE?" the wizard demands. "Since you did not give me my share, you shall not have any." The treasure flies from your pouch and disappears down the stream. The wizard vanishes in a cloud of smoke."`,
   );
 });
 
@@ -1115,7 +1115,7 @@ test("road3 description, not in debt", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`,
   );
 });
 
@@ -1129,7 +1129,7 @@ test("road3 description, no treasure so won't get cursed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`,
   );
 });
 
@@ -1144,7 +1144,7 @@ test("road3 description, already cursed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`,
   );
 });
 
@@ -1159,7 +1159,7 @@ test("road3 description, paid to prevent curse", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand at the end of a long road that stretches from the city gate to mountains. "`
+    `"You stand at the end of a long road that stretches from the city gate to mountains. "`,
   );
 });
 
@@ -1173,7 +1173,7 @@ test("stream description, not in debt", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`
+    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`,
   );
 });
 
@@ -1202,7 +1202,7 @@ test("stream description, in debt but already cursed", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`
+    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`,
   );
 });
 
@@ -1216,7 +1216,7 @@ test("stream description, paid debt", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`
+    `"You come across a steam that separates the road from a clearing. It looks crossable by foot or by horse. "`,
   );
 });
 
@@ -1323,7 +1323,7 @@ test("clearing description, not cursed, squirrel dead, horse dead here", () => {
     squirrelDead: false,
     cursed: false,
     horseDead: true,
-    itemLocations: { ...newGameState.itemLocations, clearing: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, clearing: ["horse"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -1346,7 +1346,7 @@ test("clearing description, not cursed, squirrel dead, horse here not dead", () 
     squirrelDead: false,
     cursed: false,
     horseDead: false,
-    itemLocations: { ...newGameState.itemLocations, clearing: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, clearing: ["horse"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -1367,7 +1367,7 @@ test("squirrel description, not dead", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You approach the squirrel. It pauses, perhaps curious if you will feed it, before scampering up the tree. "`
+    `"You approach the squirrel. It pauses, perhaps curious if you will feed it, before scampering up the tree. "`,
   );
   const sentient = locations[location].getSentient(gameState);
   expect(sentient).toBe(true);
@@ -1383,7 +1383,7 @@ test("squirrel description, dead", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The squirrel lies dead on the ground. "`
+    `"The squirrel lies dead on the ground. "`,
   );
   const sentient = locations[location].getSentient(gameState);
   expect(sentient).toBe(false);
@@ -1414,7 +1414,7 @@ test("wizard description, naked, score on offer, you have score", () => {
   const location = "wizard";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, inventory: ["sword"] },
+    itemLocations: {...newGameState.itemLocations, inventory: ["sword"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(`
@@ -1459,7 +1459,7 @@ test("wizard description, not naked, score by trade", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1472,7 +1472,7 @@ test("wizard description, not naked, score by credit", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1482,11 +1482,11 @@ test("wizard description, not naked, score at wizard but you own it by credit", 
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
-    itemLocations: { ...newGameState.itemLocations, wizard: ["score"] },
+    itemLocations: {...newGameState.itemLocations, wizard: ["score"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1496,11 +1496,11 @@ test("wizard description, not naked, score at wizard but you own it by trade", (
     ...newGameState,
     naked: false,
     gotScoreByTrade: true,
-    itemLocations: { ...newGameState.itemLocations, wizard: ["score"] },
+    itemLocations: {...newGameState.itemLocations, wizard: ["score"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1509,11 +1509,11 @@ test("wizard description, not naked, score not at wizard", () => {
   const gameState = {
     ...newGameState,
     naked: false,
-    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+    itemLocations: {...newGameState.itemLocations, wizard: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1523,11 +1523,11 @@ test("wizard description, not naked, got score by credit, did not pay debt, no t
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
-    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+    itemLocations: {...newGameState.itemLocations, wizard: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1538,11 +1538,11 @@ test("wizard description, not naked, got score by credit, did not pay debt, trea
     naked: false,
     gotScoreByCredit: true,
     treasureLevel: 1,
-    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+    itemLocations: {...newGameState.itemLocations, wizard: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "Are you here to give me my share of the treasure? ""`
+    `"The wizard looks at you though bushy eyebrows. "Are you here to give me my share of the treasure? ""`,
   );
 });
 
@@ -1554,11 +1554,11 @@ test("wizard description, not naked, got score by credit, did not pay debt, trea
     gotScoreByCredit: true,
     treasureLevel: 1,
     preCreditTreasureLevel: 1,
-    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+    itemLocations: {...newGameState.itemLocations, wizard: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1570,11 +1570,11 @@ test("wizard description, not naked, got score by credit, paid debt, treasure", 
     gotScoreByCredit: true,
     treasureLevel: 1,
     paidDebt: true,
-    itemLocations: { ...newGameState.itemLocations, wizard: [] },
+    itemLocations: {...newGameState.itemLocations, wizard: []},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The wizard looks at you though bushy eyebrows. "`
+    `"The wizard looks at you though bushy eyebrows. "`,
   );
 });
 
@@ -1585,7 +1585,7 @@ test("cliff description, no horse", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You scramble on the rocky cliff. Above you is the entrance to a cave. Below you is a clearing next to a stream. "`
+    `"You scramble on the rocky cliff. Above you is the entrance to a cave. Below you is a clearing next to a stream. "`,
   );
   const connections = locations[location].getConnections(gameState);
   expect(connections.N).toEqual("caveEntrance");
@@ -1595,11 +1595,11 @@ test("cliff description, horse", () => {
   const location = "cliff";
   const gameState = {
     ...newGameState,
-    itemLocations: { ...newGameState.itemLocations, inventory: ["horse"] },
+    itemLocations: {...newGameState.itemLocations, inventory: ["horse"]},
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"The horse cannot make it up the rocky cliff. You must return to the clearing. "`
+    `"The horse cannot make it up the rocky cliff. You must return to the clearing. "`,
   );
   const connections = locations[location].getConnections(gameState);
   expect(connections.N).toEqual("");
@@ -1673,7 +1673,7 @@ test("caveEntrance description, dragon asleep", () => {
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. "`
+    `"You stand in the entrance of a cave. Two short passageways branch out. One passageway leads to a foul smelling cavern. The other passageway leads to a room that glitters with gems and gold. "`,
   );
 });
 
@@ -1744,7 +1744,7 @@ test("defecatory description, dragon not poisoned, dragon not asleep, dragon not
   };
   const description = locations[location].getDescription(gameState);
   expect(description).toMatchInlineSnapshot(
-    `"You stand in a large, foul smelling cavern. There is a puddle of clear water, a crevice, and a pile of dragon dung. "`
+    `"You stand in a large, foul smelling cavern. There is a puddle of clear water, a crevice, and a pile of dragon dung. "`,
   );
 });
 
@@ -1806,7 +1806,7 @@ test.each([
     };
     const description = dragonDescription(gameState);
     expect(description).toEqual("");
-  }
+  },
 );
 
 test.each([
@@ -1867,7 +1867,7 @@ test.each([
     };
     const description = dragonDescription(gameState);
     expect(description).toMatchSnapshot();
-  }
+  },
 );
 
 test.each([
@@ -1928,7 +1928,7 @@ test.each([
     };
     const description = dragonDescription(gameState);
     expect(description).toMatchSnapshot();
-  }
+  },
 );
 
 test.each([
@@ -1989,5 +1989,5 @@ test.each([
     };
     const description = dragonDescription(gameState);
     expect(description).toMatchSnapshot();
-  }
+  },
 );

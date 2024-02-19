@@ -1,4 +1,4 @@
-import { ItemInteraction } from "./items";
+import {ItemInteraction} from "./items";
 
 class Location {
   constructor({
@@ -160,7 +160,7 @@ const inn = new Location({
   },
   onEnterGameStateEffect: function (gameState) {
     if (gameState.naked) {
-      return { reputation: gameState.reputation - 1 };
+      return {reputation: gameState.reputation - 1};
     }
   },
 });
@@ -190,7 +190,7 @@ const courtyard = new Location({
   },
   onExitGameStateEffect: function (gameState) {
     if (gameState.firstCourtyardEntry) {
-      return { firstCourtyardEntry: false };
+      return {firstCourtyardEntry: false};
     }
   },
 });
@@ -296,7 +296,7 @@ const lawn = new Location({
   },
   onExitGameStateEffect: function (gameState) {
     if (gameState.savedBaby && !gameState.receivedBabyReward) {
-      return { manorFire: false, receivedBabyReward: true };
+      return {manorFire: false, receivedBabyReward: true};
     }
   },
   onEnterItemLocationEffect: function (gameState) {
@@ -359,7 +359,7 @@ const entryway = new Location({
   },
   onEnterGameStateEffect: function (gameState) {
     if (gameState.itemLocations.inventory.includes("baby")) {
-      return { babyCough: true };
+      return {babyCough: true};
     }
   },
 });
@@ -389,7 +389,7 @@ const nursery = new Location({
   },
   onEnterGameStateEffect: function (gameState) {
     if (!gameState.handkerchiefDamp || !gameState.playerMasked) {
-      return { playerCough: true };
+      return {playerCough: true};
     }
   },
 });
@@ -1092,7 +1092,7 @@ const puddle = new Location({
   },
   getDescription: function (gameState) {
     return `You stand at a puddle of clear water. \n\n${dragonDescription(
-      gameState
+      gameState,
     )}`;
   },
   onEnterGameStateEffect: function (gameState) {
@@ -1123,7 +1123,7 @@ const crevice = new Location({
   },
   getDescription: function (gameState) {
     return `You squeeze into the crevice. It isn't big, but it seems deep enough to hide your from sight. \n\n${dragonDescription(
-      gameState
+      gameState,
     )}`;
   },
   onEnterGameStateEffect: function (gameState) {
@@ -1147,7 +1147,7 @@ const crevice = new Location({
       gameState.clothesPoopy &&
       !gameState.naked
     ) {
-      return { dragonPoisoned: true };
+      return {dragonPoisoned: true};
     }
   },
 });
@@ -1169,7 +1169,7 @@ const dung = new Location({
   },
   getDescription: function (gameState) {
     return `You stand in front of a large pile of dragon dung. The stench makes your eyes water. \n\n${dragonDescription(
-      gameState
+      gameState,
     )}`;
   },
   onEnterGameStateEffect: function (gameState) {

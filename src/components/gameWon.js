@@ -56,7 +56,7 @@ export default function GameWon({
         <button
           className="close"
           onClick={() => {
-            dispatchGameState({ action: "newGame" });
+            dispatchGameState({action: "newGame"});
             setCurrentDisplay("location");
           }}
         >
@@ -84,7 +84,7 @@ export default function GameWon({
   );
 }
 
-function handleShareResults({ reputation, maxReputation, gold, maxGold }) {
+function handleShareResults({reputation, maxReputation, gold, maxGold}) {
   const url = "https://skedwards88.github.io/dragon/";
 
   let resultText = "";

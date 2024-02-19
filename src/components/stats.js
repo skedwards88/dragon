@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Stats({ reputation, maxReputation, gold, maxGold }) {
+export default function Stats({reputation, maxReputation, gold, maxGold}) {
   return (
     <div id="stats">
       <div className="stat">

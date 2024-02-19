@@ -19,7 +19,7 @@ export default function GameLost({
         <button
           className="close"
           onClick={() => {
-            dispatchGameState({ action: "newGame" });
+            dispatchGameState({action: "newGame"});
             setCurrentDisplay("location");
           }}
         >
