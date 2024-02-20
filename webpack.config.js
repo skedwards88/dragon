@@ -2,6 +2,7 @@ const path = require("path");
 const WorkboxPlugin = require("workbox-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
+const packageJson = require("./package.json");
 
 module.exports = (env, argv) => {
   if (argv.mode === "development") {
@@ -66,10 +67,11 @@ module.exports = (env, argv) => {
   });
 
   const serviceWorkerPlugin = new WorkboxPlugin.GenerateSW({
-    // these options encourage the ServiceWorkers to get in there fast
-    // and not allow any straggling "old" SWs to hang around
+    // This helps ensure that all pages will be controlled by a service worker immediately after that service worker activates
     clientsClaim: true,
+    // This skips the service worker waiting phase, meaning the service worker activates as soon as it's finished installing
     skipWaiting: true,
+    cacheId: `dragon-${packageJson.version}`,
   });
 
   const plugins =
@@ -107,7 +109,6 @@ module.exports = (env, argv) => {
     },
     devServer: {
       static: "./dist",
-      historyApiFallback: true,
     },
     plugins: plugins,
   };
