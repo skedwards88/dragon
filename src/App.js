@@ -1,5 +1,4 @@
 import React, {useState} from "react";
-import "./App.css";
 import Inventory from "./components/inventory";
 import Location from "./components/location";
 import Consequence from "./components/consequence";

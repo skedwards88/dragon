@@ -2,6 +2,7 @@
   "name": "Dragon Hero Text Adventure",
   "short_name": "Dragon Hero",
   "description": "A text adventure puzzle game",
+  "id": "?dragon_hero=202402221",
   "dir": "auto",
   "lang": "en-US",
   "display": "standalone",
@@ -9,6 +10,8 @@
   "start_url": "../.",
   "background_color": "#F1F0F0",
   "theme_color": "#6e799e",
+  "shortcuts": [],
+  "categories": ["games", "entertainment"],
   "icons": [
     {
       "src": "favicon.svg",
@@ -38,8 +41,6 @@
       "purpose": "maskable"
     }
   ],
-  "shortcuts": [],
-  "categories": ["games", "entertainment"],
   "screenshots": [
     {
       "src": "screenshot_newGame_phone.png",
