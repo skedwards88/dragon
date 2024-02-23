@@ -102,12 +102,6 @@ function handleShareResults({reputation, maxReputation, gold, maxGold}) {
     })
     .then(() => console.log("Successful share"))
     .catch((error) => {
-      // copy to clipboard as backup
       console.log("Error sharing", error);
-      try {
-        navigator.clipboard.writeText(`${resultText}\n\n${url}`);
-      } catch (error) {
-        console.log("Error copying", error);
-      }
     });
 }
