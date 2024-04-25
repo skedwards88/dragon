@@ -1,8 +1,8 @@
 import React from "react";
-import { items } from "../items";
-import { locations } from "../locations";
+import {items} from "../items";
+import {locations} from "../locations";
 
-function InventoryItems({ dispatchGameState, gameState, setCurrentDisplay }) {
+function InventoryItems({dispatchGameState, gameState, setCurrentDisplay}) {
   const itemsInInventory = gameState.itemLocations.inventory;
   return Array.from(itemsInInventory).map((item) => {
     return (
@@ -10,7 +10,7 @@ function InventoryItems({ dispatchGameState, gameState, setCurrentDisplay }) {
         <div key={item}>{items[item].getDescription(gameState)}</div>
         <button
           onClick={() => {
-            dispatchGameState({ item: item, action: "useItem" });
+            dispatchGameState({item: item, action: "useItem"});
             setCurrentDisplay("consequence");
           }}
           className="item-action"
@@ -20,7 +20,7 @@ function InventoryItems({ dispatchGameState, gameState, setCurrentDisplay }) {
         </button>
         <button
           onClick={() => {
-            dispatchGameState({ item: item, action: "dropItem" });
+            dispatchGameState({item: item, action: "dropItem"});
             setCurrentDisplay("consequence");
           }}
           className="item-action"
@@ -31,7 +31,7 @@ function InventoryItems({ dispatchGameState, gameState, setCurrentDisplay }) {
         <button
           disabled={!locations[gameState.playerLocation].getSentient(gameState)}
           onClick={() => {
-            dispatchGameState({ item: item, action: "giveItem" });
+            dispatchGameState({item: item, action: "giveItem"});
             setCurrentDisplay("consequence");
           }}
           className="item-action"
@@ -64,7 +64,7 @@ export default function Inventory({
           <div key="journal">{`journal with ${gameState.journalPagesRemaining} pages left`}</div>
           <button
             onClick={() => {
-              dispatchGameState({ action: "readJournal" });
+              dispatchGameState({action: "readJournal"});
               setCurrentDisplay("consequence");
             }}
             className="item-action"
@@ -75,7 +75,7 @@ export default function Inventory({
           <button
             disabled={gameState.journalPagesRemaining <= 0}
             onClick={() => {
-              dispatchGameState({ action: "writeJournal" });
+              dispatchGameState({action: "writeJournal"});
               setCurrentDisplay("consequence");
             }}
             className="item-action"
@@ -91,7 +91,7 @@ export default function Inventory({
               !locations[gameState.playerLocation].getSentient(gameState)
             }
             onClick={() => {
-              dispatchGameState({ action: "pay" });
+              dispatchGameState({action: "pay"});
               setCurrentDisplay("consequence");
             }}
             className="item-action"

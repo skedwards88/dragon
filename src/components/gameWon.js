@@ -56,7 +56,7 @@ export default function GameWon({
         <button
           className="close"
           onClick={() => {
-            dispatchGameState({ action: "newGame" });
+            dispatchGameState({action: "newGame"});
             setCurrentDisplay("location");
           }}
         >
@@ -84,7 +84,7 @@ export default function GameWon({
   );
 }
 
-function handleShareResults({ reputation, maxReputation, gold, maxGold }) {
+function handleShareResults({reputation, maxReputation, gold, maxGold}) {
   const url = "https://skedwards88.github.io/dragon/";
 
   let resultText = "";
@@ -102,12 +102,6 @@ function handleShareResults({ reputation, maxReputation, gold, maxGold }) {
     })
     .then(() => console.log("Successful share"))
     .catch((error) => {
-      // copy to clipboard as backup
       console.log("Error sharing", error);
-      try {
-        navigator.clipboard.writeText(`${resultText}\n\n${url}`);
-      } catch (error) {
-        console.log("Error copying", error);
-      }
     });
 }

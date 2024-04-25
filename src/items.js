@@ -1,4 +1,4 @@
-import { locations } from "./locations";
+import {locations} from "./locations";
 
 export class ItemInteraction {
   constructor({
@@ -140,7 +140,7 @@ const clothes = new Item({
     }
 
     function getGameEffect(gameState) {
-      let gameEffect = gameState.naked ? { naked: false } : { naked: true };
+      let gameEffect = gameState.naked ? {naked: false} : {naked: true};
       if (
         !gameState.naked &&
         (gameState.playerLocation === "inn" ||
@@ -188,7 +188,7 @@ const clothes = new Item({
     }
 
     function getGameEffect(gameState) {
-      let gameEffect = { naked: true };
+      let gameEffect = {naked: true};
       if (
         !gameState.naked &&
         (gameState.playerLocation === "inn" ||
@@ -327,7 +327,7 @@ const apple = new Item({
       gameState.appleBitesRemaining > 0
     ) {
       return new ItemInteraction({
-        gameEffect: { horseTethered: true },
+        gameEffect: {horseTethered: true},
         targetItemDestination: "outOfPlay",
         itemMovements: [
           {
@@ -377,7 +377,7 @@ const apple = new Item({
       gameState.appleBitesRemaining > 0
     ) {
       return new ItemInteraction({
-        gameEffect: { horseTethered: true },
+        gameEffect: {horseTethered: true},
         targetItemDestination: "outOfPlay",
         itemMovements: [
           {
@@ -412,7 +412,7 @@ const handkerchief = new Item({
 
       if (
         ["entryway", "nursery", "nurseryWindow"].includes(
-          gameState.playerLocation
+          gameState.playerLocation,
         ) &&
         gameState.manorFire &&
         gameState.handkerchiefDamp
@@ -428,7 +428,7 @@ const handkerchief = new Item({
 
       if (
         ["entryway", "nursery", "nurseryWindow"].includes(
-          gameState.playerLocation
+          gameState.playerLocation,
         ) &&
         gameState.manorFire &&
         !gameState.handkerchiefDamp
@@ -442,7 +442,7 @@ const handkerchief = new Item({
 
       if (
         ["dung", "defecatory", "crevice", "puddle"].includes(
-          gameState.playerLocation && !gameState.playerMasked
+          gameState.playerLocation && !gameState.playerMasked,
         )
       ) {
         text += "Even with it, the stench reaches your nose. ";
@@ -453,8 +453,8 @@ const handkerchief = new Item({
 
     function getGameEffect(gameState) {
       return gameState.playerMasked
-        ? { playerMasked: false }
-        : { playerMasked: true };
+        ? {playerMasked: false}
+        : {playerMasked: true};
     }
 
     return new ItemInteraction({
@@ -473,7 +473,7 @@ const handkerchief = new Item({
 
         if (
           ["entryway", "nursery", "nurseryWindow"].includes(
-            gameState.playerLocation
+            gameState.playerLocation,
           ) &&
           gameState.manorFire &&
           gameState.handkerchiefDamp
@@ -488,11 +488,11 @@ const handkerchief = new Item({
       let gameEffect = {};
 
       if (gameState.playerMasked) {
-        gameEffect = { ...gameEffect, playerMasked: false };
+        gameEffect = {...gameEffect, playerMasked: false};
       }
 
       if (["fountain", "stream", "puddle"].includes(gameState.playerLocation)) {
-        gameEffect = { ...gameEffect, handkerchiefDamp: true };
+        gameEffect = {...gameEffect, handkerchiefDamp: true};
       }
 
       if (Object.keys(gameEffect).length) return gameEffect;
@@ -580,7 +580,7 @@ const baby = new Item({
     function getGameEffect(gameState) {
       // you "save the baby" when you pick it up. If you drop it anywhere besides the window, you no longer save it.
       if (gameState.playerLocation !== "nurseryWindow") {
-        return { savedBaby: false };
+        return {savedBaby: false};
       }
     }
 
@@ -605,7 +605,7 @@ const baby = new Item({
     }
 
     return new ItemInteraction({
-      gameEffect: { savedBaby: true },
+      gameEffect: {savedBaby: true},
       description: writeDescription(gameState),
     });
   },
@@ -727,7 +727,7 @@ const sword = new Item({
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
         gameState.playerLocation === "wizard"
       ) {
-        gameEffect = { ...gameEffect, gotScoreByTrade: true };
+        gameEffect = {...gameEffect, gotScoreByTrade: true};
       }
 
       if (Object.keys(gameEffect).length) return gameEffect;
@@ -787,8 +787,8 @@ const horse = new Item({
 
     function getGameEffect(gameState) {
       return gameState.horseMounted
-        ? { horseMounted: false, horseTethered: true }
-        : { horseMounted: true, horseTethered: true };
+        ? {horseMounted: false, horseTethered: true}
+        : {horseMounted: true, horseTethered: true};
     }
 
     return new ItemInteraction({
@@ -821,16 +821,16 @@ const horse = new Item({
     }
 
     function getGameEffect(gameState) {
-      let gameEffect = { horseTethered: false };
+      let gameEffect = {horseTethered: false};
 
       if (
         gameState.itemLocations[gameState.playerLocation].includes("berries")
       ) {
-        gameEffect = { ...gameEffect, horseDead: true };
+        gameEffect = {...gameEffect, horseDead: true};
       }
 
       if (gameState.horseMounted) {
-        gameEffect = { ...gameEffect, horseMounted: false };
+        gameEffect = {...gameEffect, horseMounted: false};
       }
 
       return gameEffect;
@@ -876,7 +876,7 @@ const horse = new Item({
   getCustomGive: function (gameState) {
     function getGameEffect(gameState) {
       if (gameState.horseMounted) {
-        return { horseMounted: false, horseTethered: true };
+        return {horseMounted: false, horseTethered: true};
       }
     }
 
@@ -930,14 +930,14 @@ const berries = new Item({
       let gameEffect = {};
 
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        gameEffect = { ...gameEffect, squirrelDead: true };
+        gameEffect = {...gameEffect, squirrelDead: true};
       }
 
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
       ) {
-        gameEffect = { ...gameEffect, horseDead: true };
+        gameEffect = {...gameEffect, horseDead: true};
       }
 
       if (Object.keys(gameEffect).length) return gameEffect;
@@ -970,13 +970,13 @@ const berries = new Item({
 
     function getGameEffect(gameState) {
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
-        return { squirrelDead: true };
+        return {squirrelDead: true};
       }
       if (
         gameState.itemLocations[gameState.playerLocation].includes("horse") &&
         !gameState.horseTethered
       ) {
-        return { horseDead: true };
+        return {horseDead: true};
       }
     }
 
@@ -1226,7 +1226,7 @@ const score = new Item({
         gameState.itemLocations.inventory.includes("score") &&
         gameState.itemLocations.wizard.includes("sword")
       ) {
-        return { gotScoreByTrade: false };
+        return {gotScoreByTrade: false};
       }
     }
 

@@ -1,7 +1,7 @@
 import React from "react";
-import { locations } from "../locations";
+import {locations} from "../locations";
 
-export default function Consequence({ setCurrentDisplay, gameState }) {
+export default function Consequence({setCurrentDisplay, gameState}) {
   return (
     <div className="App" id="consequence-display">
       <div className="description">{gameState.consequenceText}</div>

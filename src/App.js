@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import "./App.css";
+import React, {useState} from "react";
 import Inventory from "./components/inventory";
 import Location from "./components/location";
 import Consequence from "./components/consequence";
@@ -8,13 +7,13 @@ import GameLost from "./components/gameLost";
 import Info from "./components/info";
 import Restart from "./components/restart";
 import Resume from "./components/resume";
-import { reducer } from "./reducer";
-import { init } from "./init";
+import {reducer} from "./reducer";
+import {init} from "./init";
 
 function handleBeforeInstallPrompt(
   event,
   setInstallPromptEvent,
-  setShowInstallButton
+  setShowInstallButton,
 ) {
   console.log("handleBeforeInstallPrompt");
   if (event) setInstallPromptEvent(event);
@@ -38,28 +37,23 @@ function App() {
   const [showInstallButton, setShowInstallButton] = React.useState(true);
 
   React.useEffect(() => {
-    window.addEventListener("beforeinstallprompt", (event) =>
+    const listener = (event) =>
       handleBeforeInstallPrompt(
         event,
         setInstallPromptEvent,
-        setShowInstallButton
-      )
-    );
-    return () =>
-      window.removeEventListener("beforeinstallprompt", (event) =>
-        handleBeforeInstallPrompt(
-          event,
-          setInstallPromptEvent,
-          setShowInstallButton
-        )
+        setShowInstallButton,
       );
+
+    window.addEventListener("beforeinstallprompt", listener);
+    return () => window.removeEventListener("beforeinstallprompt", listener);
   }, []);
 
   React.useEffect(() => {
-    window.addEventListener("appinstalled", () =>
-      handleAppInstalled(setInstallPromptEvent, setShowInstallButton)
-    );
-    return () => window.removeEventListener("appinstalled", handleAppInstalled);
+    const listener = () =>
+      handleAppInstalled(setInstallPromptEvent, setShowInstallButton);
+
+    window.addEventListener("appinstalled", listener);
+    return () => window.removeEventListener("appinstalled", listener);
   }, []);
 
   React.useLayoutEffect(() => {
@@ -81,7 +75,7 @@ function App() {
     }
 
     // If yes, update state
-    dispatchGameState({ action: "resume", savedState: savedState });
+    dispatchGameState({action: "resume", savedState: savedState});
     setShowMap(savedState.showMap ?? true);
     setShowPhoto(savedState.showPhoto ?? true);
 

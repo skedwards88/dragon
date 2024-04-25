@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Resume({ setCurrentDisplay, dispatchGameState }) {
+export default function Resume({setCurrentDisplay, dispatchGameState}) {
   return (
     <div className="App">
       <div className="description">{`Continue from last point?`}</div>
@@ -11,7 +11,7 @@ export default function Resume({ setCurrentDisplay, dispatchGameState }) {
         <button
           className="close"
           onClick={() => {
-            dispatchGameState({ action: "newGame" });
+            dispatchGameState({action: "newGame"});
             setCurrentDisplay("location");
           }}
         >

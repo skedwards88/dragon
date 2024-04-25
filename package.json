@@ -5,14 +5,15 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "compressImages": "for FILE in src/images/background_images_raw/*; do cwebp -q 75 $FILE -o src/images/background_images/$(basename $FILE '.png').webp ; done",
+    "prebuild": "npm run compressImages",
+    "build": "webpack",
     "dev": "webpack-dev-server --mode development",
     "start": "webpack-dev-server",
-    "build": "webpack",
-    "lint": "npx eslint --ignore-path .gitignore .",
-    "style": "npx stylelint --fix \"**/*.css\"",
-    "prettier": "npx prettier --ignore-path .gitignore --write .",
-    "compressImages": "for FILE in src/images/background_images_raw/*; do cwebp -q 75 $FILE -o src/images/background_images/$(basename $FILE '.png').webp ; done",
-    "prebuild": "npm run compressImages"
+    "eslint": "npx eslint --ignore-path .gitignore . --fix",
+    "prettier": "npx prettier --write .",
+    "style": "npx stylelint '**/*.css' --fix",
+    "lint": "npm run eslint && npm run prettier && npm run style"
   },
   "repository": {
     "type": "git",
@@ -35,7 +36,6 @@
     "@babel/plugin-syntax-import-assertions": "^7.23.3",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-react": "^7.16.7",
-    "@eslint/create-config": "github:eslint/create-config",
     "babel-jest": "^29.7.0",
     "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^10.2.4",
@@ -53,8 +53,5 @@
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.7.4",
     "workbox-webpack-plugin": "^6.5.2"
-  },
-  "jest": {
-    "verbose": true
   }
 }

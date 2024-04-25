@@ -1,6 +1,6 @@
-import { init } from "./init";
-import { reducer } from "./reducer";
-import { sendAnalytics } from "./sendAnalytics.js";
+import {init} from "./init";
+import {reducer} from "./reducer";
+import {sendAnalytics} from "./sendAnalytics.js";
 
 jest.mock("./sendAnalytics");
 
@@ -11,7 +11,7 @@ beforeEach(() => {
 const newGameState = init();
 
 test("New game resets state", () => {
-  const output = reducer({ madeUpKey: true }, { action: "newGame" });
+  const output = reducer({madeUpKey: true}, {action: "newGame"});
 
   expect(output).toMatchInlineSnapshot(`
     {
@@ -273,20 +273,20 @@ test("Taking the sword from the smithy increases sword cost (once) and reduces r
   const item = "sword";
   const location = "smithy";
   const output = reducer(
-    { ...newGameState, playerLocation: location },
+    {...newGameState, playerLocation: location},
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.swordCost).toMatchInlineSnapshot(`50`);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 
   expect(output.consequenceText).toMatchInlineSnapshot(`
@@ -303,10 +303,10 @@ test("Taking the sword from the smithy increases sword cost (once) and reduces r
   expect(output2.reputation).toMatchInlineSnapshot(`8`);
   expect(output2.swordCost).toMatchInlineSnapshot(`50`);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output2.consequenceText).toMatchInlineSnapshot(`
     "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
@@ -322,21 +322,21 @@ test("Playing the lute for the youth will boost reputation only once", () => {
     {
       ...newGameState,
       playerLocation: location,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`11`);
   expect(output.playedForYouth).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You play a song for the crying youth. The music seems to cheer the youth up. 
@@ -352,7 +352,7 @@ test("Playing the lute for the youth will boost reputation only once", () => {
   expect(output2.reputation).toMatchInlineSnapshot(`11`);
   expect(output2.playedForYouth).toBe(true);
   expect(output2.consequenceText).toMatchInlineSnapshot(
-    `"They appreciate the music, but don't seem keen to listen all day. "`
+    `"They appreciate the music, but don't seem keen to listen all day. "`,
   );
 });
 
@@ -365,21 +365,21 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down. The youth eyes you suspiciously.
@@ -393,21 +393,21 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down. The blacksmith eyes you suspiciously.
@@ -421,21 +421,21 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down. The innkeeper eyes you suspiciously.
@@ -449,21 +449,21 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 
@@ -473,21 +473,21 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
 });
@@ -501,21 +501,21 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down and drop your clothes by the youth. The youth eyes you suspiciously.
@@ -529,21 +529,21 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down and drop your clothes by the blacksmith. The blacksmith eyes you suspiciously.
@@ -557,21 +557,21 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`9`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You strip down and drop your clothes in the inn. The innkeeper eyes you suspiciously.
@@ -585,24 +585,24 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You strip down and drop your clothes by the wizard. "`
+    `"You strip down and drop your clothes by the wizard. "`,
   );
 
   location = "fountain";
@@ -611,24 +611,24 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
       ...newGameState,
       playerLocation: location,
       naked: false,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You strip down and drop your clothes in the fountain. Your clothes look much cleaner now. "`
+    `"You strip down and drop your clothes in the fountain. Your clothes look much cleaner now. "`,
   );
 });
 
@@ -639,12 +639,12 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
     {
       ...newGameState,
       playerLocation: location,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
@@ -653,21 +653,21 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
   expect(sendAnalytics).toHaveBeenCalledWith("clothesPoopy");
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop your clothes in the dung. "`
+    `"You drop your clothes in the dung. "`,
   );
 
   output = reducer(
-    { ...newGameState, playerLocation: location, clothesPoopy: true },
+    {...newGameState, playerLocation: location, clothesPoopy: true},
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
@@ -676,13 +676,13 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
   expect(sendAnalytics).toHaveBeenCalledTimes(1);
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop your clothes in the dung. "`
+    `"You drop your clothes in the dung. "`,
   );
 });
 
@@ -694,12 +694,12 @@ test("Dropping clothes in water will make them not poopy", () => {
       ...newGameState,
       playerLocation: location,
       clothesPoopy: true,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
@@ -708,14 +708,14 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop your clothes in the fountain. Your clothes look much cleaner now. "`
+    `"You drop your clothes in the fountain. Your clothes look much cleaner now. "`,
   );
 
   location = "stream";
@@ -724,12 +724,12 @@ test("Dropping clothes in water will make them not poopy", () => {
       ...newGameState,
       playerLocation: location,
       clothesPoopy: true,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
@@ -738,14 +738,14 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop your clothes in the stream. Your clothes look much cleaner now. "`
+    `"You drop your clothes in the stream. Your clothes look much cleaner now. "`,
   );
 
   location = "puddle";
@@ -754,12 +754,12 @@ test("Dropping clothes in water will make them not poopy", () => {
       ...newGameState,
       playerLocation: location,
       clothesPoopy: true,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
@@ -768,14 +768,14 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
+    `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`,
   );
 
   location = "puddle";
@@ -784,12 +784,12 @@ test("Dropping clothes in water will make them not poopy", () => {
       ...newGameState,
       playerLocation: location,
       clothesPoopy: true,
-      itemLocations: { ...newGameState.itemLocations, inventory: [item] },
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
     },
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
@@ -798,14 +798,14 @@ test("Dropping clothes in water will make them not poopy", () => {
   expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`
+    `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`,
   );
 });
 
@@ -824,20 +824,20 @@ test("Eating the apple does not remove it from inventory", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(
-    newGameState.appleBitesRemaining - biteNumber
+    newGameState.appleBitesRemaining - biteNumber,
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You take a bite from the apple, feeling refreshed. "`
+    `"You take a bite from the apple, feeling refreshed. "`,
   );
 
   biteNumber++;
@@ -847,16 +847,16 @@ test("Eating the apple does not remove it from inventory", () => {
   });
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(
-    newGameState.appleBitesRemaining - biteNumber
+    newGameState.appleBitesRemaining - biteNumber,
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You take a bite from the apple, feeling refreshed. It looks like there are a few bites remaining. "`
+    `"You take a bite from the apple, feeling refreshed. It looks like there are a few bites remaining. "`,
   );
 
   biteNumber++;
@@ -866,16 +866,16 @@ test("Eating the apple does not remove it from inventory", () => {
   });
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(
-    newGameState.appleBitesRemaining - biteNumber
+    newGameState.appleBitesRemaining - biteNumber,
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You take a bite from the apple, feeling refreshed. It looks like there are a couple of bites remaining. "`
+    `"You take a bite from the apple, feeling refreshed. It looks like there are a couple of bites remaining. "`,
   );
 
   biteNumber++;
@@ -885,16 +885,16 @@ test("Eating the apple does not remove it from inventory", () => {
   });
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(
-    newGameState.appleBitesRemaining - biteNumber
+    newGameState.appleBitesRemaining - biteNumber,
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You take a bite from the apple, wondering if you'll be able to find another apple. It looks like there is one bite remaining. "`
+    `"You take a bite from the apple, wondering if you'll be able to find another apple. It looks like there is one bite remaining. "`,
   );
 
   biteNumber++;
@@ -904,16 +904,16 @@ test("Eating the apple does not remove it from inventory", () => {
   });
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(
-    newGameState.appleBitesRemaining - biteNumber
+    newGameState.appleBitesRemaining - biteNumber,
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You take the last bite from the apple, feeling regret that there isn't any more. "`
+    `"You take the last bite from the apple, feeling regret that there isn't any more. "`,
   );
 
   biteNumber++;
@@ -923,14 +923,14 @@ test("Eating the apple does not remove it from inventory", () => {
   });
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(0);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You nibble at the core, but there isn't much flesh remaining. "`
+    `"You nibble at the core, but there isn't much flesh remaining. "`,
   );
 
   biteNumber++;
@@ -940,14 +940,14 @@ test("Eating the apple does not remove it from inventory", () => {
   });
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["inn"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.appleBitesRemaining).toEqual(0);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You nibble at the core, but there isn't much flesh remaining. "`
+    `"You nibble at the core, but there isn't much flesh remaining. "`,
   );
 });
 
@@ -968,26 +968,26 @@ test("Dropping the apple will give you the horse if the horse is present and if 
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining(["horse"])
+    expect.arrayContaining(["horse"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`
+    `"This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`,
   );
 });
 
@@ -1008,26 +1008,26 @@ test("Giving the apple will give you the horse if the horse is present and if th
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining(["horse"])
+    expect.arrayContaining(["horse"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
+    `"This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`,
   );
 });
 
@@ -1049,26 +1049,26 @@ test("Dropping the apple will give you the horse if the horse is present and if 
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining(["horse"])
+    expect.arrayContaining(["horse"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`
+    `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`,
   );
 });
 
@@ -1090,26 +1090,26 @@ test("Giving the apple will give you the horse if the horse is present and if th
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining(["horse"])
+    expect.arrayContaining(["horse"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`
+    `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`,
   );
 });
 
@@ -1131,26 +1131,26 @@ test("Dropping the apple will not give you the horse if the apple is fully eaten
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining(["horse"])
+    expect.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"This horse seems very interested in food. The horse walks over to eat the apple core that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins."`
+    `"This horse seems very interested in food. The horse walks over to eat the apple core that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins."`,
   );
 });
 
@@ -1172,26 +1172,26 @@ test("Giving the apple will not give you the horse if the apple is fully eaten. 
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining(["horse"])
+    expect.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The horse does not want your apple core."`
+    `"The horse does not want your apple core."`,
   );
 });
 
@@ -1214,23 +1214,23 @@ test("Dropping the apple at the pasture will not matter if the horse is not at t
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["outOfPlay"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["horse"])
+    expect.not.arrayContaining(["horse"]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the apple at the pasture."`
+    `"You drop the apple at the pasture."`,
   );
 });
 
@@ -1251,17 +1251,17 @@ test("Giving the apple to the squirrel will effectively drop it.", () => {
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The squirrel does not want your fresh apple."`
+    `"The squirrel does not want your fresh apple."`,
   );
 });
 
@@ -1283,10 +1283,10 @@ test("Wearing handkerchief, not damp, in entryway", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`
+    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1309,10 +1309,10 @@ test("Wearing handkerchief, not damp, in nursery", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`
+    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1335,10 +1335,10 @@ test("Wearing handkerchief, not damp, in nurseryWindow", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`
+    `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1361,10 +1361,10 @@ test("Wearing handkerchief, not damp, in inn", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. "`
+    `"You tie the handkerchief around your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1387,10 +1387,10 @@ test("Wearing handkerchief, damp, in entryway", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`
+    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1413,10 +1413,10 @@ test("Wearing handkerchief, damp, in nursery", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`
+    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1439,10 +1439,10 @@ test("Wearing handkerchief, damp, in nurseryWindow", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`
+    `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1465,10 +1465,10 @@ test("Wearing handkerchief, damp, in inn", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. "`
+    `"You tie the handkerchief around your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1491,10 +1491,10 @@ test("Removing handkerchief, not damp, in entryway", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth. "`
+    `"You remove the handkerchief from your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(false);
 });
@@ -1517,10 +1517,10 @@ test("Removing handkerchief, damp, in entryway", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth. The smoke fills your lungs, making you cough. "`
+    `"You remove the handkerchief from your nose and mouth. The smoke fills your lungs, making you cough. "`,
   );
   expect(output.playerMasked).toBe(false);
 });
@@ -1544,10 +1544,10 @@ test("Wearing handkerchief, not damp, in entryway, no fire", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. "`
+    `"You tie the handkerchief around your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1571,10 +1571,10 @@ test("Wearing handkerchief, damp, in entryway, no fire", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. "`
+    `"You tie the handkerchief around your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1597,10 +1597,10 @@ test("Wearing handkerchief in cave", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. "`
+    `"You tie the handkerchief around your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
@@ -1623,10 +1623,10 @@ test("Removing handkerchief in cave", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth. "`
+    `"You remove the handkerchief from your nose and mouth. "`,
   );
   expect(output.playerMasked).toBe(false);
 });
@@ -1650,10 +1650,10 @@ test("Dropping handkerchief when wearing it in fire", () => {
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth and drop it in the entryway. The smoke fills your lungs, making you cough. "`
+    `"You remove the handkerchief from your nose and mouth and drop it in the entryway. The smoke fills your lungs, making you cough. "`,
   );
   expect(output.playerMasked).toBe(false);
 });
@@ -1677,10 +1677,10 @@ test("Dropping handkerchief when wearing it in cave", () => {
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth and drop it in the crevice. "`
+    `"You remove the handkerchief from your nose and mouth and drop it in the crevice. "`,
   );
   expect(output.playerMasked).toBe(false);
   expect(output.handkerchiefDamp).toBe(false);
@@ -1705,10 +1705,10 @@ test("Dropping handkerchief when wearing it in fountain", () => {
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You remove the handkerchief from your nose and mouth and drop it in the fountain. "`
+    `"You remove the handkerchief from your nose and mouth and drop it in the fountain. "`,
   );
   expect(output.playerMasked).toBe(false);
   expect(output.handkerchiefDamp).toBe(true);
@@ -1735,7 +1735,7 @@ test("Giving the handkerchief to youth once increases reputation and gives plot 
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." 
@@ -1748,10 +1748,10 @@ test("Giving the handkerchief to youth once increases reputation and gives plot 
   expect(output.offeredHandkerchiefToYouth).toBe(true);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.youth).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(output, {
@@ -1759,13 +1759,13 @@ test("Giving the handkerchief to youth once increases reputation and gives plot 
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The youth does not want your damp handkerchief but agrees to hold it for you."`
+    `"The youth does not want your damp handkerchief but agrees to hold it for you."`,
   );
   expect(output.playerMasked).toBe(true);
   expect(output.offeredHandkerchiefToYouth).toBe(true);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.youth).toEqual(expect.arrayContaining([item]));
 });
@@ -1787,10 +1787,10 @@ test("The baby has no use", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"It's unclear what use this baby has. "`
+    `"It's unclear what use this baby has. "`,
   );
 });
 
@@ -1812,16 +1812,16 @@ test("Dropping the baby in the nursery returns it to the crib and un-saves it", 
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You place the baby back in the crib. "`
+    `"You place the baby back in the crib. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.savedBaby).toBe(false);
 });
@@ -1844,19 +1844,19 @@ test("Dropping the baby out the window saves it and removes it from game", () =>
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the baby out of the open window. The crowd below catches the baby. "`
+    `"You drop the baby out of the open window. The crowd below catches the baby. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.savedBaby).toBe(true);
 });
@@ -1879,16 +1879,16 @@ test("Dropping the baby away from the nursery/window just makes it cry more", ()
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the crying baby. It cries even louder. "`
+    `"You drop the crying baby. It cries even louder. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.savedBaby).toBe(false);
 });
@@ -1910,16 +1910,16 @@ test("Taking the baby from nursery gives cough hint", () => {
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You pick up the baby from the crib. The baby coughs as you move it away from the open window. "`
+    `"You pick up the baby from the crib. The baby coughs as you move it away from the open window. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 });
 
@@ -1940,16 +1940,16 @@ test("Taking the baby from somewhere besides nursery does not give cough hint", 
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You now have a crying baby."`
+    `"You now have a crying baby."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 });
 
@@ -1971,7 +1971,7 @@ test("Using the sword to on sleeping dragon", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. 
@@ -1979,10 +1979,10 @@ test("Using the sword to on sleeping dragon", () => {
     Reputation +2"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.dragonAsleep).toBe(true);
   expect(output.dragonDead).toBe(true);
@@ -2011,7 +2011,7 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. 
@@ -2019,10 +2019,10 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
     Reputation -1"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(true);
@@ -2051,7 +2051,7 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You try to cut off the dragon's head, but it singes you as soon as you get close enough. 
@@ -2059,10 +2059,10 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
     Reputation -1"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
@@ -2091,16 +2091,16 @@ test("Using the sword not on dragon", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You slash the sword through the air, looking a bit foolish. "`
+    `"You slash the sword through the air, looking a bit foolish. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
@@ -2123,7 +2123,7 @@ test("Taking the sword from the blacksmith if you haven't paid will lose reputat
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
@@ -2131,10 +2131,10 @@ test("Taking the sword from the blacksmith if you haven't paid will lose reputat
     Reputation -1"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.swordCost).toEqual(newGameState.swordCost + 10);
@@ -2149,10 +2149,10 @@ test("Taking the sword from the blacksmith if you haven't paid will lose reputat
     Reputation -1"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.reputation).toEqual(newGameState.reputation - 2);
   expect(output.swordCost).toEqual(newGameState.swordCost + 10);
@@ -2171,16 +2171,16 @@ test("Taking the sword from the blacksmith if you have paid is a normal take", (
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You now have a sword."`
+    `"You now have a sword."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.swordCost).toEqual(newGameState.swordCost);
@@ -2203,16 +2203,16 @@ test("You can't take the sword from the wizard if you traded it to the wizard", 
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"Ah you would like to exchange? You must first give me the score."`
+    `"Ah you would like to exchange? You must first give me the score."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 });
 
@@ -2233,16 +2233,16 @@ test("You can take the sword from the wizard if you didn't trade it to the wizar
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You now have a sword."`
+    `"You now have a sword."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 });
 
@@ -2264,16 +2264,16 @@ test("Give the sword to the wizard for the score as long as you haven't bargaine
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You give your sword to the wizard. In exchange, they give you the musical score. "`
+    `"You give your sword to the wizard. In exchange, they give you the musical score. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining(["score"])
+    expect.arrayContaining(["score"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.gotScoreByTrade).toBe(true);
 
@@ -2283,13 +2283,13 @@ test("Give the sword to the wizard for the score as long as you haven't bargaine
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"Ah you would like to exchange? You must first give me the score."`
+    `"Ah you would like to exchange? You must first give me the score."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining(["score"])
+    expect.arrayContaining(["score"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.gotScoreByTrade).toBe(true);
 });
@@ -2312,19 +2312,19 @@ test("If you paid for the score, you can't trade for the score; giving the sword
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The wizard does not want your sword but agrees to hold it for you."`
+    `"The wizard does not want your sword but agrees to hold it for you."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["score"])
+    expect.not.arrayContaining(["score"]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.gotScoreByTrade).toBe(false);
   expect(output.gotScoreByCredit).toBe(true);
@@ -2334,16 +2334,16 @@ test("If you paid for the score, you can't trade for the score; giving the sword
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You now have a sword."`
+    `"You now have a sword."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["score"])
+    expect.not.arrayContaining(["score"]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.gotScoreByTrade).toBe(false);
   expect(output.gotScoreByCredit).toBe(true);
@@ -2367,22 +2367,22 @@ test("If the wizard doesn't have the score, giving the sword is a normal give.",
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The wizard does not want your sword but agrees to hold it for you."`
+    `"The wizard does not want your sword but agrees to hold it for you."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["score"])
+    expect.not.arrayContaining(["score"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining(["score"])
+    expect.not.arrayContaining(["score"]),
   );
   expect(output.gotScoreByTrade).toBe(false);
   expect(output.gotScoreByCredit).toBe(false);
@@ -2393,19 +2393,19 @@ test("If the wizard doesn't have the score, giving the sword is a normal give.",
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You now have a sword."`
+    `"You now have a sword."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining(["score"])
+    expect.not.arrayContaining(["score"]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining(["score"])
+    expect.not.arrayContaining(["score"]),
   );
   expect(output.gotScoreByTrade).toBe(false);
   expect(output.gotScoreByCredit).toBe(false);
@@ -2429,16 +2429,16 @@ test("You can't take the horse if it is dead", () => {
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"This dead horse is too heavy to carry. "`
+    `"This dead horse is too heavy to carry. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
 });
@@ -2463,16 +2463,16 @@ test("You can't take the horse directly", () => {
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. "`
+    `"You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2498,16 +2498,16 @@ test("If the horse is tethered, you can take it", () => {
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You take back the horse's reins. "`
+    `"You take back the horse's reins. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2533,16 +2533,16 @@ test("When you give the horse, you automatically unmount but the horse is still 
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The wizard does not want your voracious horse but agrees to hold it for you."`
+    `"The wizard does not want your voracious horse but agrees to hold it for you."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2568,16 +2568,16 @@ test("If you drop the horse, it is no longer tethered", () => {
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`
+    `"You let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2603,16 +2603,16 @@ test("If you  drop the horse when mounted, it is no longer tethered", () => {
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`
+    `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2639,19 +2639,19 @@ test("If you drop the horse at the same place as the berries are, it dies. The b
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You unmount the horse and let go of the horse's reins. The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. "`
+    `"You unmount the horse and let go of the horse's reins. The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining(["berries"])
+    expect.arrayContaining(["berries"]),
   );
   expect(output.horseDead).toBe(true);
   expect(output.horseMounted).toBe(false);
@@ -2678,16 +2678,16 @@ test("If you drop the horse at the clearing, it doesn't die if the berries are n
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`
+    `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2714,16 +2714,16 @@ test("Using the horse will mount if unmounted", () => {
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You mount the horse. Much easier than walking!"`
+    `"You mount the horse. Much easier than walking!"`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(true);
@@ -2750,16 +2750,16 @@ test("Using the horse will unmount if mounted but will keep the horse tethered",
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You unmount the horse, keeping hold of the horse's reins. "`
+    `"You unmount the horse, keeping hold of the horse's reins. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.horseMounted).toBe(false);
@@ -2784,7 +2784,7 @@ test("Eating the berries will lose reputation and get poisoned but berries will 
     {
       action: "useItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
@@ -2792,10 +2792,10 @@ test("Eating the berries will lose reputation and get poisoned but berries will 
     Reputation -1"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.playerPoisoned).toBe(true);
@@ -2810,10 +2810,10 @@ test("Eating the berries will lose reputation and get poisoned but berries will 
     Reputation -1"
   `);
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.reputation).toEqual(newGameState.reputation - 2);
   expect(output.playerPoisoned).toBe(true);
@@ -2837,16 +2837,16 @@ test("If you drop the berries at the squirrel, it dies, but it won't die twice",
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`
+    `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.squirrelDead).toBe(true);
 
@@ -2855,13 +2855,13 @@ test("If you drop the berries at the squirrel, it dies, but it won't die twice",
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the berries by the dead squirrel."`
+    `"You drop the berries by the dead squirrel."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.squirrelDead).toBe(true);
 });
@@ -2884,16 +2884,16 @@ test("If you drop the berries at the horse, it dies, but it won't die twice", ()
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+    `"The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
 
@@ -2902,13 +2902,13 @@ test("If you drop the berries at the horse, it dies, but it won't die twice", ()
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the berries in the stream."`
+    `"You drop the berries in the stream."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
 });
@@ -2932,16 +2932,16 @@ test("If you drop the berries at the horse, it won't die if it is tethered", () 
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the berries in the stream."`
+    `"You drop the berries in the stream."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
 });
@@ -2965,16 +2965,16 @@ test("If you drop the berries at the horse and squirrel, they both die, but not 
     {
       action: "dropItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+    `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
   expect(output.squirrelDead).toBe(true);
@@ -2984,13 +2984,13 @@ test("If you drop the berries at the horse and squirrel, they both die, but not 
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You drop the berries by the dead squirrel."`
+    `"You drop the berries by the dead squirrel."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
   expect(output.squirrelDead).toBe(true);
@@ -3014,16 +3014,16 @@ test("If you give the berries to the squirrel, it dies, but it won't die twice",
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`
+    `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.squirrelDead).toBe(true);
 
@@ -3032,13 +3032,13 @@ test("If you give the berries to the squirrel, it dies, but it won't die twice",
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The dead squirrel does not want your handful of berries."`
+    `"The dead squirrel does not want your handful of berries."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.squirrelDead).toBe(true);
 });
@@ -3061,16 +3061,16 @@ test("If you give the berries to the horse, it dies, but it won't die twice", ()
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+    `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
 
@@ -3081,13 +3081,13 @@ test("If you give the berries to the horse, it dies, but it won't die twice", ()
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The pasture does not want your handful of berries."`
+    `"The pasture does not want your handful of berries."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
 });
@@ -3111,16 +3111,16 @@ test("If you give the berries to the horse, it won't die even if it is tethered"
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The stream does not want your handful of berries."`
+    `"The stream does not want your handful of berries."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
 });
@@ -3144,16 +3144,16 @@ test("If you give the berries to the squirrel and the horse is present, only the
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`
+    `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.squirrelDead).toBe(true);
@@ -3165,13 +3165,13 @@ test("If you give the berries to the squirrel and the horse is present, only the
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`
+    `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
   expect(output.squirrelDead).toBe(true);
@@ -3181,13 +3181,13 @@ test("If you give the berries to the squirrel and the horse is present, only the
     item: item,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The dead squirrel does not want your handful of berries."`
+    `"The dead squirrel does not want your handful of berries."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(true);
   expect(output.squirrelDead).toBe(true);
@@ -3212,16 +3212,16 @@ test("The wizard refuses the berries", () => {
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The wizard politely refuses the berries. "Those will give you a life changing experience," he says."`
+    `"The wizard politely refuses the berries. "Those will give you a life changing experience," he says."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.squirrelDead).toBe(false);
@@ -3246,16 +3246,16 @@ test("Other sentients will just hold the berries", () => {
     {
       action: "giveItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The blacksmith does not want your handful of berries but agrees to hold it for you."`
+    `"The blacksmith does not want your handful of berries but agrees to hold it for you."`,
   );
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.horseDead).toBe(false);
   expect(output.squirrelDead).toBe(false);
@@ -3279,7 +3279,7 @@ test("If the dragon is dead, you take all the treasure", () => {
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
@@ -3289,13 +3289,13 @@ test("If the dragon is dead, you take all the treasure", () => {
   expect(output.treasureLevel).toBe(3);
   expect(output.gold).toBe(newGameState.gold + 300);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 });
 
@@ -3318,7 +3318,7 @@ test("If the dragon is asleep but not dead lets you take some treasure but not a
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
@@ -3332,13 +3332,13 @@ test("If the dragon is asleep but not dead lets you take some treasure but not a
   expect(output.singeCount).toBe(newGameState.singeCount + 1);
   expect(output.reputation).toBe(newGameState.reputation - 1);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(output, {
@@ -3357,13 +3357,13 @@ test("If the dragon is asleep but not dead lets you take some treasure but not a
   expect(output.singeCount).toBe(newGameState.singeCount + 2);
   expect(output.reputation).toBe(newGameState.reputation - 2);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 });
 
@@ -3387,7 +3387,7 @@ test("If the dragon is poisoned but not asleep/dead, you can take some treasure"
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
@@ -3401,13 +3401,13 @@ test("If the dragon is poisoned but not asleep/dead, you can take some treasure"
   expect(output.singeCount).toBe(newGameState.singeCount + 2);
   expect(output.reputation).toBe(newGameState.reputation - 2);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(output, {
@@ -3426,13 +3426,13 @@ test("If the dragon is poisoned but not asleep/dead, you can take some treasure"
   expect(output.singeCount).toBe(newGameState.singeCount + 4);
   expect(output.reputation).toBe(newGameState.reputation - 4);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 });
 
@@ -3456,7 +3456,7 @@ test("If the dragon is not poisoned or anything, you can't take any treasure", (
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You try to steal the treasure, but the dragon singes you before you can get close. 
@@ -3468,13 +3468,13 @@ test("If the dragon is not poisoned or anything, you can't take any treasure", (
   expect(output.singeCount).toBe(newGameState.singeCount + 1);
   expect(output.reputation).toBe(newGameState.reputation - 1);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(output, {
@@ -3491,13 +3491,13 @@ test("If the dragon is not poisoned or anything, you can't take any treasure", (
   expect(output.singeCount).toBe(newGameState.singeCount + 2);
   expect(output.reputation).toBe(newGameState.reputation - 2);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 });
 
@@ -3521,7 +3521,7 @@ test("You can take the treasure in increments, getting singed along the way", ()
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You try to steal the treasure, but the dragon singes you before you can get close. 
@@ -3533,21 +3533,21 @@ test("You can take the treasure in increments, getting singed along the way", ()
   expect(output.singeCount).toBe(newGameState.singeCount + 1);
   expect(output.reputation).toBe(newGameState.reputation - 1);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(
-    { ...output, dragonPoisoned: true },
+    {...output, dragonPoisoned: true},
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
@@ -3561,21 +3561,21 @@ test("You can take the treasure in increments, getting singed along the way", ()
   expect(output.singeCount).toBe(newGameState.singeCount + 3);
   expect(output.reputation).toBe(newGameState.reputation - 3);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(
-    { ...output, dragonPoisoned: true, dragonAsleep: true },
+    {...output, dragonPoisoned: true, dragonAsleep: true},
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
@@ -3589,21 +3589,21 @@ test("You can take the treasure in increments, getting singed along the way", ()
   expect(output.singeCount).toBe(newGameState.singeCount + 4);
   expect(output.reputation).toBe(newGameState.reputation - 4);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
 
   output = reducer(
-    { ...output, dragonPoisoned: true, dragonAsleep: true, dragonDead: true },
+    {...output, dragonPoisoned: true, dragonAsleep: true, dragonDead: true},
     {
       action: "takeItem",
       item: item,
-    }
+    },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
@@ -3615,13 +3615,13 @@ test("You can take the treasure in increments, getting singed along the way", ()
   expect(output.singeCount).toBe(newGameState.singeCount + 4);
   expect(output.reputation).toBe(newGameState.reputation - 4);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 });
 
@@ -3637,10 +3637,10 @@ test("Moving player, no consequences", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
-  expect(output).toEqual({ ...newGameState, playerLocation: newLocation });
+  expect(output).toEqual({...newGameState, playerLocation: newLocation});
 });
 
 test("Entering the inn when naked will lose reputation", () => {
@@ -3655,7 +3655,7 @@ test("Entering the inn when naked will lose reputation", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -3674,7 +3674,7 @@ test("Leaving the courtyard the first time is different", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
@@ -3708,7 +3708,7 @@ test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 2);
@@ -3739,7 +3739,7 @@ test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, clo
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
@@ -3770,7 +3770,7 @@ test("Entering the lawn: saved baby, not rewarded yet, no cough, baby cough, clo
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
@@ -3801,7 +3801,7 @@ test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
@@ -3832,7 +3832,7 @@ test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, not
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 0);
@@ -3863,7 +3863,7 @@ test("Entering the lawn: saved baby, not rewarded yet, cough, baby cough, not cl
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -3899,20 +3899,20 @@ test("Entering the lawn: baby goes out of play", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[oldLocation]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[newLocation]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 });
 
@@ -3939,20 +3939,20 @@ test("Entering the lawn: baby goes out of play, does not error if baby already w
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[oldLocation]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[newLocation]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations.outOfPlay).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
 });
 
@@ -3971,7 +3971,7 @@ test("Exiting the lawn puts out the fire if the baby was saved", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.savedBaby).toBe(true);
@@ -3999,7 +3999,7 @@ test("Exiting the lawn does not put out the fire if the baby was not saved", () 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.savedBaby).toBe(false);
@@ -4026,7 +4026,7 @@ test("Taking the baby into the entryway gives it a cough", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.babyCough).toBe(true);
@@ -4052,7 +4052,7 @@ test("The baby doesn't develop a cough if you don't bring it with you", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.babyCough).toBe(false);
@@ -4077,7 +4077,7 @@ test("If you get to the nursery without wearing the damp handkerchief, you get a
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.playerCough).toBe(true);
@@ -4101,7 +4101,7 @@ test("Wearing a dry handkerchief doesn't protect from cough", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.playerCough).toBe(true);
@@ -4125,7 +4125,7 @@ test("Having but not wearing a damp handkerchief doesn't protect from cough", ()
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.playerCough).toBe(true);
@@ -4149,7 +4149,7 @@ test("Wearing a damp handkerchief protects from cough", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.playerCough).toBe(false);
@@ -4167,7 +4167,7 @@ test("Talking to the blacksmith when naked will lose reputation", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4185,7 +4185,7 @@ test("Talking to the youth when naked will lose reputation", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4205,7 +4205,7 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4232,7 +4232,7 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4259,7 +4259,7 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4287,7 +4287,7 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
@@ -4315,7 +4315,7 @@ test("If you cross the stream without repaying the wizard, you get cursed", () =
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4340,7 +4340,7 @@ test("If you cross the stream without repaying the wizard, you get cursed", () =
     {
       action: "movePlayer",
       newLocation: oldLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(oldLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
@@ -4368,7 +4368,7 @@ test("If you haven't earned any treasure, it is safe to cross", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4386,7 +4386,7 @@ test("If you haven't earned any treasure, it is safe to cross", () => {
     {
       action: "movePlayer",
       newLocation: oldLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(oldLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4414,7 +4414,7 @@ test("If you repaid the wizard, it is safe to cross", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4432,7 +4432,7 @@ test("If you repaid the wizard, it is safe to cross", () => {
     {
       action: "movePlayer",
       newLocation: oldLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(oldLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4460,7 +4460,7 @@ test("If you don't owe the wizard, you can cross safely", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4478,7 +4478,7 @@ test("If you don't owe the wizard, you can cross safely", () => {
     {
       action: "movePlayer",
       newLocation: oldLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(oldLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4506,7 +4506,7 @@ test("You won't get cursed twice", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4524,7 +4524,7 @@ test("You won't get cursed twice", () => {
     {
       action: "movePlayer",
       newLocation: oldLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(oldLocation);
   expect(output.reputation).toEqual(newGameState.reputation);
@@ -4547,7 +4547,7 @@ test("When enter puddle, time in cave increases", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave + 1);
@@ -4571,7 +4571,7 @@ test("When enter puddle, if the dragon is not poisoned, and enough time has elap
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4599,7 +4599,7 @@ test("When enter puddle, if enough time has elapsed but dragon is poisoned, you 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4620,7 +4620,7 @@ test("When enter dung, time in cave increases", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave + 1);
@@ -4644,7 +4644,7 @@ test("When enter dung, if the dragon is not poisoned, and enough time has elapse
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4672,7 +4672,7 @@ test("When enter dung, if enough time has elapsed but dragon is poisoned, you do
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4693,7 +4693,7 @@ test("When enter crevice, time in cave increases", () => {
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave + 1);
@@ -4717,7 +4717,7 @@ test("When enter crevice, if the dragon is not poisoned and you are not wearing 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4745,7 +4745,7 @@ test("When enter crevice, if enough time has elapsed but dragon is poisoned, you
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4771,7 +4771,7 @@ test("When enter crevice, if enough time has elapsed but you are wearing poopy c
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4797,7 +4797,7 @@ test("When enter crevice, if enough time has elapsed and you have poopy clothes 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4827,7 +4827,7 @@ test("When enter crevice, if enough time has elapsed and you have are wearing cl
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave + 1);
@@ -4861,7 +4861,7 @@ test("When exit crevice, if berries are in the puddle and you are wearing poopy 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
@@ -4895,7 +4895,7 @@ test("When exit crevice, if berries are in the puddle but you are not wearing po
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
@@ -4927,7 +4927,7 @@ test("When exit crevice, if you are wearing poopy clothes but clothes aren't in 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
@@ -4959,7 +4959,7 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
@@ -4986,7 +4986,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5010,7 +5010,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5034,7 +5034,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5058,7 +5058,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5082,7 +5082,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5106,7 +5106,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5130,7 +5130,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5154,7 +5154,7 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
     {
       action: "movePlayer",
       newLocation: newLocation,
-    }
+    },
   );
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(newGameState.timeInCave);
@@ -5181,14 +5181,14 @@ test("Paying the blacksmith will give you the sword", () => {
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations["smithy"]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.ownSword).toBe(true);
   expect(output.gold).toEqual(startingGold - output.swordCost);
@@ -5218,19 +5218,19 @@ test("Paying the blacksmith will not give you the sword if you don't have enough
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations["smithy"]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.ownSword).toBe(false);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The blacksmith looks at your gold. "It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." "`
+    `"The blacksmith looks at your gold. "It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." "`,
   );
 });
 
@@ -5253,19 +5253,19 @@ test("Paying the blacksmith will not give you the sword if you already own it, e
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations["smithy"]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.ownSword).toBe(true);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The blacksmith is not interested in your gold."`
+    `"The blacksmith is not interested in your gold."`,
   );
 });
 
@@ -5281,7 +5281,7 @@ test("Paying the youth has no effect", () => {
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output).toEqual({
@@ -5291,7 +5291,7 @@ test("Paying the youth has no effect", () => {
     consequenceText: output.consequenceText,
   });
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"The youth is not interested in your gold."`
+    `"The youth is not interested in your gold."`,
   );
 });
 
@@ -5310,21 +5310,21 @@ test("If you have not already made a deal with the wizard, paying the wizard wil
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.gotScoreByCredit).toBe(true);
   expect(output.paidDebt).toBe(false);
   expect(output.gold).toEqual(startingGold);
   expect(output.preCreditTreasureLevel).toEqual(0);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`
+    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`,
   );
 });
 
@@ -5344,21 +5344,21 @@ test("If you have not already made a deal with the wizard, paying the wizard wil
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.gotScoreByCredit).toBe(true);
   expect(output.paidDebt).toBe(false);
   expect(output.preCreditTreasureLevel).toEqual(1);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`
+    `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`,
   );
 });
 
@@ -5378,20 +5378,20 @@ test("If you have traded the wizard, they will not take debt even if you have go
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.itemLocations.inventory).toEqual(
-    expect.not.arrayContaining([item])
+    expect.not.arrayContaining([item]),
   );
   expect(output.itemLocations[location]).toEqual(
-    expect.arrayContaining([item])
+    expect.arrayContaining([item]),
   );
   expect(output.gotScoreByCredit).toBe(false);
   expect(output.paidDebt).toBe(false);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `""Although I would like your gold, you have no debts to me.""`
+    `""Although I would like your gold, you have no debts to me.""`,
   );
 });
 
@@ -5411,13 +5411,13 @@ test("If you are in debt but didn't earn treasure when you try to pay the wizard
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(false);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `""Hmm...You have not earned any treasure. Use your wits!""`
+    `""Hmm...You have not earned any treasure. Use your wits!""`,
   );
 });
 
@@ -5437,7 +5437,7 @@ test("If you are in debt and earned treasure level 1", () => {
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(true);
@@ -5466,13 +5466,13 @@ test("If you are in debt and earned treasure level 1 but already had treasure le
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(false);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `""Hmm...You have not earned any more treasure. Use your wits!""`
+    `""Hmm...You have not earned any more treasure. Use your wits!""`,
   );
 });
 
@@ -5492,7 +5492,7 @@ test("If you are in debt and earned treasure level 2", () => {
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(true);
@@ -5521,7 +5521,7 @@ test("If you are in debt and earned treasure level 2 but had level 1 pre-debt", 
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(true);
@@ -5549,7 +5549,7 @@ test("If you are in debt and earned treasure level 3", () => {
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(true);
@@ -5578,7 +5578,7 @@ test("If you are in debt and earned treasure level 3 but had level 1 pre-debt", 
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(true);
@@ -5606,12 +5606,12 @@ test("If you already paid debt, wizard won't take again", () => {
     },
     {
       action: "pay",
-    }
+    },
   );
 
   expect(output.paidDebt).toBe(true);
   expect(output.gold).toEqual(startingGold);
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `""Although I would like your gold, you have no debts to me.""`
+    `""Although I would like your gold, you have no debts to me.""`,
   );
 });
