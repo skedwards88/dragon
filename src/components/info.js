@@ -18,7 +18,7 @@ export default function Info({setCurrentDisplay}) {
         <a href="https://skedwards88.github.io/">these</a>
         {` out.`}
         {<hr></hr>}
-        {`Story by Colin\nBuilt by Sarah\nArtwork by Dall-e`}
+        {`Story by Colin\nBuilt by Sarah\nArtwork (mostly) by Dall-e`}
         {<hr></hr>}
         <a href="./privacy.html">Privacy policy</a>
       </div>
