@@ -9,34 +9,24 @@ import Restart from "./components/restart";
 import Resume from "./components/resume";
 import {reducer} from "./reducer";
 import {init} from "./init";
-
-function handleBeforeInstallPrompt(
-  event,
-  setInstallPromptEvent,
-  setShowInstallButton,
-) {
-  console.log("handleBeforeInstallPrompt");
-  if (event) setInstallPromptEvent(event);
-  setShowInstallButton(true);
-}
-
-function handleAppInstalled(setInstallPromptEvent, setShowInstallButton) {
-  console.log("handleAppInstalled");
-  setInstallPromptEvent(null);
-  setShowInstallButton(false);
-}
+import {
+  handleAppInstalled,
+  handleBeforeInstallPrompt,
+} from "@skedwards88/shared-components/src/logic/handleInstall";
+import InstallOverview from "@skedwards88/shared-components/src/components/InstallOverview";
+import PWAInstall from "@skedwards88/shared-components/src/components/PWAInstall";
 
 function App() {
-  const [gameState, dispatchGameState] = React.useReducer(reducer, {}, init);
-
-  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart | resume
-  const [showMap, setShowMap] = useState(true);
-  const [showPhoto, setShowPhoto] = useState(true);
-
+  // *****
+  // Install handling setup
+  // *****
+  // Set up states that will be used by the handleAppInstalled and handleBeforeInstallPrompt listeners
   const [installPromptEvent, setInstallPromptEvent] = React.useState();
   const [showInstallButton, setShowInstallButton] = React.useState(true);
 
   React.useEffect(() => {
+    // Need to store the function in a variable so that
+    // the add and remove actions can reference the same function
     const listener = (event) =>
       handleBeforeInstallPrompt(
         event,
@@ -45,16 +35,29 @@ function App() {
       );
 
     window.addEventListener("beforeinstallprompt", listener);
+
     return () => window.removeEventListener("beforeinstallprompt", listener);
   }, []);
 
   React.useEffect(() => {
+    // Need to store the function in a variable so that
+    // the add and remove actions can reference the same function
     const listener = () =>
       handleAppInstalled(setInstallPromptEvent, setShowInstallButton);
 
     window.addEventListener("appinstalled", listener);
+
     return () => window.removeEventListener("appinstalled", listener);
   }, []);
+  // *****
+  // End install handling setup
+  // *****
+
+  const [gameState, dispatchGameState] = React.useReducer(reducer, {}, init);
+
+  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart | resume
+  const [showMap, setShowMap] = useState(true);
+  const [showPhoto, setShowPhoto] = useState(true);
 
   React.useLayoutEffect(() => {
     // Check if saved state is available and if has all info
@@ -148,12 +151,33 @@ function App() {
           dispatchGameState={dispatchGameState}
         />
       );
-    default:
+
+    case "installOverview":
       return (
-        <Location
+        <InstallOverview
+          setDisplay={setCurrentDisplay}
           setInstallPromptEvent={setInstallPromptEvent}
           showInstallButton={showInstallButton}
           installPromptEvent={installPromptEvent}
+          googleAppLink={
+            "https://play.google.com/store/apps/details?id=dragonhero.io.github.skedwards88.twa&hl=en_US"
+          }
+        ></InstallOverview>
+      );
+
+    case "pwaInstall":
+      return (
+        <PWAInstall
+          setDisplay={setCurrentDisplay}
+          googleAppLink={
+            "https://play.google.com/store/apps/details?id=dragonhero.io.github.skedwards88.twa&hl=en_US"
+          }
+        ></PWAInstall>
+      );
+
+    default:
+      return (
+        <Location
           gameState={gameState}
           dispatchGameState={dispatchGameState}
           setCurrentDisplay={setCurrentDisplay}

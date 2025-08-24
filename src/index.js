@@ -2,6 +2,7 @@ import React from "react";
 import {createRoot} from "react-dom/client";
 import App from "./App.js";
 import "./App.css";
+import "@skedwards88/shared-components/src/styles/Install.css";
 
 if (process.env.NODE_ENV !== "development" && "serviceWorker" in navigator) {
   const path =

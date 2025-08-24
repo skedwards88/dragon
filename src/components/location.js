@@ -3,7 +3,7 @@ import {locations} from "../../src/locations";
 import Stats from "./stats";
 import {items} from "../items";
 import Share from "@skedwards88/shared-components/src/components/Share";
-import sendAnalytics from "@skedwards88/shared-components/src/logic/sendAnalytics";
+import {isRunningStandalone} from "@skedwards88/shared-components/src/logic/isRunningStandalone";
 
 function LocationItems({gameState, dispatchGameState, setCurrentDisplay}) {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
@@ -190,16 +190,6 @@ function Map({gameState, dispatchGameState, setCurrentDisplay, showPhoto}) {
   );
 }
 
-async function handleInstall(installPromptEvent, setInstallPromptEvent) {
-  console.log("handling install");
-  console.log(installPromptEvent);
-  installPromptEvent.prompt();
-  const result = await installPromptEvent.userChoice;
-  console.log(result);
-  setInstallPromptEvent(null);
-  sendAnalytics("install");
-}
-
 export default function Location({
   gameState,
   dispatchGameState,
@@ -208,9 +198,6 @@ export default function Location({
   setShowMap,
   showPhoto,
   setShowPhoto,
-  installPromptEvent,
-  showInstallButton,
-  setInstallPromptEvent,
 }) {
   const locationName =
     locations[gameState.playerLocation].getBackgroundName(gameState);
@@ -240,12 +227,10 @@ export default function Location({
           origin="control bar"
           id="share"
         ></Share>
-        {showInstallButton && installPromptEvent ? (
+        {!isRunningStandalone() ? (
           <button
             id="install"
-            onClick={() =>
-              handleInstall(installPromptEvent, setInstallPromptEvent)
-            }
+            onClick={() => setCurrentDisplay("installOverview")}
           ></button>
         ) : (
           <></>
