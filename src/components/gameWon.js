@@ -1,5 +1,6 @@
 import React from "react";
 import Stats from "./stats";
+import Share from "@skedwards88/shared-components/src/components/Share";
 
 export default function GameWon({
   dispatchGameState,
@@ -62,31 +63,25 @@ export default function GameWon({
         >
           PLAY AGAIN
         </button>
-        {navigator.canShare ? (
-          <button
-            className="close"
-            onClick={() =>
-              handleShareResults({
-                reputation: gameState.reputation,
-                maxReputation: gameState.maxReputation,
-                gold: gameState.gold,
-                maxGold: gameState.maxGold,
-              })
-            }
-          >
-            SHARE
-          </button>
-        ) : (
-          <></>
-        )}
+        <Share
+          appName="Dragon Hero"
+          text={getWinShareText({
+            reputation: gameState.reputation,
+            maxReputation: gameState.maxReputation,
+            gold: gameState.gold,
+            maxGold: gameState.maxGold,
+          })}
+          url="https://skedwards88.github.io/dragon/"
+          origin="game over"
+          className="close"
+          content="SHARE"
+        ></Share>
       </div>
     </div>
   );
 }
 
-function handleShareResults({reputation, maxReputation, gold, maxGold}) {
-  const url = "https://skedwards88.github.io/dragon/";
-
+function getWinShareText({reputation, maxReputation, gold, maxGold}) {
   let resultText = "";
   if (reputation === maxReputation && gold === maxGold) {
     resultText = `I earned the maximum score on Dragon Hero!`;
@@ -94,14 +89,5 @@ function handleShareResults({reputation, maxReputation, gold, maxGold}) {
     resultText = `I beat Dragon Hero: ${reputation}/${maxReputation} reputation, ${gold}/${maxGold} gold.`;
   }
 
-  navigator
-    .share({
-      title: "Dragon Hero",
-      text: `${resultText}\n\n`,
-      url: url,
-    })
-    .then(() => console.log("Successful share"))
-    .catch((error) => {
-      console.log("Error sharing", error);
-    });
+  return resultText;
 }

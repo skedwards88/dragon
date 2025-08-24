@@ -2,6 +2,7 @@ import React from "react";
 import {locations} from "../../src/locations";
 import Stats from "./stats";
 import {items} from "../items";
+import Share from "@skedwards88/shared-components/src/components/Share";
 
 function LocationItems({gameState, dispatchGameState, setCurrentDisplay}) {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
@@ -188,35 +189,6 @@ function Map({gameState, dispatchGameState, setCurrentDisplay, showPhoto}) {
   );
 }
 
-function handleShare() {
-  const url = "https://skedwards88.github.io/dragon/";
-
-  let text = "Check out this text adventure puzzle!";
-
-  navigator
-    .share({
-      title: "Dragon Hero",
-      text: `${text}\n\n`,
-      url: url,
-    })
-    .then(() => console.log("Successful share"))
-    .catch((error) => {
-      // copy to clipboard as backup
-      console.log("Error sharing", error);
-      try {
-        navigator.clipboard.writeText(`${text}\n\n${url}`);
-      } catch (error) {
-        console.log("Error copying", error);
-      }
-    });
-
-  try {
-    window.gtag("event", "share", {});
-  } catch (error) {
-    console.log("tracking error", error);
-  }
-}
-
 async function handleInstall(installPromptEvent, setInstallPromptEvent) {
   console.log("handling install");
   console.log(installPromptEvent);
@@ -264,11 +236,13 @@ export default function Location({
           id="restart"
           onClick={() => setCurrentDisplay("restart")}
         ></button>
-        {navigator.canShare ? (
-          <button id="share" onClick={() => handleShare()}></button>
-        ) : (
-          <></>
-        )}
+        <Share
+          appName="Dragon Hero"
+          text="Check out this text adventure puzzle!"
+          url="https://skedwards88.github.io/dragon/"
+          origin="control bar"
+          id="share"
+        ></Share>
         {showInstallButton && installPromptEvent ? (
           <button
             id="install"
