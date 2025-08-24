@@ -3,6 +3,7 @@ import {locations} from "../../src/locations";
 import Stats from "./stats";
 import {items} from "../items";
 import Share from "@skedwards88/shared-components/src/components/Share";
+import sendAnalytics from "@skedwards88/shared-components/src/logic/sendAnalytics";
 
 function LocationItems({gameState, dispatchGameState, setCurrentDisplay}) {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
@@ -196,11 +197,7 @@ async function handleInstall(installPromptEvent, setInstallPromptEvent) {
   const result = await installPromptEvent.userChoice;
   console.log(result);
   setInstallPromptEvent(null);
-  try {
-    window.gtag("event", "install", {});
-  } catch (error) {
-    console.log("tracking error", error);
-  }
+  sendAnalytics("install");
 }
 
 export default function Location({

@@ -1,8 +1,8 @@
 import {init} from "./init";
 import {reducer} from "./reducer";
-import {sendAnalytics} from "./sendAnalytics.js";
+import sendAnalytics from "@skedwards88/shared-components/src/logic/sendAnalytics";
 
-jest.mock("./sendAnalytics");
+jest.mock("@skedwards88/shared-components/src/logic/sendAnalytics");
 
 beforeEach(() => {
   sendAnalytics.mockClear();

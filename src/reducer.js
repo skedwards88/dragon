@@ -1,7 +1,7 @@
 import {init} from "./init.js";
 import {items} from "./items.js";
 import {locations} from "./locations.js";
-import {sendAnalytics} from "./sendAnalytics.js";
+import sendAnalytics from "@skedwards88/shared-components/src/logic/sendAnalytics";
 
 function recordKeyEvents(oldState, newState) {
   // game progressed beyond inn
