@@ -160,7 +160,7 @@ function App() {
           showInstallButton={showInstallButton}
           installPromptEvent={installPromptEvent}
           googleAppLink={
-            "https://play.google.com/store/apps/details?id=dragonhero.io.github.skedwards88.twa&hl=en_US"
+            "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           }
         ></InstallOverview>
       );
@@ -170,7 +170,7 @@ function App() {
         <PWAInstall
           setDisplay={setCurrentDisplay}
           googleAppLink={
-            "https://play.google.com/store/apps/details?id=dragonhero.io.github.skedwards88.twa&hl=en_US"
+            "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           }
         ></PWAInstall>
       );
