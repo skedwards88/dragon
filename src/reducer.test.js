@@ -1,6 +1,6 @@
 import {init} from "./init";
 import {reducer} from "./reducer";
-import sendAnalytics from "@skedwards88/shared-components/src/logic/sendAnalytics";
+import {sendAnalytics} from "@skedwards88/shared-components/src/logic/sendAnalytics";
 
 jest.mock("@skedwards88/shared-components/src/logic/sendAnalytics");
 
