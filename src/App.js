@@ -172,6 +172,7 @@ function App() {
           googleAppLink={
             "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           }
+          pwaLink={"https://skedwards88.github.io/dragon"}
         ></PWAInstall>
       );
 

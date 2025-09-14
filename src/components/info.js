@@ -14,9 +14,9 @@ export default function Info({setCurrentDisplay}) {
         <a href={feedbackLink}>open an issue</a>
         {" on GitHub."}
         {<hr></hr>}
-        {`Want more games? Check `}
-        <a href="https://skedwards88.github.io/">these</a>
-        {` out.`}
+        {`Want more games? See all of our puzzle games at `}
+        <a href="https://twistedtrailgames.com/">TwistedTrailGames.com</a>
+        {`.`}
         {<hr></hr>}
         {`Story by Colin\nBuilt by Sarah\nArtwork (mostly) by Dall-e`}
         {<hr></hr>}
