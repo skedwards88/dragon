@@ -1,62 +1,6 @@
 import {init} from "./init.js";
 import {items} from "./items.js";
 import {locations} from "./locations.js";
-import {sendAnalytics} from "@skedwards88/shared-components/src/logic/sendAnalytics";
-
-function recordKeyEvents(oldState, newState) {
-  // game progressed beyond inn
-  if (oldState.firstCourtyardEntry && !newState.firstCourtyardEntry) {
-    sendAnalytics("firstCourtyardEntry");
-    return;
-  }
-
-  // handkerchief damp
-  if (!oldState.handkerchiefDamp && newState.handkerchiefDamp) {
-    sendAnalytics("handkerchiefDamp");
-    return;
-  }
-
-  // baby saved
-  if (!oldState.receivedBabyReward && newState.receivedBabyReward) {
-    // dropped baby out of window
-    // Wore damp handkerchief in fire
-    sendAnalytics("savedBaby", {
-      throughWindow: !newState.babyCough,
-      woreDampMask: !newState.playerCough,
-    });
-    return;
-  }
-
-  // clothes poopy
-  if (!oldState.clothesPoopy && newState.clothesPoopy) {
-    sendAnalytics("clothesPoopy");
-    return;
-  }
-
-  // clothes washed
-  if (oldState.clothesPoopy && !newState.clothesPoopy) {
-    sendAnalytics("clothesWashed");
-    return;
-  }
-
-  // dragon poisoned
-  if (!oldState.dragonPoisoned && newState.dragonPoisoned) {
-    sendAnalytics("dragonPoisoned");
-    return;
-  }
-  // dragon asleep
-  if (!oldState.dragonAsleep && newState.dragonAsleep) {
-    sendAnalytics("dragonAsleep");
-    return;
-  }
-  // dragon killed
-  if (!oldState.dragonDead && newState.dragonDead) {
-    sendAnalytics("dragonDead");
-    return;
-  }
-
-  // todo game over -- record final reputation and gold
-}
 
 function appendConsequenceToDescription({
   gameEffect,
@@ -146,8 +90,6 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
-
     return {
       ...currentGameState,
       ...gameEffect,
@@ -182,8 +124,6 @@ export function reducer(currentGameState, payload) {
       itemMovements: itemMovements,
       newGameState: newGameState,
     });
-
-    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -224,8 +164,6 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
-
     return {
       ...currentGameState,
       ...gameEffect,
@@ -262,8 +200,6 @@ export function reducer(currentGameState, payload) {
       itemMovements: itemMovements,
       newGameState: newGameState,
     });
-
-    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -318,8 +254,6 @@ export function reducer(currentGameState, payload) {
       itemMovements: itemMovements,
       newGameState: newGameState,
     });
-
-    recordKeyEvents(currentGameState, {...currentGameState, ...gameEffect});
 
     return {
       ...currentGameState,
@@ -383,19 +317,6 @@ export function reducer(currentGameState, payload) {
       newGameState: newGameState,
     });
 
-    recordKeyEvents(currentGameState, {
-      ...currentGameState,
-      ...gameStateChanges,
-    });
-
-    // if the game is won
-    if (newLocation === "gate" && currentGameState.treasureLevel) {
-      sendAnalytics("wonGame", {
-        reputation: {...currentGameState, ...gameStateChanges}.reputation,
-        gold: {...currentGameState, ...gameStateChanges}.gold,
-      });
-    }
-
     return {
       ...currentGameState,
       ...gameStateChanges,
@@ -407,7 +328,6 @@ export function reducer(currentGameState, payload) {
     if (currentGameState.journalEntry) {
       const newConsequenceText =
         "As you read the text, words and memories whirl around you. When you reach the end of the entry, you know that you are in an earlier time. ";
-      sendAnalytics("readJournal");
       return {
         ...currentGameState,
         ...currentGameState.journalEntry,
@@ -426,7 +346,6 @@ export function reducer(currentGameState, payload) {
       text +=
         "As you write, the previous entry fades, as if it was lost to time. ";
     }
-    sendAnalytics("writeJournal");
     return {
       ...currentGameState,
       journalPagesRemaining: currentGameState.journalPagesRemaining - 1,

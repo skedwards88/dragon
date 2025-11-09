@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React from "react";
 import Inventory from "./components/inventory";
 import Location from "./components/location";
 import Consequence from "./components/consequence";
@@ -15,6 +15,11 @@ import {
 } from "@skedwards88/shared-components/src/logic/handleInstall";
 import InstallOverview from "@skedwards88/shared-components/src/components/InstallOverview";
 import PWAInstall from "@skedwards88/shared-components/src/components/PWAInstall";
+import {getUserId} from "@skedwards88/shared-components/src/logic/getUserId";
+import {v4 as uuidv4} from "uuid";
+import {sendAnalyticsCF} from "@skedwards88/shared-components/src/logic/sendAnalyticsCF";
+import {isRunningStandalone} from "@skedwards88/shared-components/src/logic/isRunningStandalone";
+import {inferKeyEvents} from "./inferKeyEvents";
 
 function App() {
   // *****
@@ -55,9 +60,9 @@ function App() {
 
   const [gameState, dispatchGameState] = React.useReducer(reducer, {}, init);
 
-  const [currentDisplay, setCurrentDisplay] = useState("location"); // location | inventory | consequence | info | restart | resume
-  const [showMap, setShowMap] = useState(true);
-  const [showPhoto, setShowPhoto] = useState(true);
+  const [currentDisplay, setCurrentDisplay] = React.useState("location"); // location | inventory | consequence | info | restart | resume
+  const [showMap, setShowMap] = React.useState(true);
+  const [showPhoto, setShowPhoto] = React.useState(true);
 
   React.useLayoutEffect(() => {
     // Check if saved state is available and if has all info
@@ -97,6 +102,57 @@ function App() {
 
     window.localStorage.setItem("dragonHeroState", JSON.stringify(stateToSave));
   }, [gameState, currentDisplay, showMap, showPhoto]);
+
+  // ******
+  // Start analytics setup
+  // ******
+
+  // Store the previous state so that we can infer which analytics events to send
+  const previousStateRef = React.useRef(gameState);
+
+  // Store userID so I don't have to read local storage every time
+  const userId = getUserId("dragon_uid");
+
+  // Store sessionID as a ref so I have the same session ID until app refresh
+  const sessionIdRef = React.useRef(uuidv4());
+  const sessionId = sessionIdRef.current;
+
+  // Send analytics on load
+  React.useEffect(() => {
+    sendAnalyticsCF({
+      userId,
+      sessionId,
+      analyticsToLog: [
+        {
+          eventName: "app_load",
+          // os, browser, and isMobile are parsed on the server from the user agent headers
+          screenWidth: window.screen.width,
+          screenHeight: window.screen.height,
+          isStandalone: isRunningStandalone(),
+          devicePixelRatio: window.devicePixelRatio,
+        },
+      ],
+    });
+    // Just run once on app load
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Send analytics following reducer updates, if needed
+  React.useEffect(() => {
+    const previousState = previousStateRef.current;
+
+    const analyticsToLog = inferKeyEvents(previousState, gameState);
+
+    if (analyticsToLog.length) {
+      sendAnalyticsCF({userId, sessionId, analyticsToLog});
+    }
+
+    previousStateRef.current = gameState;
+  }, [gameState, sessionId, userId]);
+
+  // ******
+  // End analytics setup
+  // ******
 
   if (gameState.reputation <= 0) {
     return (

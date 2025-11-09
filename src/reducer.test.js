@@ -1,12 +1,6 @@
 import {init} from "./init";
 import {reducer} from "./reducer";
-import {sendAnalytics} from "@skedwards88/shared-components/src/logic/sendAnalytics";
-
-jest.mock("@skedwards88/shared-components/src/logic/sendAnalytics");
-
-beforeEach(() => {
-  sendAnalytics.mockClear();
-});
+import {inferKeyEvents} from "./inferKeyEvents";
 
 const newGameState = init();
 
@@ -113,11 +107,11 @@ test("New game resets state", () => {
       "treasureLevel": 0,
     }
   `);
-  expect(sendAnalytics).not.toHaveBeenCalled();
 });
 
 test("Resuming will apply saved state over new game state", () => {
-  const output = reducer(newGameState, {
+  const input = newGameState;
+  const output = reducer(input, {
     action: "resume",
     savedState: {
       currentDisplay: "location",
@@ -266,7 +260,6 @@ test("Resuming will apply saved state over new game state", () => {
       "treasureLevel": 0,
     }
   `);
-  expect(sendAnalytics).not.toHaveBeenCalled();
 });
 
 test("Taking the sword from the smithy increases sword cost (once) and reduces reputation (every time)", () => {
@@ -635,53 +628,59 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
 test("Dropping clothes in the dung pile will make them poopy", () => {
   const item = "clothes";
   const location = "dung";
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      itemLocations: {...newGameState.itemLocations, inventory: [item]},
-    },
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  const originalState1 = {
+    ...newGameState,
+    playerLocation: location,
+    itemLocations: {...newGameState.itemLocations, inventory: [item]},
+  };
+  const newState1 = reducer(originalState1, {
+    action: "dropItem",
+    item: item,
+  });
 
-  expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toBe(true);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("clothesPoopy");
-  expect(output.naked).toBe(true);
-  expect(output.itemLocations.inventory).toEqual(
+  expect(newState1.reputation).toMatchInlineSnapshot(`10`);
+  expect(newState1.clothesPoopy).toBe(true);
+
+  let keyEvents = inferKeyEvents(originalState1, newState1);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("clothesPoopy");
+
+  expect(newState1.naked).toBe(true);
+  expect(newState1.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item]),
   );
-  expect(output.itemLocations[location]).toEqual(
+  expect(newState1.itemLocations[location]).toEqual(
     expect.arrayContaining([item]),
   );
-  expect(output.consequenceText).toMatchInlineSnapshot(
+  expect(newState1.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the dung. "`,
   );
 
-  output = reducer(
-    {...newGameState, playerLocation: location, clothesPoopy: true},
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  const originalState2 = {
+    ...newGameState,
+    playerLocation: location,
+    clothesPoopy: true,
+  };
+  const newState2 = reducer(originalState2, {
+    action: "dropItem",
+    item: item,
+  });
 
-  expect(output.reputation).toMatchInlineSnapshot(`10`);
-  expect(output.clothesPoopy).toBe(true);
+  expect(newState2.reputation).toMatchInlineSnapshot(`10`);
+  expect(newState2.clothesPoopy).toBe(true);
+
   // if the clothes are already poopy, doesn't send analytics again
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(output.naked).toBe(true);
-  expect(output.itemLocations.inventory).toEqual(
+  keyEvents = inferKeyEvents(originalState2, newState2);
+  expect(keyEvents.length).toBe(0);
+
+  expect(newState2.naked).toBe(true);
+  expect(newState2.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item]),
   );
-  expect(output.itemLocations[location]).toEqual(
+  expect(newState2.itemLocations[location]).toEqual(
     expect.arrayContaining([item]),
   );
-  expect(output.consequenceText).toMatchInlineSnapshot(
+  expect(newState2.consequenceText).toMatchInlineSnapshot(
     `"You drop your clothes in the dung. "`,
   );
 });
@@ -689,23 +688,24 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
 test("Dropping clothes in water will make them not poopy", () => {
   const item = "clothes";
   let location = "fountain";
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      clothesPoopy: true,
-      itemLocations: {...newGameState.itemLocations, inventory: [item]},
-    },
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  const input1 = {
+    ...newGameState,
+    playerLocation: location,
+    clothesPoopy: true,
+    itemLocations: {...newGameState.itemLocations, inventory: [item]},
+  };
+  let output = reducer(input1, {
+    action: "dropItem",
+    item: item,
+  });
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toBe(false);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+
+  let keyEvents = inferKeyEvents(input1, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item]),
@@ -719,23 +719,23 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   location = "stream";
-  output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      clothesPoopy: true,
-      itemLocations: {...newGameState.itemLocations, inventory: [item]},
-    },
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  const input2 = {
+    ...newGameState,
+    playerLocation: location,
+    clothesPoopy: true,
+    itemLocations: {...newGameState.itemLocations, inventory: [item]},
+  };
+  output = reducer(input2, {
+    action: "dropItem",
+    item: item,
+  });
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
   expect(output.clothesPoopy).toBe(false);
-  expect(sendAnalytics).toHaveBeenCalledTimes(2);
-  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  keyEvents = inferKeyEvents(input2, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item]),
@@ -749,23 +749,23 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   location = "puddle";
-  output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      clothesPoopy: true,
-      itemLocations: {...newGameState.itemLocations, inventory: [item]},
-    },
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  const input3 = {
+    ...newGameState,
+    playerLocation: location,
+    clothesPoopy: true,
+    itemLocations: {...newGameState.itemLocations, inventory: [item]},
+  };
+  output = reducer(input3, {
+    action: "dropItem",
+    item: item,
+  });
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
 
-  expect(sendAnalytics).toHaveBeenCalledTimes(3);
-  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  keyEvents = inferKeyEvents(input1, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item]),
@@ -779,23 +779,23 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   location = "puddle";
-  output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      clothesPoopy: true,
-      itemLocations: {...newGameState.itemLocations, inventory: [item]},
-    },
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  const input4 = {
+    ...newGameState,
+    playerLocation: location,
+    clothesPoopy: true,
+    itemLocations: {...newGameState.itemLocations, inventory: [item]},
+  };
+  output = reducer(input4, {
+    action: "dropItem",
+    item: item,
+  });
 
   expect(output.reputation).toMatchInlineSnapshot(`10`);
 
-  expect(sendAnalytics).toHaveBeenCalledTimes(4);
-  expect(sendAnalytics).toHaveBeenCalledWith("clothesWashed");
+  keyEvents = inferKeyEvents(input1, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
   expect(output.naked).toBe(true);
   expect(output.itemLocations.inventory).toEqual(
     expect.not.arrayContaining([item]),
@@ -1690,30 +1690,30 @@ test("Dropping handkerchief when wearing it in fountain", () => {
   const item = "handkerchief";
   let location = "fountain";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      handkerchiefDamp: false,
-      playerMasked: true,
-      manorFire: true,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        inventory: ["handkerchief"],
-      },
+  const input1 = {
+    ...newGameState,
+    playerLocation: location,
+    handkerchiefDamp: false,
+    playerMasked: true,
+    manorFire: true,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      inventory: ["handkerchief"],
     },
-    {
-      action: "dropItem",
-      item: item,
-    },
-  );
+  };
+  let output = reducer(input1, {
+    action: "dropItem",
+    item: item,
+  });
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You remove the handkerchief from your nose and mouth and drop it in the fountain. "`,
   );
   expect(output.playerMasked).toBe(false);
   expect(output.handkerchiefDamp).toBe(true);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("handkerchiefDamp");
+
+  let keyEvents = inferKeyEvents(input1, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("handkerchiefDamp");
 });
 
 test("Giving the handkerchief to youth once increases reputation and gives plot details. Giving again does nothing.", () => {
@@ -1957,22 +1957,20 @@ test("Using the sword to on sleeping dragon", () => {
   const item = "sword";
   let location = "lair";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      dragonAsleep: true,
-      dragonDead: false,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        inventory: [item],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: location,
+    dragonAsleep: true,
+    dragonDead: false,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      inventory: [item],
     },
-    {
-      action: "useItem",
-      item: item,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "useItem",
+    item: item,
+  });
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. 
 
@@ -1986,8 +1984,10 @@ test("Using the sword to on sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(true);
   expect(output.dragonDead).toBe(true);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("dragonDead");
+
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("dragonDead");
 
   expect(output.reputation).toEqual(newGameState.reputation + 2);
 });
@@ -1996,23 +1996,21 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
   const item = "sword";
   let location = "lair";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      dragonAsleep: false,
-      dragonPoisoned: true,
-      dragonDead: false,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        inventory: [item],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: location,
+    dragonAsleep: false,
+    dragonPoisoned: true,
+    dragonDead: false,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      inventory: [item],
     },
-    {
-      action: "useItem",
-      item: item,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "useItem",
+    item: item,
+  });
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. 
 
@@ -2026,7 +2024,9 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(true);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
+
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.singeCount).toEqual(1);
@@ -2036,23 +2036,21 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
   const item = "sword";
   let location = "lair";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      dragonAsleep: false,
-      dragonPoisoned: false,
-      dragonDead: false,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        inventory: [item],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: location,
+    dragonAsleep: false,
+    dragonPoisoned: false,
+    dragonDead: false,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      inventory: [item],
     },
-    {
-      action: "useItem",
-      item: item,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "useItem",
+    item: item,
+  });
   expect(output.consequenceText).toMatchInlineSnapshot(`
     "You try to cut off the dragon's head, but it singes you as soon as you get close enough. 
 
@@ -2066,7 +2064,9 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
+
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
   expect(output.singeCount).toEqual(1);
@@ -2076,23 +2076,21 @@ test("Using the sword not on dragon", () => {
   const item = "sword";
   let location = "inn";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: location,
-      dragonAsleep: false,
-      dragonPoisoned: false,
-      dragonDead: false,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        inventory: [item],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: location,
+    dragonAsleep: false,
+    dragonPoisoned: false,
+    dragonDead: false,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      inventory: [item],
     },
-    {
-      action: "useItem",
-      item: item,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "useItem",
+    item: item,
+  });
   expect(output.consequenceText).toMatchInlineSnapshot(
     `"You slash the sword through the air, looking a bit foolish. "`,
   );
@@ -2104,7 +2102,9 @@ test("Using the sword not on dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
+
   expect(output.dragonDead).toBe(false);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(0);
@@ -3665,30 +3665,32 @@ test("Leaving the courtyard the first time is different", () => {
   let oldLocation = "courtyard";
   let newLocation = "fountain";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      firstCourtyardEntry: true,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    firstCourtyardEntry: true,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("firstCourtyardEntry");
 
-  output = reducer(output, {
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("firstCourtyardEntry");
+
+  const input2 = output;
+  output = reducer(input2, {
     action: "movePlayer",
     newLocation: newLocation,
   });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.firstCourtyardEntry).toEqual(false);
   // analytics not called again
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
+  keyEvents = inferKeyEvents(input2, output);
+  expect(keyEvents.length).toBe(0);
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
@@ -3960,52 +3962,50 @@ test("Exiting the lawn puts out the fire if the baby was saved", () => {
   let oldLocation = "lawn";
   let newLocation = "entryway";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      savedBaby: true,
-      receivedBabyReward: false,
-      manorFire: true,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    savedBaby: true,
+    receivedBabyReward: false,
+    manorFire: true,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.savedBaby).toBe(true);
   expect(output.manorFire).toBe(false);
   expect(output.receivedBabyReward).toBe(true);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("savedBaby", {
-    throughWindow: true,
-    woreDampMask: true,
-  });
+
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("savedBaby");
+  expect(keyEvents[0].eventInfo.throughWindow).toBe(true);
+  expect(keyEvents[0].eventInfo.woreDampMask).toBe(true);
 });
 
 test("Exiting the lawn does not put out the fire if the baby was not saved", () => {
   let oldLocation = "lawn";
   let newLocation = "entryway";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      savedBaby: false,
-      receivedBabyReward: false,
-      manorFire: true,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    savedBaby: false,
+    receivedBabyReward: false,
+    manorFire: true,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.savedBaby).toBe(false);
   expect(output.manorFire).toBe(true);
   expect(output.receivedBabyReward).toBe(false);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
 });
 
 test("Taking the baby into the entryway gives it a cough", () => {
@@ -4195,107 +4195,99 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
   let oldLocation = "road1";
   let newLocation = "gate";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      treasureLevel: 1,
-      gold: 110,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    treasureLevel: 1,
+    gold: 110,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
-    gold: 110,
-    reputation: newGameState.reputation - 1,
-  });
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+  expect(keyEvents[0].eventInfo.gold).toBe(110);
+  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation - 1);
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if wearing poopy clothes.", () => {
   let oldLocation = "road1";
   let newLocation = "gate";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      treasureLevel: 1,
-      gold: 110,
-      naked: false,
-      clothesPoopy: true,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    treasureLevel: 1,
+    gold: 110,
+    naked: false,
+    clothesPoopy: true,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
-    gold: 110,
-    reputation: newGameState.reputation - 1,
-  });
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+  expect(keyEvents[0].eventInfo.gold).toBe(110);
+  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation - 1);
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked, but extra points not lost if clothes poopy.", () => {
   let oldLocation = "road1";
   let newLocation = "gate";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      treasureLevel: 1,
-      gold: 110,
-      naked: true,
-      clothesPoopy: true,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    treasureLevel: 1,
+    gold: 110,
+    naked: true,
+    clothesPoopy: true,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
-    gold: 110,
-    reputation: newGameState.reputation - 1,
-  });
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+  expect(keyEvents[0].eventInfo.gold).toBe(110);
+  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation - 1);
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points gained if mounted.", () => {
   let oldLocation = "road1";
   let newLocation = "gate";
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      treasureLevel: 1,
-      gold: 110,
-      naked: false,
-      clothesPoopy: false,
-      horseMounted: true,
-    },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    treasureLevel: 1,
+    gold: 110,
+    naked: false,
+    clothesPoopy: false,
+    horseMounted: true,
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("wonGame", {
-    gold: 110,
-    reputation: newGameState.reputation + 1,
-  });
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+  expect(keyEvents[0].eventInfo.gold).toBe(110);
+  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation + 1);
 });
 
 test("If you cross the stream without repaying the wizard, you get cursed", () => {
@@ -4845,31 +4837,30 @@ test("When exit crevice, if berries are in the puddle and you are wearing poopy 
   let newLocation = "defecatory";
   let timeInCave = 2;
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      dragonPoisoned: false,
-      timeInCave: timeInCave,
-      naked: false,
-      clothesPoopy: true,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        puddle: ["berries"],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    dragonPoisoned: false,
+    timeInCave: timeInCave,
+    naked: false,
+    clothesPoopy: true,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      puddle: ["berries"],
     },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(true);
-  expect(sendAnalytics).toHaveBeenCalledTimes(1);
-  expect(sendAnalytics).toHaveBeenCalledWith("dragonPoisoned");
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(1);
+  expect(keyEvents[0].eventInfo.milestone).toBe("dragonPoisoned");
 
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
@@ -4879,30 +4870,30 @@ test("When exit crevice, if berries are in the puddle but you are not wearing po
   let newLocation = "defecatory";
   let timeInCave = 2;
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      dragonPoisoned: false,
-      timeInCave: timeInCave,
-      naked: true,
-      clothesPoopy: true,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        puddle: ["berries"],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    dragonPoisoned: false,
+    timeInCave: timeInCave,
+    naked: true,
+    clothesPoopy: true,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      puddle: ["berries"],
     },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
+
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
@@ -4911,30 +4902,30 @@ test("When exit crevice, if you are wearing poopy clothes but clothes aren't in 
   let newLocation = "defecatory";
   let timeInCave = 2;
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      dragonPoisoned: false,
-      timeInCave: timeInCave,
-      naked: false,
-      clothesPoopy: true,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        puddle: [],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    dragonPoisoned: false,
+    timeInCave: timeInCave,
+    naked: false,
+    clothesPoopy: true,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      puddle: [],
     },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
+
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
@@ -4943,30 +4934,30 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
   let newLocation = "defecatory";
   let timeInCave = 2;
 
-  let output = reducer(
-    {
-      ...newGameState,
-      playerLocation: oldLocation,
-      dragonPoisoned: false,
-      timeInCave: timeInCave,
-      naked: false,
-      clothesPoopy: false,
-      itemLocations: {
-        ...newGameState.itemLocations,
-        puddle: ["berries"],
-      },
+  const input = {
+    ...newGameState,
+    playerLocation: oldLocation,
+    dragonPoisoned: false,
+    timeInCave: timeInCave,
+    naked: false,
+    clothesPoopy: false,
+    itemLocations: {
+      ...newGameState.itemLocations,
+      puddle: ["berries"],
     },
-    {
-      action: "movePlayer",
-      newLocation: newLocation,
-    },
-  );
+  };
+  let output = reducer(input, {
+    action: "movePlayer",
+    newLocation: newLocation,
+  });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.timeInCave).toEqual(timeInCave);
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
-  expect(sendAnalytics).not.toHaveBeenCalled();
+  let keyEvents = inferKeyEvents(input, output);
+  expect(keyEvents.length).toBe(0);
+
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
