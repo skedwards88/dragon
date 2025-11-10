@@ -4,6 +4,7 @@ import Stats from "./stats";
 import {items} from "../items";
 import Share from "@skedwards88/shared-components/src/components/Share";
 import {isRunningStandalone} from "@skedwards88/shared-components/src/logic/isRunningStandalone";
+import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
 
 function LocationItems({gameState, dispatchGameState, setCurrentDisplay}) {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
@@ -199,6 +200,8 @@ export default function Location({
   showPhoto,
   setShowPhoto,
 }) {
+  const {userId, sessionId} = useMetadataContext();
+
   const locationName =
     locations[gameState.playerLocation].getBackgroundName(gameState);
 
@@ -226,6 +229,8 @@ export default function Location({
           url="https://skedwards88.github.io/dragon/"
           origin="control bar"
           id="share"
+          userId={userId}
+          sessionId={sessionId}
         ></Share>
         {!isRunningStandalone() ? (
           <button

@@ -1,12 +1,15 @@
 import React from "react";
 import Stats from "./stats";
 import Share from "@skedwards88/shared-components/src/components/Share";
+import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
 
 export default function GameWon({
   dispatchGameState,
   gameState,
   setCurrentDisplay,
 }) {
+  const {userId, sessionId} = useMetadataContext();
+
   let gameEndText;
   gameEndText = `You arrive at the city gates ${
     gameState.horseMounted
@@ -75,6 +78,8 @@ export default function GameWon({
           origin="game over"
           className="close"
           content="SHARE"
+          userId={userId}
+          sessionId={sessionId}
         ></Share>
       </div>
     </div>
