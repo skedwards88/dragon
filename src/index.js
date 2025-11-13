@@ -6,11 +6,8 @@ import "@skedwards88/shared-components/src/styles/Install.css";
 import {MetadataContextProvider} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
 
 if (process.env.NODE_ENV !== "development" && "serviceWorker" in navigator) {
-  const path =
-    location.hostname === "localhost"
-      ? "/service-worker.js"
-      : "/dragon/service-worker.js";
-  const scope = location.hostname === "localhost" ? "" : "/dragon/";
+  const path = "/service-worker.js";
+  const scope = "";
   window.addEventListener("load", () => {
     navigator.serviceWorker
       .register(path, {scope: scope})
