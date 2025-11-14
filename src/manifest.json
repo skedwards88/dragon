@@ -8,7 +8,6 @@
   "display": "standalone",
   "orientation": "portrait",
   "start_url": "https://dragon.twistedtrailgames.com",
-  "scope": "/dragon/",
   "background_color": "#F1F0F0",
   "theme_color": "#6e799e",
   "shortcuts": [],
