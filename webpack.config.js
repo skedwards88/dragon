@@ -86,6 +86,7 @@ module.exports = (env, argv) => {
         from: "./src/images/screenshot_window_tablet.png",
         to: "./assets/screenshot_window_tablet.png",
       },
+      {from: "./src/assetlinks.json", to: "./.well-known/assetlinks.json"},
     ],
     options: {
       concurrency: 100,
