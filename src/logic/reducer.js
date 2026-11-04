@@ -1,4 +1,4 @@
-import {init} from "./init.js";
+import { init } from "./init";
 import {items} from "./items.js";
 import {locations} from "./locations.js";
 

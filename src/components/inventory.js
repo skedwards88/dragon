@@ -1,6 +1,6 @@
 import React from "react";
-import {items} from "../items";
-import {locations} from "../locations";
+import {items} from "../logic/items";
+import {locations} from "../logic/locations";
 
 function InventoryItems({dispatchGameState, gameState, setCurrentDisplay}) {
   const itemsInInventory = gameState.itemLocations.inventory;

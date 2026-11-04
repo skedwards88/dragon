@@ -1,5 +1,5 @@
 import React from "react";
-import {locations} from "../locations";
+import {locations} from "../logic/locations";
 
 export default function Consequence({setCurrentDisplay, gameState}) {
   return (

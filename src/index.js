@@ -1,6 +1,6 @@
 import React from "react";
 import {createRoot} from "react-dom/client";
-import App from "./App.js";
+import App from "./components/App";
 import "./App.css";
 import "@skedwards88/shared-components/src/styles/Install.css";
 import {MetadataContextProvider} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
