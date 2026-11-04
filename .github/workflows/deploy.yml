@@ -57,6 +57,8 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./dist/"
+          # To include dist/.well-known/assetlinks.json
+          include-hidden-files: true
 
       - name: Deploy to GitHub Pages
         id: deployment
