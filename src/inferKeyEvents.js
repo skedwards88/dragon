@@ -82,7 +82,7 @@ export function inferKeyEvents(oldState, newState) {
     });
   }
 
-  if (newState.playerLocation === "gate" && oldState.treasureLevel) {
+  if (newState.playerLocation === "gate" && oldState.treasureLevel && oldState.playerLocation != "gate") {
     keyEvents.push({
       eventName: "keyEvent",
       eventInfo: {
