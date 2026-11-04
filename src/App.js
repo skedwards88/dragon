@@ -9,10 +9,7 @@ import Restart from "./components/restart";
 import Resume from "./components/resume";
 import {reducer} from "./reducer";
 import {init} from "./init";
-import {
-  handleAppInstalled,
-  handleBeforeInstallPrompt,
-} from "@skedwards88/shared-components/src/logic/handleInstall";
+import {useInstallPrompt} from "@skedwards88/shared-components/src/logic/handleInstall";
 import InstallOverview from "@skedwards88/shared-components/src/components/InstallOverview";
 import PWAInstall from "@skedwards88/shared-components/src/components/PWAInstall";
 import {sendAnalyticsCF} from "@skedwards88/shared-components/src/logic/sendAnalyticsCF";
@@ -20,41 +17,11 @@ import {inferKeyEvents} from "./inferKeyEvents";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
 
 function App() {
-  // *****
-  // Install handling setup
-  // *****
-  // Set up states that will be used by the handleAppInstalled and handleBeforeInstallPrompt listeners
-  const [installPromptEvent, setInstallPromptEvent] = React.useState();
-  const [showInstallButton, setShowInstallButton] = React.useState(true);
+  const {userId, sessionId} = useMetadataContext();
 
-  React.useEffect(() => {
-    // Need to store the function in a variable so that
-    // the add and remove actions can reference the same function
-    const listener = (event) =>
-      handleBeforeInstallPrompt(
-        event,
-        setInstallPromptEvent,
-        setShowInstallButton,
-      );
-
-    window.addEventListener("beforeinstallprompt", listener);
-
-    return () => window.removeEventListener("beforeinstallprompt", listener);
-  }, []);
-
-  React.useEffect(() => {
-    // Need to store the function in a variable so that
-    // the add and remove actions can reference the same function
-    const listener = () =>
-      handleAppInstalled(setInstallPromptEvent, setShowInstallButton);
-
-    window.addEventListener("appinstalled", listener);
-
-    return () => window.removeEventListener("appinstalled", listener);
-  }, []);
-  // *****
-  // End install handling setup
-  // *****
+  // This must live at the top level component, not in InstallOverview where it is used, since the InstallOverview is not rendered initially and therefore misses its chance to attach the listeners
+  const {installPromptEvent, showInstallButton, handleInstall} =
+    useInstallPrompt({userId, sessionId});
 
   const [gameState, dispatchGameState] = React.useReducer(reducer, {}, init);
 
@@ -107,8 +74,6 @@ function App() {
 
   // Store the previous state so that we can infer which analytics events to send
   const previousStateRef = React.useRef(gameState);
-
-  const {userId, sessionId} = useMetadataContext();
 
   // Send analytics following reducer updates, if needed
   React.useEffect(() => {

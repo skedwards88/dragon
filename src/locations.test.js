@@ -1783,7 +1783,7 @@ test.each([
     berryLocation: "inventory",
   },
 ])(
-  "dragon description when dragon poisoned: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  "dragon description when dragon poisoned: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
     dragonPoisoned,
@@ -1844,7 +1844,7 @@ test.each([
     berryLocation: "puddle",
   },
 ])(
-  "dragon description when conditions met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  "dragon description when conditions met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
     dragonPoisoned,
@@ -1905,7 +1905,7 @@ test.each([
     berryLocation: "inventory",
   },
 ])(
-  "dragon description with increasing time when conditions not met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  "dragon description with increasing time when conditions not met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
     dragonPoisoned,
@@ -1966,7 +1966,7 @@ test.each([
     berryLocation: "dung",
   },
 ])(
-  "dragon description with time up when conditions are not met in different ways: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation, ",
+  "dragon description with time up when conditions are not met in different ways: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
     dragonPoisoned,

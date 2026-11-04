@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`dragon description when conditions met: timeInCave 0, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
 "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
