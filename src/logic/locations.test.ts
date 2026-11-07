@@ -1,7 +1,7 @@
 import {locations, dragonDescription} from "./locations";
 import {type GameState, init} from "./init";
 
-const newGameState = init();
+const newGameState = init({useSaved: false});
 
 test("Inn description, apple not taken, not clothed", () => {
   const location = "inn";

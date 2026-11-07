@@ -8,14 +8,17 @@ import Info from "./info";
 import Restart from "./restart";
 import Resume from "./resume";
 import {reducer} from "../logic/reducer";
-import {type GameState, init} from "../logic/init";
+import {init} from "../logic/init";
 import {useInstallPrompt} from "@skedwards88/shared-components/src/logic/handleInstall";
 import InstallOverview from "@skedwards88/shared-components/src/components/InstallOverview";
 import PWAInstall from "@skedwards88/shared-components/src/components/PWAInstall";
 import {sendAnalyticsCF} from "@skedwards88/shared-components/src/logic/sendAnalyticsCF";
 import {inferKeyEvents} from "../logic/inferKeyEvents";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
-import {getFromStorage, saveToStorage} from "@skedwards88/shared-components/src/logic/safeStorage";
+import {
+  getFromStorage,
+  saveToStorage,
+} from "@skedwards88/shared-components/src/logic/safeStorage";
 
 export type DisplayState =
   | "location"
@@ -27,12 +30,6 @@ export type DisplayState =
   | "installOverview"
   | "pwaInstall";
 
-type OverallState = {
-  gameState: GameState;
-  currentDisplay: DisplayState;
-  showMap: boolean;
-  showPhoto: boolean;
-};
 function App(): React.JSX.Element {
   const {userId, sessionId} = useMetadataContext();
 
@@ -40,45 +37,35 @@ function App(): React.JSX.Element {
   const {installPromptEvent, showInstallButton, handleInstall} =
     useInstallPrompt({userId, sessionId});
 
-  const [gameState, dispatchGameState] = React.useReducer(reducer, {}, init);
+  const [gameState, dispatchGameState] = React.useReducer(
+    reducer,
+    {useSaved: true},
+    init,
+  );
 
-  const [currentDisplay, setCurrentDisplay] =
-    React.useState<DisplayState>("location");
-  const [showMap, setShowMap] = React.useState(true);
-  const [showPhoto, setShowPhoto] = React.useState(true);
+  const [currentDisplay, setCurrentDisplay] = React.useState<DisplayState>(
+    gameState.resumedFromSaved ? "resume" : "location",
+  );
 
-  React.useLayoutEffect(() => {
-    // Check if saved state is available and if has all info
-    //   locationConsequenceText and consequenceText may be empty, so don't check those
-    const savedState = getFromStorage<OverallState>("dragonHeroState");
-    if (!(
-      savedState?.gameState?.playerLocation &&
-      savedState.gameState.itemLocations
-      // todo should also check for existence of all other values, keeping in mind 0/false values
-    )) {
-      return;
-    }
+  const [showMap, setShowMap] = React.useState(() => {
+    return getFromStorage<boolean>("dragonHeroShowMap") ?? true;
+  });
 
-    // If yes, update state
-    dispatchGameState({action: "resume", savedGameState: savedState.gameState});
-    setShowMap(savedState.showMap ?? true);
-    setShowPhoto(savedState.showPhoto ?? true);
-
-    // Ask if want to continue from last point or start a new game
-    // todo It seems hacky to 1) make new game 2) overwrite with saved state 3) ask for input, then potentially overwrite with new game.
-    setCurrentDisplay("resume");
-  }, []);
+  const [showPhoto, setShowPhoto] = React.useState(() => {
+    return getFromStorage<boolean>("dragonHeroShowPhoto") ?? true;
+  });
 
   React.useEffect(() => {
-    const stateToSave = {
-      gameState,
-      currentDisplay,
-      showMap,
-      showPhoto,
-    };
+    saveToStorage("dragonHeroShowMap", showMap);
+  }, [showMap]);
 
-    saveToStorage("dragonHeroState", stateToSave);
-  }, [gameState, currentDisplay, showMap, showPhoto]);
+  React.useEffect(() => {
+    saveToStorage("dragonHeroShowPhoto", showPhoto);
+  }, [showPhoto]);
+
+  React.useEffect(() => {
+    saveToStorage("dragonHeroGameState", gameState);
+  }, [gameState]);
 
   // ******
   // Start analytics setup
@@ -162,8 +149,8 @@ function App(): React.JSX.Element {
     case "installOverview":
       return (
         <InstallOverview
-          closeAction={()=>setCurrentDisplay("location")}
-          pwaInstallAction={()=>setCurrentDisplay("pwaInstall")}
+          closeAction={() => setCurrentDisplay("location")}
+          pwaInstallAction={() => setCurrentDisplay("pwaInstall")}
           installPromptEvent={installPromptEvent}
           showInstallButton={showInstallButton}
           handleInstall={handleInstall}
@@ -178,7 +165,7 @@ function App(): React.JSX.Element {
     case "pwaInstall":
       return (
         <PWAInstall
-          closeAction={()=>setCurrentDisplay("location")}
+          closeAction={() => setCurrentDisplay("location")}
           googleAppLink={
             "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           }

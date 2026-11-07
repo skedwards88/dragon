@@ -57,7 +57,6 @@ function updateLocations({
 
 export type ReducerPayload =
   | {action: "newGame"}
-  | {action: "resume"; savedGameState: GameState}
   | {action: "takeItem"; item: ItemName}
   | {action: "useItem"; item: ItemName}
   | {action: "dropItem"; item: ItemName}
@@ -72,12 +71,7 @@ export function reducer(
   payload: ReducerPayload,
 ): GameState {
   if (payload.action === "newGame") {
-    return init();
-  } else if (payload.action === "resume") {
-    return {
-      ...currentGameState,
-      ...payload.savedGameState,
-    };
+    return init({useSaved: false});
   } else if (payload.action === "takeItem") {
     const item = payload.item;
     const playerLocation = currentGameState.playerLocation;

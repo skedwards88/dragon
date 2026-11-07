@@ -4,6 +4,7 @@ import {
   locations,
 } from "./locations";
 import {type ItemName, type ItemInfo, items} from "./items";
+import {getFromStorage} from "@skedwards88/shared-components/src/logic/safeStorage";
 
 export type GameState = {
   reputation: number;
@@ -49,17 +50,18 @@ export type GameState = {
   itemLocations: ItemLocations;
   journalPagesRemaining: number;
   journalEntry: GameState | null;
+  resumedFromSaved: boolean;
 };
 
 type ItemLocations = Record<LocationName | AlterItemLocationName, ItemName[]>;
 
-function buildStartingLocations(): ItemLocations {
-  const allLocations = [
-    ...(Object.keys(locations) as LocationName[]),
-    "inventory",
-    "outOfPlay",
-  ] as const;
+const allLocations = [
+  ...(Object.keys(locations) as LocationName[]),
+  "inventory",
+  "outOfPlay",
+] as const;
 
+function buildStartingLocations(): ItemLocations {
   const startingItemLocations = Object.fromEntries(
     allLocations.map((key) => [key, [] as ItemName[]]),
   ) as ItemLocations;
@@ -74,7 +76,128 @@ function buildStartingLocations(): ItemLocations {
   return startingItemLocations;
 }
 
-export function init(): GameState {
+function savedStateValidQ(
+  savedState: GameState,
+  checkJournalEntry: boolean = true,
+): boolean {
+  if (typeof savedState !== "object" || savedState === null) {
+    return false;
+  }
+
+  // All number fields must be numbers and finite
+  for (const key of [
+    "reputation",
+    "gold",
+    "timeInCave",
+    "swordCost",
+    "maxSwordCost",
+    "treasureAmount",
+    "treasureLevel",
+    "preCreditTreasureLevel",
+    "singeCount",
+    "maxReputation",
+    "maxGold",
+    "appleBitesRemaining",
+    "journalPagesRemaining",
+  ] as const) {
+    if (
+      typeof savedState[key] !== "number" ||
+      !Number.isFinite(savedState[key])
+    ) {
+      return false;
+    }
+  }
+
+  // all bool fields must be bools
+  for (const key of [
+    "ownSword",
+    "manorFire",
+    "naked",
+    "squirrelDead",
+    "horseDead",
+    "horseTethered",
+    "horseMounted",
+    "playerPoisoned",
+    "clothesPoopy",
+    "handkerchiefDamp",
+    "playerMasked",
+    "babyCough",
+    "playerCough",
+    "savedBaby",
+    "receivedBabyReward",
+    "playedForYouth",
+    "offeredHandkerchiefToYouth",
+    "cursed",
+    "firstCourtyardEntry",
+    "dragonPoisoned",
+    "dragonAsleep",
+    "dragonDead",
+    "gotScoreByCredit",
+    "paidDebt",
+    "gotScoreByTrade",
+    "resumedFromSaved",
+  ] as const) {
+    if (typeof savedState[key] !== "boolean") return false;
+  }
+
+  // all string fields must be strings
+  for (const key of ["consequenceText", "locationConsequenceText"] as const) {
+    if (typeof savedState[key] !== "string") return false;
+  }
+
+  // player must be in valid location
+  if (!Object.keys(locations).includes(savedState.playerLocation)) {
+    return false;
+  }
+
+  const itemLocations = savedState.itemLocations;
+  if (typeof itemLocations !== "object" || itemLocations === null) {
+    return false;
+  }
+
+  // There must be an items entry for every location, and only known items at each location
+  for (const locationName of allLocations) {
+    const itemsAtLocation = itemLocations[locationName];
+    if (!Array.isArray(itemsAtLocation)) {
+      return false;
+    }
+    for (const itemAtLocation of itemsAtLocation) {
+      if (
+        typeof itemAtLocation !== "string" ||
+        !Object.keys(items).includes(itemAtLocation)
+      )
+        return false;
+    }
+  }
+
+  // There can't be unknown locations in the item locations entry
+  for (const savedLocation of Object.keys(itemLocations)) {
+    if (!(allLocations as readonly string[]).includes(savedLocation)) {
+      return false;
+    }
+  }
+
+  // journal entry must be valid if exists (but don't need the journal entry of the journal entry to be valid since it doesn't get used)
+  if (
+    checkJournalEntry &&
+    savedState.journalEntry !== null &&
+    !savedStateValidQ(savedState.journalEntry, false)
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+export function init({useSaved}: {useSaved: boolean}): GameState {
+  if (useSaved) {
+    const savedState = getFromStorage<GameState>("dragonHeroGameState");
+
+    if (savedState && savedStateValidQ(savedState)) {
+      return {...savedState, resumedFromSaved: true};
+    }
+  }
+
   const startingItemLocations = buildStartingLocations();
 
   return {
@@ -121,5 +244,6 @@ export function init(): GameState {
     itemLocations: startingItemLocations,
     journalPagesRemaining: 3,
     journalEntry: null,
+    resumedFromSaved: false,
   };
 }
