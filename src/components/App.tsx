@@ -8,15 +8,32 @@ import Info from "./info";
 import Restart from "./restart";
 import Resume from "./resume";
 import {reducer} from "../logic/reducer";
-import {init} from "../logic/init";
+import {type GameState, init} from "../logic/init";
 import {useInstallPrompt} from "@skedwards88/shared-components/src/logic/handleInstall";
 import InstallOverview from "@skedwards88/shared-components/src/components/InstallOverview";
 import PWAInstall from "@skedwards88/shared-components/src/components/PWAInstall";
 import {sendAnalyticsCF} from "@skedwards88/shared-components/src/logic/sendAnalyticsCF";
 import {inferKeyEvents} from "../logic/inferKeyEvents";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
+import {getFromStorage, saveToStorage} from "@skedwards88/shared-components/src/logic/safeStorage";
 
-function App() {
+export type DisplayState =
+  | "location"
+  | "inventory"
+  | "consequence"
+  | "info"
+  | "restart"
+  | "resume"
+  | "installOverview"
+  | "pwaInstall";
+
+type OverallState = {
+  gameState: GameState;
+  currentDisplay: DisplayState;
+  showMap: boolean;
+  showPhoto: boolean;
+};
+function App(): React.JSX.Element {
   const {userId, sessionId} = useMetadataContext();
 
   // This must live at the top level component, not in InstallOverview where it is used, since the InstallOverview is not rendered initially and therefore misses its chance to attach the listeners
@@ -25,30 +42,25 @@ function App() {
 
   const [gameState, dispatchGameState] = React.useReducer(reducer, {}, init);
 
-  const [currentDisplay, setCurrentDisplay] = React.useState("location"); // location | inventory | consequence | info | restart | resume
+  const [currentDisplay, setCurrentDisplay] =
+    React.useState<DisplayState>("location");
   const [showMap, setShowMap] = React.useState(true);
   const [showPhoto, setShowPhoto] = React.useState(true);
 
   React.useLayoutEffect(() => {
     // Check if saved state is available and if has all info
     //   locationConsequenceText and consequenceText may be empty, so don't check those
-    const savedState = JSON.parse(localStorage.getItem("dragonHeroState"));
-    if (
-      !(
-        (
-          savedState &&
-          savedState.gameState &&
-          savedState.gameState.playerLocation &&
-          savedState.gameState.itemLocations
-        )
-        // todo should also check for existence of all other values, keeping in mind 0/false values
-      )
-    ) {
+    const savedState = getFromStorage<OverallState>("dragonHeroState");
+    if (!(
+      savedState?.gameState?.playerLocation &&
+      savedState.gameState.itemLocations
+      // todo should also check for existence of all other values, keeping in mind 0/false values
+    )) {
       return;
     }
 
     // If yes, update state
-    dispatchGameState({action: "resume", savedState: savedState});
+    dispatchGameState({action: "resume", savedGameState: savedState.gameState});
     setShowMap(savedState.showMap ?? true);
     setShowPhoto(savedState.showPhoto ?? true);
 
@@ -59,13 +71,13 @@ function App() {
 
   React.useEffect(() => {
     const stateToSave = {
-      gameState: gameState,
-      currentDisplay: currentDisplay,
-      showMap: showMap,
-      showPhoto: showPhoto,
+      gameState,
+      currentDisplay,
+      showMap,
+      showPhoto,
     };
 
-    window.localStorage.setItem("dragonHeroState", JSON.stringify(stateToSave));
+    saveToStorage("dragonHeroState", stateToSave);
   }, [gameState, currentDisplay, showMap, showPhoto]);
 
   // ******
@@ -107,7 +119,6 @@ function App() {
   if (gameState.playerLocation === "gate" && gameState.treasureLevel) {
     return (
       <GameWon
-        result="win"
         dispatchGameState={dispatchGameState}
         gameState={gameState}
         setCurrentDisplay={setCurrentDisplay}
@@ -151,10 +162,11 @@ function App() {
     case "installOverview":
       return (
         <InstallOverview
-          setDisplay={setCurrentDisplay}
-          setInstallPromptEvent={setInstallPromptEvent}
-          showInstallButton={showInstallButton}
+          closeAction={()=>setCurrentDisplay("location")}
+          pwaInstallAction={()=>setCurrentDisplay("pwaInstall")}
           installPromptEvent={installPromptEvent}
+          showInstallButton={showInstallButton}
+          handleInstall={handleInstall}
           googleAppLink={
             "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           }
@@ -166,11 +178,13 @@ function App() {
     case "pwaInstall":
       return (
         <PWAInstall
-          setDisplay={setCurrentDisplay}
+          closeAction={()=>setCurrentDisplay("location")}
           googleAppLink={
             "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           }
-          pwaLink={"https://skedwards88.github.io/dragon"}
+          pwaLink={"https://dragon.twistedtrailgames.com/"}
+          userId={userId}
+          sessionId={sessionId}
         ></PWAInstall>
       );
 

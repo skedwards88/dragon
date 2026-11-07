@@ -1,11 +1,11 @@
 import {locations, dragonDescription} from "./locations";
-import {init} from "./init";
+import {type GameState, init} from "./init";
 
 const newGameState = init();
 
 test("Inn description, apple not taken, not clothed", () => {
   const location = "inn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -18,7 +18,7 @@ test("Inn description, apple not taken, not clothed", () => {
 
 test("Inn description, apple not taken, clothed", () => {
   const location = "inn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
   };
@@ -30,7 +30,7 @@ test("Inn description, apple not taken, clothed", () => {
 
 test("Inn description, apple not taken but partially eaten, clothed", () => {
   const location = "inn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     appleBitesRemaining: 4,
@@ -43,7 +43,7 @@ test("Inn description, apple not taken but partially eaten, clothed", () => {
 
 test("Inn description, apple taken, not clothed", () => {
   const location = "inn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, inn: ["lute"]},
   };
@@ -55,9 +55,9 @@ test("Inn description, apple taken, not clothed", () => {
   `);
 });
 
-test("Inn description, apple not taken, clothed", () => {
+test("Inn description, apple not at inn, clothed", () => {
   const location = "inn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     itemLocations: {...newGameState.itemLocations, inn: ["lute"]},
@@ -70,7 +70,7 @@ test("Inn description, apple not taken, clothed", () => {
 
 test("Mirror description, clothed", () => {
   const location = "mirror";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
   };
@@ -82,7 +82,7 @@ test("Mirror description, clothed", () => {
 
 test("Mirror description, not clothed", () => {
   const location = "mirror";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: true,
   };
@@ -92,7 +92,7 @@ test("Mirror description, not clothed", () => {
 
 test("Wardrobe description, clothes not taken", () => {
   const location = "wardrobe";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -103,7 +103,7 @@ test("Wardrobe description, clothes not taken", () => {
 
 test("Wardrobe description, clothes taken", () => {
   const location = "wardrobe";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, wardrobe: ["lute"]},
   };
@@ -115,7 +115,7 @@ test("Wardrobe description, clothes taken", () => {
 
 test("Inn window description, manor on fire", () => {
   const location = "window";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
   };
@@ -127,7 +127,7 @@ test("Inn window description, manor on fire", () => {
 
 test("Inn window description, manor not on fire", () => {
   const location = "window";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -139,7 +139,7 @@ test("Inn window description, manor not on fire", () => {
 
 test("Room description, lute not taken", () => {
   const location = "room";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -148,9 +148,9 @@ test("Room description, lute not taken", () => {
   );
 });
 
-test("Room description, lute taken", () => {
+test("Room description, lute taken, manor on fire", () => {
   const location = "room";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, room: []},
   };
@@ -162,7 +162,7 @@ test("Room description, lute taken", () => {
 
 test("Room description, lute not taken, no fire", () => {
   const location = "room";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -172,9 +172,9 @@ test("Room description, lute not taken, no fire", () => {
   );
 });
 
-test("Room description, lute taken", () => {
+test("Room description, lute taken, manor not on fire", () => {
   const location = "room";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
     itemLocations: {...newGameState.itemLocations, room: []},
@@ -187,7 +187,7 @@ test("Room description, lute taken", () => {
 
 test("Courtyard description, fire, first time", () => {
   const location = "courtyard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -200,7 +200,7 @@ test("Courtyard description, fire, first time", () => {
 
 test("Courtyard description, fire, not first time", () => {
   const location = "courtyard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     firstCourtyardEntry: false,
   };
@@ -212,7 +212,7 @@ test("Courtyard description, fire, not first time", () => {
 
 test("Courtyard description, no fire, first time", () => {
   const location = "courtyard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -226,7 +226,7 @@ test("Courtyard description, no fire, first time", () => {
 
 test("Courtyard description, no fire, not first time", () => {
   const location = "courtyard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     firstCourtyardEntry: false,
     manorFire: false,
@@ -239,7 +239,7 @@ test("Courtyard description, no fire, not first time", () => {
 
 test("Nursery description, fire, baby absent", () => {
   const location = "nursery";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, nursery: []},
   };
@@ -251,7 +251,7 @@ test("Nursery description, fire, baby absent", () => {
 
 test("Nursery description, fire, baby present", () => {
   const location = "nursery";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, nursery: ["baby"]},
   };
@@ -263,7 +263,7 @@ test("Nursery description, fire, baby present", () => {
 
 test("Nursery description, no fire", () => {
   const location = "nursery";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -275,7 +275,7 @@ test("Nursery description, no fire", () => {
 
 test("Nursery window description, no fire", () => {
   const location = "nurseryWindow";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -287,7 +287,7 @@ test("Nursery window description, no fire", () => {
 
 test("Nursery window description, fire", () => {
   const location = "nurseryWindow";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -298,7 +298,7 @@ test("Nursery window description, fire", () => {
 
 test("Smithy description, sword present", () => {
   const location = "smithy";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -309,7 +309,7 @@ test("Smithy description, sword present", () => {
 
 test("Smithy description, sword absent", () => {
   const location = "smithy";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, smithy: []},
   };
@@ -321,7 +321,7 @@ test("Smithy description, sword absent", () => {
 
 test("Lawn description, fire, not saved baby, naked", () => {
   const location = "lawn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     naked: true,
@@ -344,7 +344,7 @@ test("Lawn description, fire, not saved baby, naked", () => {
 
 test("lawn description, fire, not saved baby, not naked", () => {
   const location = "lawn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     naked: false,
@@ -365,7 +365,7 @@ test("lawn description, fire, not saved baby, not naked", () => {
 
 test("lawn description, no fire", () => {
   const location = "lawn";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
     naked: false,
@@ -389,7 +389,7 @@ test.each([
   "lawn description: naked $naked, babyCough $babyCough, playerCough $playerCough",
   ({naked, babyCough, playerCough}) => {
     const location = "lawn";
-    const gameState = {
+    const gameState: GameState = {
       ...newGameState,
       manorFire: true,
       naked: naked,
@@ -405,7 +405,7 @@ test.each([
 
 test("fountain description, fire", () => {
   const location = "fountain";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
   };
@@ -419,7 +419,7 @@ test("fountain description, fire", () => {
 
 test("fountain description, no fire", () => {
   const location = "fountain";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -433,7 +433,7 @@ test("fountain description, no fire", () => {
 
 test("entryway description, no fire", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -445,7 +445,7 @@ test("entryway description, no fire", () => {
 
 test("entryway description, fire, baby in nursery, not masked", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
   };
@@ -459,7 +459,7 @@ test("entryway description, fire, baby in nursery, not masked", () => {
 
 test("entryway description, fire, baby in nursery, masked not damp", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     playerMasked: true,
@@ -476,7 +476,7 @@ test("entryway description, fire, baby in nursery, masked not damp", () => {
 
 test("entryway description, fire, baby in nursery, damp not masked", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     handkerchiefDamp: true,
@@ -491,7 +491,7 @@ test("entryway description, fire, baby in nursery, damp not masked", () => {
 
 test("entryway description, fire, baby in nursery, damp and masked", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     handkerchiefDamp: true,
@@ -507,7 +507,7 @@ test("entryway description, fire, baby in nursery, damp and masked", () => {
 
 test("entryway description, fire, baby not in nursery, not masked", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     itemLocations: {...newGameState.itemLocations, nursery: []},
@@ -522,7 +522,7 @@ test("entryway description, fire, baby not in nursery, not masked", () => {
 
 test("entryway description, fire, baby not in nursery, masked not damp", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     playerMasked: true,
@@ -540,7 +540,7 @@ test("entryway description, fire, baby not in nursery, masked not damp", () => {
 
 test("entryway description, fire, baby not in nursery, damp not masked", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     handkerchiefDamp: true,
@@ -556,7 +556,7 @@ test("entryway description, fire, baby not in nursery, damp not masked", () => {
 
 test("entryway description, fire, baby not in nursery, damp and masked", () => {
   const location = "entryway";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     handkerchiefDamp: true,
@@ -573,7 +573,7 @@ test("entryway description, fire, baby not in nursery, damp and masked", () => {
 
 test("nursery description, fire, baby not in nursery", () => {
   const location = "nursery";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
     itemLocations: {...newGameState.itemLocations, nursery: []},
@@ -586,7 +586,7 @@ test("nursery description, fire, baby not in nursery", () => {
 
 test("nursery description, fire, baby in nursery", () => {
   const location = "nursery";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: true,
   };
@@ -598,7 +598,7 @@ test("nursery description, fire, baby in nursery", () => {
 
 test("nursery description, no fire", () => {
   const location = "nursery";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     manorFire: false,
   };
@@ -610,7 +610,7 @@ test("nursery description, no fire", () => {
 
 test("blacksmith description, sword absent, clothed, not masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     itemLocations: {...newGameState.itemLocations, smithy: []},
@@ -623,7 +623,7 @@ test("blacksmith description, sword absent, clothed, not masked", () => {
 
 test("blacksmith description, sword absent, not clothed, not masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, smithy: []},
   };
@@ -635,7 +635,7 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
 
 test("blacksmith description, sword absent, clothed, masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     playerMasked: true,
@@ -647,9 +647,9 @@ test("blacksmith description, sword absent, clothed, masked", () => {
   );
 });
 
-test("blacksmith description, sword absent, not clothed, not masked", () => {
+test("blacksmith description, sword absent, not clothed, masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: true,
     playerMasked: true,
@@ -663,7 +663,7 @@ test("blacksmith description, sword absent, not clothed, not masked", () => {
 
 test("blacksmith description, sword present but already bought, clothed, not masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     ownSword: true,
@@ -677,7 +677,7 @@ test("blacksmith description, sword present but already bought, clothed, not mas
 
 test("blacksmith description, sword present but already bought, not clothed, not masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     ownSword: true,
     itemLocations: {...newGameState.itemLocations, smithy: ["sword"]},
@@ -690,7 +690,7 @@ test("blacksmith description, sword present but already bought, not clothed, not
 
 test("blacksmith description, sword present but already bought, clothed, masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     playerMasked: true,
@@ -703,9 +703,9 @@ test("blacksmith description, sword present but already bought, clothed, masked"
   );
 });
 
-test("blacksmith description, sword present but already bought, not clothed, not masked", () => {
+test("blacksmith description, sword present but already bought, not clothed, masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: true,
     playerMasked: true,
@@ -720,7 +720,7 @@ test("blacksmith description, sword present but already bought, not clothed, not
 
 test("blacksmith description, sword present, clothed, not masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
   };
@@ -734,7 +734,7 @@ test("blacksmith description, sword present, clothed, not masked", () => {
 
 test("blacksmith description, sword present, not clothed, not masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -747,7 +747,7 @@ test("blacksmith description, sword present, not clothed, not masked", () => {
 
 test("blacksmith description, sword present, clothed, masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     playerMasked: true,
@@ -760,9 +760,9 @@ test("blacksmith description, sword present, clothed, masked", () => {
   `);
 });
 
-test("blacksmith description, sword present, not clothed, not masked", () => {
+test("blacksmith description, sword present, not clothed, masked", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: true,
     playerMasked: true,
@@ -777,7 +777,7 @@ test("blacksmith description, sword present, not clothed, not masked", () => {
 
 test("blacksmith description, sword present, not clothed, not masked, upped cost", () => {
   const location = "blacksmith";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: true,
     playerMasked: true,
@@ -793,7 +793,7 @@ test("blacksmith description, sword present, not clothed, not masked, upped cost
 
 test("pasture description, horse present, not dead, not tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -806,7 +806,7 @@ test("pasture description, horse present, not dead, not tethered", () => {
 
 test("pasture description, horse absent, not dead, not tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, pasture: []},
   };
@@ -818,7 +818,7 @@ test("pasture description, horse absent, not dead, not tethered", () => {
 
 test("pasture description, horse present, dead, not tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseDead: true,
     itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
@@ -831,7 +831,7 @@ test("pasture description, horse present, dead, not tethered", () => {
 
 test("pasture description, horse present, not dead, tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseTethered: true,
     itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
@@ -844,7 +844,7 @@ test("pasture description, horse present, not dead, tethered", () => {
 
 test("pasture description, horse present, dead, tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseDead: true,
     horseTethered: true,
@@ -858,7 +858,7 @@ test("pasture description, horse present, dead, tethered", () => {
 
 test("pasture name/sentient, horse present, not dead, not tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const name = locations[location].getDisplayName(gameState);
@@ -869,7 +869,7 @@ test("pasture name/sentient, horse present, not dead, not tethered", () => {
 
 test("pasture name/sentient, horse absent, not dead, not tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, pasture: []},
   };
@@ -881,7 +881,7 @@ test("pasture name/sentient, horse absent, not dead, not tethered", () => {
 
 test("pasture name/sentient, horse present, dead, not tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseDead: true,
     itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
@@ -894,7 +894,7 @@ test("pasture name/sentient, horse present, dead, not tethered", () => {
 
 test("pasture name/sentient, horse present, not dead, tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseTethered: true,
     itemLocations: {...newGameState.itemLocations, pasture: ["horse"]},
@@ -907,7 +907,7 @@ test("pasture name/sentient, horse present, not dead, tethered", () => {
 
 test("pasture name/sentient, horse present, dead, tethered", () => {
   const location = "pasture";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseDead: true,
     horseTethered: true,
@@ -921,7 +921,7 @@ test("pasture name/sentient, horse present, dead, tethered", () => {
 
 test("gate description, not played for youth", () => {
   const location = "gate";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -934,7 +934,7 @@ test("gate description, not played for youth", () => {
 
 test("gate description, played for youth", () => {
   const location = "gate";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     playedForYouth: true,
   };
@@ -948,7 +948,7 @@ test("gate description, played for youth", () => {
 
 test("youth description, played for youth, clothed", () => {
   const location = "youth";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     playedForYouth: true,
     naked: false,
@@ -961,7 +961,7 @@ test("youth description, played for youth, clothed", () => {
 
 test("youth description, played for youth, not clothed", () => {
   const location = "youth";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     playedForYouth: true,
   };
@@ -973,7 +973,7 @@ test("youth description, played for youth, not clothed", () => {
 
 test("youth description, not played for youth, clothed", () => {
   const location = "youth";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
   };
@@ -985,7 +985,7 @@ test("youth description, not played for youth, clothed", () => {
 
 test("youth description, not played for youth, not clothed", () => {
   const location = "youth";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -996,7 +996,7 @@ test("youth description, not played for youth, not clothed", () => {
 
 test("road1 description, not mounted", () => {
   const location = "road1";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1010,7 +1010,7 @@ test("road1 description, not mounted", () => {
 
 test("road1 description, mounted", () => {
   const location = "road1";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseMounted: true,
   };
@@ -1027,7 +1027,7 @@ test("road1 description, mounted", () => {
 
 test("road2 description, not mounted", () => {
   const location = "road2";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1043,7 +1043,7 @@ test("road2 description, not mounted", () => {
 
 test("road2 description, mounted", () => {
   const location = "road2";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseMounted: true,
   };
@@ -1060,7 +1060,7 @@ test("road2 description, mounted", () => {
 
 test("road3 description, not mounted", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1074,7 +1074,7 @@ test("road3 description, not mounted", () => {
 
 test("road3 description, mounted", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     horseMounted: true,
   };
@@ -1091,7 +1091,7 @@ test("road3 description, mounted", () => {
 
 test("road3 description, getting cursed", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: false,
@@ -1106,7 +1106,7 @@ test("road3 description, getting cursed", () => {
 
 test("road3 description, not in debt", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: false,
     paidDebt: false,
@@ -1121,7 +1121,7 @@ test("road3 description, not in debt", () => {
 
 test("road3 description, no treasure so won't get cursed", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: false,
@@ -1135,7 +1135,7 @@ test("road3 description, no treasure so won't get cursed", () => {
 
 test("road3 description, already cursed", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: false,
@@ -1150,7 +1150,7 @@ test("road3 description, already cursed", () => {
 
 test("road3 description, paid to prevent curse", () => {
   const location = "road3";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: true,
@@ -1165,7 +1165,7 @@ test("road3 description, paid to prevent curse", () => {
 
 test("stream description, not in debt", () => {
   const location = "stream";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: false,
     paidDebt: false,
@@ -1179,7 +1179,7 @@ test("stream description, not in debt", () => {
 
 test("stream description, in debt", () => {
   const location = "stream";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: false,
@@ -1194,7 +1194,7 @@ test("stream description, in debt", () => {
 });
 test("stream description, in debt but already cursed", () => {
   const location = "stream";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: false,
@@ -1208,7 +1208,7 @@ test("stream description, in debt but already cursed", () => {
 
 test("stream description, paid debt", () => {
   const location = "stream";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     gotScoreByCredit: true,
     paidDebt: true,
@@ -1222,7 +1222,7 @@ test("stream description, paid debt", () => {
 
 test("clearing description, not cursed, squirrel not dead", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1239,7 +1239,7 @@ test("clearing description, not cursed, squirrel not dead", () => {
 
 test("clearing description, cursed, squirrel not dead", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: false,
     cursed: true,
@@ -1259,7 +1259,7 @@ test("clearing description, cursed, squirrel not dead", () => {
 
 test("clearing description, not cursed, squirrel dead", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: true,
     cursed: false,
@@ -1278,7 +1278,7 @@ test("clearing description, not cursed, squirrel dead", () => {
 
 test("clearing description, cursed, squirrel dead", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: true,
     cursed: true,
@@ -1298,7 +1298,7 @@ test("clearing description, cursed, squirrel dead", () => {
 
 test("clearing description, not cursed, squirrel dead, horse dead but not here", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: false,
     cursed: false,
@@ -1318,7 +1318,7 @@ test("clearing description, not cursed, squirrel dead, horse dead but not here",
 
 test("clearing description, not cursed, squirrel dead, horse dead here", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: false,
     cursed: false,
@@ -1341,7 +1341,7 @@ test("clearing description, not cursed, squirrel dead, horse dead here", () => {
 
 test("clearing description, not cursed, squirrel dead, horse here not dead", () => {
   const location = "clearing";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: false,
     cursed: false,
@@ -1362,7 +1362,7 @@ test("clearing description, not cursed, squirrel dead, horse here not dead", () 
 
 test("squirrel description, not dead", () => {
   const location = "squirrel";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1377,7 +1377,7 @@ test("squirrel description, not dead", () => {
 
 test("squirrel description, dead", () => {
   const location = "squirrel";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     squirrelDead: true,
   };
@@ -1393,7 +1393,7 @@ test("squirrel description, dead", () => {
 
 test("wizard description, naked, score on offer", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1412,7 +1412,7 @@ test("wizard description, naked, score on offer", () => {
 
 test("wizard description, naked, score on offer, you have score", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, inventory: ["sword"]},
   };
@@ -1432,7 +1432,7 @@ test("wizard description, naked, score on offer, you have score", () => {
 
 test("wizard description, not naked, score on offer", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
   };
@@ -1452,7 +1452,7 @@ test("wizard description, not naked, score on offer", () => {
 
 test("wizard description, not naked, score by trade", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByTrade: true,
@@ -1465,7 +1465,7 @@ test("wizard description, not naked, score by trade", () => {
 
 test("wizard description, not naked, score by credit", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
@@ -1478,7 +1478,7 @@ test("wizard description, not naked, score by credit", () => {
 
 test("wizard description, not naked, score at wizard but you own it by credit", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
@@ -1492,7 +1492,7 @@ test("wizard description, not naked, score at wizard but you own it by credit", 
 
 test("wizard description, not naked, score at wizard but you own it by trade", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByTrade: true,
@@ -1506,7 +1506,7 @@ test("wizard description, not naked, score at wizard but you own it by trade", (
 
 test("wizard description, not naked, score not at wizard", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     itemLocations: {...newGameState.itemLocations, wizard: []},
@@ -1519,7 +1519,7 @@ test("wizard description, not naked, score not at wizard", () => {
 
 test("wizard description, not naked, got score by credit, did not pay debt, no treasure", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
@@ -1533,7 +1533,7 @@ test("wizard description, not naked, got score by credit, did not pay debt, no t
 
 test("wizard description, not naked, got score by credit, did not pay debt, treasure", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
@@ -1548,7 +1548,7 @@ test("wizard description, not naked, got score by credit, did not pay debt, trea
 
 test("wizard description, not naked, got score by credit, did not pay debt, treasure but not more than what had when made deal", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
@@ -1564,7 +1564,7 @@ test("wizard description, not naked, got score by credit, did not pay debt, trea
 
 test("wizard description, not naked, got score by credit, paid debt, treasure", () => {
   const location = "wizard";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     naked: false,
     gotScoreByCredit: true,
@@ -1580,7 +1580,7 @@ test("wizard description, not naked, got score by credit, paid debt, treasure", 
 
 test("cliff description, no horse", () => {
   const location = "cliff";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1593,7 +1593,7 @@ test("cliff description, no horse", () => {
 
 test("cliff description, horse", () => {
   const location = "cliff";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     itemLocations: {...newGameState.itemLocations, inventory: ["horse"]},
   };
@@ -1607,7 +1607,7 @@ test("cliff description, horse", () => {
 
 test("caveEntrance description, dragon not asleep, clothes not poopy not worn", () => {
   const location = "caveEntrance";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     clothesPoopy: false,
     naked: true,
@@ -1622,7 +1622,7 @@ test("caveEntrance description, dragon not asleep, clothes not poopy not worn", 
 
 test("caveEntrance description, dragon not asleep, clothes poopy but not worn", () => {
   const location = "caveEntrance";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     clothesPoopy: true,
     naked: true,
@@ -1637,7 +1637,7 @@ test("caveEntrance description, dragon not asleep, clothes poopy but not worn", 
 
 test("caveEntrance description, dragon not asleep, clothes not poopy but worn", () => {
   const location = "caveEntrance";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     clothesPoopy: false,
     naked: false,
@@ -1652,7 +1652,7 @@ test("caveEntrance description, dragon not asleep, clothes not poopy but worn", 
 
 test("caveEntrance description, dragon not asleep, clothes poopy and worn", () => {
   const location = "caveEntrance";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     clothesPoopy: true,
     naked: false,
@@ -1667,7 +1667,7 @@ test("caveEntrance description, dragon not asleep, clothes poopy and worn", () =
 
 test("caveEntrance description, dragon asleep", () => {
   const location = "caveEntrance";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     dragonAsleep: true,
   };
@@ -1679,7 +1679,7 @@ test("caveEntrance description, dragon asleep", () => {
 
 test("lair description, dragon poisoned, dragon asleep, dragon dead", () => {
   const location = "lair";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     dragonPoisoned: true,
     dragonAsleep: true,
@@ -1695,7 +1695,7 @@ test("lair description, dragon poisoned, dragon asleep, dragon dead", () => {
 
 test("lair description, dragon poisoned, dragon asleep, dragon not dead", () => {
   const location = "lair";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     dragonPoisoned: true,
     dragonAsleep: true,
@@ -1710,7 +1710,7 @@ test("lair description, dragon poisoned, dragon asleep, dragon not dead", () => 
 
 test("lair description, dragon poisoned, dragon not asleep, dragon not dead", () => {
   const location = "lair";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
     dragonPoisoned: true,
   };
@@ -1726,7 +1726,7 @@ test("lair description, dragon poisoned, dragon not asleep, dragon not dead", ()
 
 test("lair description, dragon not poisoned, dragon not asleep, dragon not dead", () => {
   const location = "lair";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1739,7 +1739,7 @@ test("lair description, dragon not poisoned, dragon not asleep, dragon not dead"
 
 test("defecatory description, dragon not poisoned, dragon not asleep, dragon not dead", () => {
   const location = "defecatory";
-  const gameState = {
+  const gameState: GameState = {
     ...newGameState,
   };
   const description = locations[location].getDescription(gameState);
@@ -1782,7 +1782,10 @@ test.each([
     playerLocation: "dung",
     berryLocation: "inventory",
   },
-])(
+] satisfies ({berryLocation: keyof GameState["itemLocations"]} & Pick<
+  GameState,
+  "timeInCave" | "dragonPoisoned" | "clothesPoopy" | "naked" | "playerLocation"
+>)[])(
   "dragon description when dragon poisoned: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
@@ -1792,13 +1795,13 @@ test.each([
     playerLocation,
     berryLocation,
   }) => {
-    const gameState = {
+    const gameState: GameState = {
       ...newGameState,
-      timeInCave: timeInCave,
-      dragonPoisoned: dragonPoisoned,
-      clothesPoopy: clothesPoopy,
-      naked: naked,
-      playerLocation: playerLocation,
+      timeInCave,
+      dragonPoisoned,
+      clothesPoopy,
+      naked,
+      playerLocation,
       itemLocations: {
         ...newGameState.itemLocations,
         [berryLocation]: ["berries"],
@@ -1843,7 +1846,10 @@ test.each([
     playerLocation: "crevice",
     berryLocation: "puddle",
   },
-])(
+] satisfies ({berryLocation: keyof GameState["itemLocations"]} & Pick<
+  GameState,
+  "timeInCave" | "dragonPoisoned" | "clothesPoopy" | "naked" | "playerLocation"
+>)[])(
   "dragon description when conditions met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
@@ -1853,7 +1859,7 @@ test.each([
     playerLocation,
     berryLocation,
   }) => {
-    const gameState = {
+    const gameState: GameState = {
       ...newGameState,
       timeInCave: timeInCave,
       dragonPoisoned: dragonPoisoned,
@@ -1904,7 +1910,10 @@ test.each([
     playerLocation: "dung",
     berryLocation: "inventory",
   },
-])(
+] satisfies ({berryLocation: keyof GameState["itemLocations"]} & Pick<
+  GameState,
+  "timeInCave" | "dragonPoisoned" | "clothesPoopy" | "naked" | "playerLocation"
+>)[])(
   "dragon description with increasing time when conditions not met: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
@@ -1914,7 +1923,7 @@ test.each([
     playerLocation,
     berryLocation,
   }) => {
-    const gameState = {
+    const gameState: GameState = {
       ...newGameState,
       timeInCave: timeInCave,
       dragonPoisoned: dragonPoisoned,
@@ -1965,7 +1974,10 @@ test.each([
     playerLocation: "crevice",
     berryLocation: "dung",
   },
-])(
+] satisfies ({berryLocation: keyof GameState["itemLocations"]} & Pick<
+  GameState,
+  "timeInCave" | "dragonPoisoned" | "clothesPoopy" | "naked" | "playerLocation"
+>)[])(
   "dragon description with time up when conditions are not met in different ways: timeInCave $timeInCave, dragonPoisoned $dragonPoisoned, clothesPoopy $clothesPoopy, naked $naked, playerLocation $playerLocation, berryLocation $berryLocation,",
   ({
     timeInCave,
@@ -1975,7 +1987,7 @@ test.each([
     playerLocation,
     berryLocation,
   }) => {
-    const gameState = {
+    const gameState: GameState = {
       ...newGameState,
       timeInCave: timeInCave,
       dragonPoisoned: dragonPoisoned,

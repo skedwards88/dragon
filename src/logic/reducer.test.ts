@@ -1,11 +1,12 @@
-import {init} from "./init";
+import {type GameState, init} from "./init";
 import {reducer} from "./reducer";
 import {inferKeyEvents} from "./inferKeyEvents";
+import {type LocationName} from "./locations";
 
 const newGameState = init();
 
 test("New game resets state", () => {
-  const output = reducer({madeUpKey: true}, {action: "newGame"});
+  const output = reducer(newGameState, {action: "newGame"});
 
   expect(output).toMatchInlineSnapshot(`
     {
@@ -110,54 +111,89 @@ test("New game resets state", () => {
 });
 
 test("Resuming will apply saved state over new game state", () => {
+  const savedGameState: GameState = {
+    reputation: 10,
+    gold: 0,
+    timeInCave: 0,
+    swordCost: 40,
+    maxSwordCost: 50,
+    ownSword: false,
+    naked: true,
+    squirrelDead: false,
+    horseDead: false,
+    horseTethered: false,
+    horseMounted: false,
+    playerPoisoned: false,
+    handkerchiefDamp: false,
+    playerMasked: false,
+    playerCough: false,
+    savedBaby: false,
+    receivedBabyReward: false,
+    playedForYouth: false,
+    offeredHandkerchiefToYouth: false,
+    cursed: false,
+    firstCourtyardEntry: true,
+    dragonPoisoned: false,
+    dragonAsleep: false,
+    dragonDead: false,
+    treasureAmount: 300,
+    treasureLevel: 0,
+    preCreditTreasureLevel: 0,
+    singeCount: 0,
+    gotScoreByCredit: false,
+    paidDebt: false,
+    gotScoreByTrade: false,
+    maxReputation: 17,
+    maxGold: 310,
+    appleBitesRemaining: 5,
+    playerLocation: "room",
+    journalPagesRemaining: 3,
+    journalEntry: null,
+    babyCough: true,
+    clothesPoopy: true,
+    consequenceText: "This happened",
+    itemLocations: {
+      blacksmith: [],
+      caveEntrance: [],
+      clearing: ["berries"],
+      cliff: [],
+      courtyard: ["handkerchief"],
+      crevice: [],
+      defecatory: [],
+      dung: [],
+      fountain: [],
+      gate: [],
+      inn: ["apple"],
+      inventory: [],
+      lair: ["treasure"],
+      lawn: ["lute"],
+      entryway: [],
+      mirror: [],
+      nursery: ["baby"],
+      nurseryWindow: [],
+      outOfPlay: [],
+      pasture: ["horse"],
+      puddle: [],
+      road1: [],
+      road2: [],
+      road3: [],
+      room: [],
+      smithy: ["sword"],
+      squirrel: [],
+      stream: [],
+      wardrobe: ["clothes"],
+      window: [],
+      wizard: ["score"],
+      youth: [],
+    },
+    locationConsequenceText: "You are here",
+    manorFire: false,
+  };
+
   const input = newGameState;
   const output = reducer(input, {
     action: "resume",
-    savedState: {
-      currentDisplay: "location",
-      showMap: false,
-      gameState: {
-        babyCough: true,
-        clothesPoopy: true,
-        consequenceText: "This happened",
-        itemLocations: {
-          blacksmith: [],
-          caveEntrance: [],
-          clearing: ["berries"],
-          cliff: [],
-          courtyard: ["handkerchief"],
-          crevice: [],
-          defecatory: [],
-          dung: [],
-          fountain: [],
-          gate: [],
-          inn: ["apple"],
-          inventory: [],
-          lair: ["treasure"],
-          lawn: ["lute"],
-          entryway: [],
-          mirror: [],
-          nursery: ["baby"],
-          nurseryWindow: [],
-          outOfPlay: [],
-          pasture: ["horse"],
-          puddle: [],
-          road1: [],
-          road2: [],
-          road3: [],
-          room: [],
-          smithy: ["sword"],
-          squirrel: [],
-          stream: [],
-          wardrobe: ["clothes"],
-          window: [],
-          wizard: ["score"],
-          youth: [],
-        },
-        locationConsequenceText: "You are here",
-        manorFire: false,
-      },
-    },
+    savedGameState,
   });
 
   expect(output).toMatchInlineSnapshot(`
@@ -351,7 +387,7 @@ test("Playing the lute for the youth will boost reputation only once", () => {
 
 test("Removing your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
   const item = "clothes";
-  let location = "youth";
+  let location: LocationName = "youth";
 
   let output = reducer(
     {
@@ -487,7 +523,7 @@ test("Removing your clothes in the presence of a person (besides the wizard) wil
 
 test("Dropping your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
   const item = "clothes";
-  let location = "youth";
+  let location: LocationName = "youth";
 
   let output = reducer(
     {
@@ -628,7 +664,7 @@ test("Dropping your clothes in the presence of a person (besides the wizard) wil
 test("Dropping clothes in the dung pile will make them poopy", () => {
   const item = "clothes";
   const location = "dung";
-  const originalState1 = {
+  const originalState1: GameState = {
     ...newGameState,
     playerLocation: location,
     itemLocations: {...newGameState.itemLocations, inventory: [item]},
@@ -656,7 +692,7 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
     `"You drop your clothes in the dung. "`,
   );
 
-  const originalState2 = {
+  const originalState2: GameState = {
     ...newGameState,
     playerLocation: location,
     clothesPoopy: true,
@@ -687,8 +723,8 @@ test("Dropping clothes in the dung pile will make them poopy", () => {
 
 test("Dropping clothes in water will make them not poopy", () => {
   const item = "clothes";
-  let location = "fountain";
-  const input1 = {
+  let location: LocationName = "fountain";
+  const input1: GameState = {
     ...newGameState,
     playerLocation: location,
     clothesPoopy: true,
@@ -719,7 +755,7 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   location = "stream";
-  const input2 = {
+  const input2: GameState = {
     ...newGameState,
     playerLocation: location,
     clothesPoopy: true,
@@ -749,7 +785,7 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   location = "puddle";
-  const input3 = {
+  const input3: GameState = {
     ...newGameState,
     playerLocation: location,
     clothesPoopy: true,
@@ -779,7 +815,7 @@ test("Dropping clothes in water will make them not poopy", () => {
   );
 
   location = "puddle";
-  const input4 = {
+  const input4: GameState = {
     ...newGameState,
     playerLocation: location,
     clothesPoopy: true,
@@ -953,9 +989,9 @@ test("Eating the apple does not remove it from inventory", () => {
 
 test("Dropping the apple will give you the horse if the horse is present and if the apple is not eaten. The apple will go out of game.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -993,9 +1029,9 @@ test("Dropping the apple will give you the horse if the horse is present and if 
 
 test("Giving the apple will give you the horse if the horse is present and if the apple is not eaten. The apple will go out of game.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1033,9 +1069,9 @@ test("Giving the apple will give you the horse if the horse is present and if th
 
 test("Dropping the apple will give you the horse if the horse is present and if the apple is partially eaten. The apple will go out of game.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 2,
@@ -1074,9 +1110,9 @@ test("Dropping the apple will give you the horse if the horse is present and if 
 
 test("Giving the apple will give you the horse if the horse is present and if the apple is partially eaten. The apple will go out of game.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 2,
@@ -1115,9 +1151,9 @@ test("Giving the apple will give you the horse if the horse is present and if th
 
 test("Dropping the apple will not give you the horse if the apple is fully eaten. The apple will just be dropped at location.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 0,
@@ -1156,9 +1192,9 @@ test("Dropping the apple will not give you the horse if the apple is fully eaten
 
 test("Giving the apple will not give you the horse if the apple is fully eaten. The apple will just be dropped at location.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 0,
@@ -1197,9 +1233,9 @@ test("Giving the apple will not give you the horse if the apple is fully eaten. 
 
 test("Dropping the apple at the pasture will not matter if the horse is not at the pasture.", () => {
   const item = "apple";
-  let location = "pasture";
+  const location = "pasture";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       appleBitesRemaining: 0,
@@ -1236,9 +1272,9 @@ test("Dropping the apple at the pasture will not matter if the horse is not at t
 
 test("Giving the apple to the squirrel will effectively drop it.", () => {
   const item = "apple";
-  let location = "squirrel";
+  const location = "squirrel";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1267,9 +1303,9 @@ test("Giving the apple to the squirrel will effectively drop it.", () => {
 
 test("Wearing handkerchief, not damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1293,9 +1329,9 @@ test("Wearing handkerchief, not damp, in entryway", () => {
 
 test("Wearing handkerchief, not damp, in nursery", () => {
   const item = "handkerchief";
-  let location = "nursery";
+  const location = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1319,9 +1355,9 @@ test("Wearing handkerchief, not damp, in nursery", () => {
 
 test("Wearing handkerchief, not damp, in nurseryWindow", () => {
   const item = "handkerchief";
-  let location = "nurseryWindow";
+  const location = "nurseryWindow";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1345,9 +1381,9 @@ test("Wearing handkerchief, not damp, in nurseryWindow", () => {
 
 test("Wearing handkerchief, not damp, in inn", () => {
   const item = "handkerchief";
-  let location = "inn";
+  const location = "inn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1371,9 +1407,9 @@ test("Wearing handkerchief, not damp, in inn", () => {
 
 test("Wearing handkerchief, damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1397,9 +1433,9 @@ test("Wearing handkerchief, damp, in entryway", () => {
 
 test("Wearing handkerchief, damp, in nursery", () => {
   const item = "handkerchief";
-  let location = "nursery";
+  const location = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1423,9 +1459,9 @@ test("Wearing handkerchief, damp, in nursery", () => {
 
 test("Wearing handkerchief, damp, in nurseryWindow", () => {
   const item = "handkerchief";
-  let location = "nurseryWindow";
+  const location = "nurseryWindow";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1449,9 +1485,9 @@ test("Wearing handkerchief, damp, in nurseryWindow", () => {
 
 test("Wearing handkerchief, damp, in inn", () => {
   const item = "handkerchief";
-  let location = "inn";
+  const location = "inn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1475,9 +1511,9 @@ test("Wearing handkerchief, damp, in inn", () => {
 
 test("Removing handkerchief, not damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1501,9 +1537,9 @@ test("Removing handkerchief, not damp, in entryway", () => {
 
 test("Removing handkerchief, damp, in entryway", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1527,9 +1563,9 @@ test("Removing handkerchief, damp, in entryway", () => {
 
 test("Wearing handkerchief, not damp, in entryway, no fire", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1554,9 +1590,9 @@ test("Wearing handkerchief, not damp, in entryway, no fire", () => {
 
 test("Wearing handkerchief, damp, in entryway, no fire", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1581,9 +1617,9 @@ test("Wearing handkerchief, damp, in entryway, no fire", () => {
 
 test("Wearing handkerchief in cave", () => {
   const item = "handkerchief";
-  let location = "crevice";
+  const location = "crevice";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1600,16 +1636,16 @@ test("Wearing handkerchief in cave", () => {
     },
   );
   expect(output.consequenceText).toMatchInlineSnapshot(
-    `"You tie the handkerchief around your nose and mouth. "`,
+    `"You tie the handkerchief around your nose and mouth. Even with it, the stench reaches your nose. "`,
   );
   expect(output.playerMasked).toBe(true);
 });
 
 test("Removing handkerchief in cave", () => {
   const item = "handkerchief";
-  let location = "crevice";
+  const location = "crevice";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1633,9 +1669,9 @@ test("Removing handkerchief in cave", () => {
 
 test("Dropping handkerchief when wearing it in fire", () => {
   const item = "handkerchief";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1660,9 +1696,9 @@ test("Dropping handkerchief when wearing it in fire", () => {
 
 test("Dropping handkerchief when wearing it in cave", () => {
   const item = "handkerchief";
-  let location = "crevice";
+  const location = "crevice";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1688,9 +1724,9 @@ test("Dropping handkerchief when wearing it in cave", () => {
 
 test("Dropping handkerchief when wearing it in fountain", () => {
   const item = "handkerchief";
-  let location = "fountain";
+  const location = "fountain";
 
-  const input1 = {
+  const input1: GameState = {
     ...newGameState,
     playerLocation: location,
     handkerchiefDamp: false,
@@ -1701,7 +1737,7 @@ test("Dropping handkerchief when wearing it in fountain", () => {
       inventory: ["handkerchief"],
     },
   };
-  let output = reducer(input1, {
+  const output = reducer(input1, {
     action: "dropItem",
     item: item,
   });
@@ -1711,14 +1747,14 @@ test("Dropping handkerchief when wearing it in fountain", () => {
   expect(output.playerMasked).toBe(false);
   expect(output.handkerchiefDamp).toBe(true);
 
-  let keyEvents = inferKeyEvents(input1, output);
+  const keyEvents = inferKeyEvents(input1, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("handkerchiefDamp");
 });
 
 test("Giving the handkerchief to youth once increases reputation and gives plot details. Giving again does nothing.", () => {
   const item = "handkerchief";
-  let location = "youth";
+  const location = "youth";
 
   let output = reducer(
     {
@@ -1772,9 +1808,9 @@ test("Giving the handkerchief to youth once increases reputation and gives plot 
 
 test("The baby has no use", () => {
   const item = "baby";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1796,9 +1832,9 @@ test("The baby has no use", () => {
 
 test("Dropping the baby in the nursery returns it to the crib and un-saves it", () => {
   const item = "baby";
-  let location = "nursery";
+  const location = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1828,9 +1864,9 @@ test("Dropping the baby in the nursery returns it to the crib and un-saves it", 
 
 test("Dropping the baby out the window saves it and removes it from game", () => {
   const item = "baby";
-  let location = "nurseryWindow";
+  const location = "nurseryWindow";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1863,9 +1899,9 @@ test("Dropping the baby out the window saves it and removes it from game", () =>
 
 test("Dropping the baby away from the nursery/window just makes it cry more", () => {
   const item = "baby";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1895,9 +1931,9 @@ test("Dropping the baby away from the nursery/window just makes it cry more", ()
 
 test("Taking the baby from nursery gives cough hint", () => {
   const item = "baby";
-  let location = "nursery";
+  const location = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1925,9 +1961,9 @@ test("Taking the baby from nursery gives cough hint", () => {
 
 test("Taking the baby from somewhere besides nursery does not give cough hint", () => {
   const item = "baby";
-  let location = "entryway";
+  const location = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -1955,9 +1991,9 @@ test("Taking the baby from somewhere besides nursery does not give cough hint", 
 
 test("Using the sword to on sleeping dragon", () => {
   const item = "sword";
-  let location = "lair";
+  const location = "lair";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: location,
     dragonAsleep: true,
@@ -1967,7 +2003,7 @@ test("Using the sword to on sleeping dragon", () => {
       inventory: [item],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "useItem",
     item: item,
   });
@@ -1985,7 +2021,7 @@ test("Using the sword to on sleeping dragon", () => {
   expect(output.dragonAsleep).toBe(true);
   expect(output.dragonDead).toBe(true);
 
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("dragonDead");
 
@@ -1994,9 +2030,9 @@ test("Using the sword to on sleeping dragon", () => {
 
 test("Using the sword to on poisoned not sleeping dragon", () => {
   const item = "sword";
-  let location = "lair";
+  const location = "lair";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: location,
     dragonAsleep: false,
@@ -2007,7 +2043,7 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
       inventory: [item],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "useItem",
     item: item,
   });
@@ -2024,7 +2060,7 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(true);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 
   expect(output.dragonDead).toBe(false);
@@ -2034,9 +2070,9 @@ test("Using the sword to on poisoned not sleeping dragon", () => {
 
 test("Using the sword to on not poisoned not sleeping dragon", () => {
   const item = "sword";
-  let location = "lair";
+  const location = "lair";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: location,
     dragonAsleep: false,
@@ -2047,7 +2083,7 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
       inventory: [item],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "useItem",
     item: item,
   });
@@ -2064,7 +2100,7 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 
   expect(output.dragonDead).toBe(false);
@@ -2074,9 +2110,9 @@ test("Using the sword to on not poisoned not sleeping dragon", () => {
 
 test("Using the sword not on dragon", () => {
   const item = "sword";
-  let location = "inn";
+  const location = "inn";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: location,
     dragonAsleep: false,
@@ -2087,7 +2123,7 @@ test("Using the sword not on dragon", () => {
       inventory: [item],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "useItem",
     item: item,
   });
@@ -2102,7 +2138,7 @@ test("Using the sword not on dragon", () => {
   );
   expect(output.dragonAsleep).toBe(false);
   expect(output.dragonPoisoned).toBe(false);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 
   expect(output.dragonDead).toBe(false);
@@ -2112,7 +2148,7 @@ test("Using the sword not on dragon", () => {
 
 test("Taking the sword from the blacksmith if you haven't paid will lose reputation (every time) and increase cose (once)", () => {
   const item = "sword";
-  let location = "smithy";
+  const location = "smithy";
 
   let output = reducer(
     {
@@ -2160,9 +2196,9 @@ test("Taking the sword from the blacksmith if you haven't paid will lose reputat
 
 test("Taking the sword from the blacksmith if you have paid is a normal take", () => {
   const item = "sword";
-  let location = "smithy";
+  const location = "smithy";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2188,9 +2224,9 @@ test("Taking the sword from the blacksmith if you have paid is a normal take", (
 
 test("You can't take the sword from the wizard if you traded it to the wizard", () => {
   const item = "sword";
-  let location = "wizard";
+  const location = "wizard";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2218,9 +2254,9 @@ test("You can't take the sword from the wizard if you traded it to the wizard", 
 
 test("You can take the sword from the wizard if you didn't trade it to the wizard", () => {
   const item = "sword";
-  let location = "wizard";
+  const location = "wizard";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2248,7 +2284,7 @@ test("You can take the sword from the wizard if you didn't trade it to the wizar
 
 test("Give the sword to the wizard for the score as long as you haven't bargained yet. You can't take the sword back directly.", () => {
   const item = "sword";
-  let location = "wizard";
+  const location = "wizard";
 
   let output = reducer(
     {
@@ -2296,7 +2332,7 @@ test("Give the sword to the wizard for the score as long as you haven't bargaine
 
 test("If you paid for the score, you can't trade for the score; giving the sword is a normal give and taking back is a normal take.", () => {
   const item = "sword";
-  let location = "wizard";
+  const location = "wizard";
 
   let output = reducer(
     {
@@ -2351,7 +2387,7 @@ test("If you paid for the score, you can't trade for the score; giving the sword
 
 test("If the wizard doesn't have the score, giving the sword is a normal give.", () => {
   const item = "sword";
-  let location = "wizard";
+  const location = "wizard";
 
   let output = reducer(
     {
@@ -2413,9 +2449,9 @@ test("If the wizard doesn't have the score, giving the sword is a normal give.",
 
 test("You can't take the horse if it is dead", () => {
   const item = "horse";
-  let location = "stream";
+  const location = "stream";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2445,9 +2481,9 @@ test("You can't take the horse if it is dead", () => {
 
 test("You can't take the horse directly", () => {
   const item = "horse";
-  let location = "stream";
+  const location = "stream";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2481,9 +2517,9 @@ test("You can't take the horse directly", () => {
 
 test("If the horse is tethered, you can take it", () => {
   const item = "horse";
-  let location = "stream";
+  const location = "stream";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2516,9 +2552,9 @@ test("If the horse is tethered, you can take it", () => {
 
 test("When you give the horse, you automatically unmount but the horse is still tethered", () => {
   const item = "horse";
-  let location = "wizard";
+  const location = "wizard";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2551,9 +2587,9 @@ test("When you give the horse, you automatically unmount but the horse is still 
 
 test("If you drop the horse, it is no longer tethered", () => {
   const item = "horse";
-  let location = "wizard";
+  const location = "wizard";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2586,9 +2622,9 @@ test("If you drop the horse, it is no longer tethered", () => {
 
 test("If you  drop the horse when mounted, it is no longer tethered", () => {
   const item = "horse";
-  let location = "wizard";
+  const location = "wizard";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2621,9 +2657,9 @@ test("If you  drop the horse when mounted, it is no longer tethered", () => {
 
 test("If you drop the horse at the same place as the berries are, it dies. The berries are still available.", () => {
   const item = "horse";
-  let location = "gate";
+  const location = "gate";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2660,9 +2696,9 @@ test("If you drop the horse at the same place as the berries are, it dies. The b
 
 test("If you drop the horse at the clearing, it doesn't die if the berries are no longer there", () => {
   const item = "horse";
-  let location = "clearing";
+  const location = "clearing";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2696,9 +2732,9 @@ test("If you drop the horse at the clearing, it doesn't die if the berries are n
 
 test("Using the horse will mount if unmounted", () => {
   const item = "horse";
-  let location = "clearing";
+  const location = "clearing";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2732,9 +2768,9 @@ test("Using the horse will mount if unmounted", () => {
 
 test("Using the horse will unmount if mounted but will keep the horse tethered", () => {
   const item = "horse";
-  let location = "clearing";
+  const location = "clearing";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2768,7 +2804,7 @@ test("Using the horse will unmount if mounted but will keep the horse tethered",
 
 test("Eating the berries will lose reputation and get poisoned but berries will still be available. Eating again will do the same.", () => {
   const item = "berries";
-  let location = "stream";
+  const location = "stream";
 
   let output = reducer(
     {
@@ -2821,7 +2857,7 @@ test("Eating the berries will lose reputation and get poisoned but berries will 
 
 test("If you drop the berries at the squirrel, it dies, but it won't die twice", () => {
   const item = "berries";
-  let location = "squirrel";
+  const location = "squirrel";
 
   let output = reducer(
     {
@@ -2868,7 +2904,7 @@ test("If you drop the berries at the squirrel, it dies, but it won't die twice",
 
 test("If you drop the berries at the horse, it dies, but it won't die twice", () => {
   const item = "berries";
-  let location = "stream";
+  const location = "stream";
 
   let output = reducer(
     {
@@ -2915,9 +2951,9 @@ test("If you drop the berries at the horse, it dies, but it won't die twice", ()
 
 test("If you drop the berries at the horse, it won't die if it is tethered", () => {
   const item = "berries";
-  let location = "stream";
+  const location = "stream";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -2948,7 +2984,7 @@ test("If you drop the berries at the horse, it won't die if it is tethered", () 
 
 test("If you drop the berries at the horse and squirrel, they both die, but not twice", () => {
   const item = "berries";
-  let location = "squirrel";
+  const location = "squirrel";
 
   let output = reducer(
     {
@@ -2998,7 +3034,7 @@ test("If you drop the berries at the horse and squirrel, they both die, but not 
 
 test("If you give the berries to the squirrel, it dies, but it won't die twice", () => {
   const item = "berries";
-  let location = "squirrel";
+  const location = "squirrel";
 
   let output = reducer(
     {
@@ -3045,7 +3081,7 @@ test("If you give the berries to the squirrel, it dies, but it won't die twice",
 
 test("If you give the berries to the horse, it dies, but it won't die twice", () => {
   const item = "berries";
-  let location = "pasture";
+  const location = "pasture";
 
   let output = reducer(
     {
@@ -3094,9 +3130,9 @@ test("If you give the berries to the horse, it dies, but it won't die twice", ()
 
 test("If you give the berries to the horse, it won't die even if it is tethered", () => {
   const item = "berries";
-  let location = "stream";
+  const location = "stream";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -3127,7 +3163,7 @@ test("If you give the berries to the horse, it won't die even if it is tethered"
 
 test("If you give the berries to the squirrel and the horse is present, only the squirrel dies", () => {
   const item = "berries";
-  let location = "squirrel";
+  const location = "squirrel";
 
   let output = reducer(
     {
@@ -3195,9 +3231,9 @@ test("If you give the berries to the squirrel and the horse is present, only the
 
 test("The wizard refuses the berries", () => {
   const item = "berries";
-  let location = "wizard";
+  const location = "wizard";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -3229,9 +3265,9 @@ test("The wizard refuses the berries", () => {
 
 test("Other sentients will just hold the berries", () => {
   const item = "berries";
-  let location = "blacksmith";
+  const location = "blacksmith";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -3263,9 +3299,9 @@ test("Other sentients will just hold the berries", () => {
 
 test("If the dragon is dead, you take all the treasure", () => {
   const item = "treasure";
-  let location = "lair";
+  const location = "lair";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -3301,7 +3337,7 @@ test("If the dragon is dead, you take all the treasure", () => {
 
 test("If the dragon is asleep but not dead lets you take some treasure but not all, even on second try. Treasure still remains in lair. You get singed each time.", () => {
   const item = "treasure";
-  let location = "lair";
+  const location = "lair";
 
   let output = reducer(
     {
@@ -3369,7 +3405,7 @@ test("If the dragon is asleep but not dead lets you take some treasure but not a
 
 test("If the dragon is poisoned but not asleep/dead, you can take some treasure", () => {
   const item = "treasure";
-  let location = "lair";
+  const location = "lair";
 
   let output = reducer(
     {
@@ -3438,7 +3474,7 @@ test("If the dragon is poisoned but not asleep/dead, you can take some treasure"
 
 test("If the dragon is not poisoned or anything, you can't take any treasure", () => {
   const item = "treasure";
-  let location = "lair";
+  const location = "lair";
 
   let output = reducer(
     {
@@ -3503,7 +3539,7 @@ test("If the dragon is not poisoned or anything, you can't take any treasure", (
 
 test("You can take the treasure in increments, getting singed along the way", () => {
   const item = "treasure";
-  let location = "lair";
+  const location = "lair";
 
   let output = reducer(
     {
@@ -3626,10 +3662,10 @@ test("You can take the treasure in increments, getting singed along the way", ()
 });
 
 test("Moving player, no consequences", () => {
-  let oldLocation = "inn";
-  let newLocation = "room";
+  const oldLocation = "inn";
+  const newLocation = "room";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3644,10 +3680,10 @@ test("Moving player, no consequences", () => {
 });
 
 test("Entering the inn when naked will lose reputation", () => {
-  let oldLocation = "courtyard";
-  let newLocation = "inn";
+  const oldLocation = "courtyard";
+  const newLocation = "inn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3662,10 +3698,10 @@ test("Entering the inn when naked will lose reputation", () => {
 });
 
 test("Leaving the courtyard the first time is different", () => {
-  let oldLocation = "courtyard";
-  let newLocation = "fountain";
+  const oldLocation = "courtyard";
+  const newLocation = "fountain";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     firstCourtyardEntry: true,
@@ -3694,10 +3730,10 @@ test("Leaving the courtyard the first time is different", () => {
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3725,10 +3761,10 @@ test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, 
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, clothed", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3756,10 +3792,10 @@ test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, clo
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, no cough, baby cough, clothed", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3787,10 +3823,10 @@ test("Entering the lawn: saved baby, not rewarded yet, no cough, baby cough, clo
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, not clothed", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3818,10 +3854,10 @@ test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, 
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, not clothed", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3849,10 +3885,10 @@ test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, not
 });
 
 test("Entering the lawn: saved baby, not rewarded yet, cough, baby cough, not clothed", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3880,11 +3916,11 @@ test("Entering the lawn: saved baby, not rewarded yet, cough, baby cough, not cl
 });
 
 test("Entering the lawn: baby goes out of play", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
-  let item = "baby";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
+  const item = "baby";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3919,11 +3955,11 @@ test("Entering the lawn: baby goes out of play", () => {
 });
 
 test("Entering the lawn: baby goes out of play, does not error if baby already was out of play", () => {
-  let oldLocation = "entryway";
-  let newLocation = "lawn";
-  let item = "baby";
+  const oldLocation = "entryway";
+  const newLocation = "lawn";
+  const item = "baby";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -3959,17 +3995,17 @@ test("Entering the lawn: baby goes out of play, does not error if baby already w
 });
 
 test("Exiting the lawn puts out the fire if the baby was saved", () => {
-  let oldLocation = "lawn";
-  let newLocation = "entryway";
+  const oldLocation = "lawn";
+  const newLocation = "entryway";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     savedBaby: true,
     receivedBabyReward: false,
     manorFire: true,
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
@@ -3978,25 +4014,25 @@ test("Exiting the lawn puts out the fire if the baby was saved", () => {
   expect(output.manorFire).toBe(false);
   expect(output.receivedBabyReward).toBe(true);
 
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("savedBaby");
-  expect(keyEvents[0].eventInfo.throughWindow).toBe(true);
-  expect(keyEvents[0].eventInfo.woreDampMask).toBe(true);
+  expect(keyEvents[0].eventInfo["throughWindow"]).toBe(true);
+  expect(keyEvents[0].eventInfo["woreDampMask"]).toBe(true);
 });
 
 test("Exiting the lawn does not put out the fire if the baby was not saved", () => {
-  let oldLocation = "lawn";
-  let newLocation = "entryway";
+  const oldLocation = "lawn";
+  const newLocation = "entryway";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     savedBaby: false,
     receivedBabyReward: false,
     manorFire: true,
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
@@ -4004,15 +4040,15 @@ test("Exiting the lawn does not put out the fire if the baby was not saved", () 
   expect(output.savedBaby).toBe(false);
   expect(output.manorFire).toBe(true);
   expect(output.receivedBabyReward).toBe(false);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 });
 
 test("Taking the baby into the entryway gives it a cough", () => {
-  let oldLocation = "nursery";
-  let newLocation = "entryway";
+  const oldLocation = "nursery";
+  const newLocation = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4034,10 +4070,10 @@ test("Taking the baby into the entryway gives it a cough", () => {
 });
 
 test("The baby doesn't develop a cough if you don't bring it with you", () => {
-  let oldLocation = "nursery";
-  let newLocation = "entryway";
+  const oldLocation = "nursery";
+  const newLocation = "entryway";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4060,10 +4096,10 @@ test("The baby doesn't develop a cough if you don't bring it with you", () => {
 });
 
 test("If you get to the nursery without wearing the damp handkerchief, you get a cough", () => {
-  let oldLocation = "entryway";
-  let newLocation = "nursery";
+  const oldLocation = "entryway";
+  const newLocation = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4084,10 +4120,10 @@ test("If you get to the nursery without wearing the damp handkerchief, you get a
 });
 
 test("Wearing a dry handkerchief doesn't protect from cough", () => {
-  let oldLocation = "entryway";
-  let newLocation = "nursery";
+  const oldLocation = "entryway";
+  const newLocation = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4108,10 +4144,10 @@ test("Wearing a dry handkerchief doesn't protect from cough", () => {
 });
 
 test("Having but not wearing a damp handkerchief doesn't protect from cough", () => {
-  let oldLocation = "entryway";
-  let newLocation = "nursery";
+  const oldLocation = "entryway";
+  const newLocation = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4132,10 +4168,10 @@ test("Having but not wearing a damp handkerchief doesn't protect from cough", ()
 });
 
 test("Wearing a damp handkerchief protects from cough", () => {
-  let oldLocation = "entryway";
-  let newLocation = "nursery";
+  const oldLocation = "entryway";
+  const newLocation = "nursery";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4156,10 +4192,10 @@ test("Wearing a damp handkerchief protects from cough", () => {
 });
 
 test("Talking to the blacksmith when naked will lose reputation", () => {
-  let oldLocation = "smithy";
-  let newLocation = "blacksmith";
+  const oldLocation = "smithy";
+  const newLocation = "blacksmith";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4174,10 +4210,10 @@ test("Talking to the blacksmith when naked will lose reputation", () => {
 });
 
 test("Talking to the youth when naked will lose reputation", () => {
-  let oldLocation = "gate";
-  let newLocation = "youth";
+  const oldLocation = "gate";
+  const newLocation = "youth";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4192,33 +4228,35 @@ test("Talking to the youth when naked will lose reputation", () => {
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked.", () => {
-  let oldLocation = "road1";
-  let newLocation = "gate";
+  const oldLocation = "road1";
+  const newLocation = "gate";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     treasureLevel: 1,
     gold: 110,
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
-  expect(keyEvents[0].eventInfo.gold).toBe(110);
-  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation - 1);
+  expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+  expect(keyEvents[0].eventInfo["reputation"]).toBe(
+    newGameState.reputation - 1,
+  );
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if wearing poopy clothes.", () => {
-  let oldLocation = "road1";
-  let newLocation = "gate";
+  const oldLocation = "road1";
+  const newLocation = "gate";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     treasureLevel: 1,
@@ -4226,24 +4264,26 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     naked: false,
     clothesPoopy: true,
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
-  expect(keyEvents[0].eventInfo.gold).toBe(110);
-  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation - 1);
+  expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+  expect(keyEvents[0].eventInfo["reputation"]).toBe(
+    newGameState.reputation - 1,
+  );
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked, but extra points not lost if clothes poopy.", () => {
-  let oldLocation = "road1";
-  let newLocation = "gate";
+  const oldLocation = "road1";
+  const newLocation = "gate";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     treasureLevel: 1,
@@ -4251,24 +4291,26 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     naked: true,
     clothesPoopy: true,
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation - 1);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
-  expect(keyEvents[0].eventInfo.gold).toBe(110);
-  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation - 1);
+  expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+  expect(keyEvents[0].eventInfo["reputation"]).toBe(
+    newGameState.reputation - 1,
+  );
 });
 
 test("Moving to the gate when treasure is earned will trigger game end changes. Points gained if mounted.", () => {
-  let oldLocation = "road1";
-  let newLocation = "gate";
+  const oldLocation = "road1";
+  const newLocation = "gate";
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     treasureLevel: 1,
@@ -4277,23 +4319,25 @@ test("Moving to the gate when treasure is earned will trigger game end changes. 
     clothesPoopy: false,
     horseMounted: true,
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
   expect(output.playerLocation).toEqual(newLocation);
   expect(output.reputation).toEqual(newGameState.reputation + 1);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
-  expect(keyEvents[0].eventInfo.gold).toBe(110);
-  expect(keyEvents[0].eventInfo.reputation).toBe(newGameState.reputation + 1);
+  expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+  expect(keyEvents[0].eventInfo["reputation"]).toBe(
+    newGameState.reputation + 1,
+  );
 });
 
 test("If you cross the stream without repaying the wizard, you get cursed", () => {
-  let oldLocation = "stream";
-  let newLocation = "road3";
-  let treasureLevel = 1;
+  const oldLocation = "stream";
+  const newLocation = "road3";
+  const treasureLevel = 1;
 
   let output = reducer(
     {
@@ -4344,9 +4388,9 @@ test("If you cross the stream without repaying the wizard, you get cursed", () =
 });
 
 test("If you haven't earned any treasure, it is safe to cross", () => {
-  let oldLocation = "stream";
-  let newLocation = "road3";
-  let treasureLevel = 0;
+  const oldLocation = "stream";
+  const newLocation = "road3";
+  const treasureLevel = 0;
 
   let output = reducer(
     {
@@ -4390,9 +4434,9 @@ test("If you haven't earned any treasure, it is safe to cross", () => {
 });
 
 test("If you repaid the wizard, it is safe to cross", () => {
-  let oldLocation = "stream";
-  let newLocation = "road3";
-  let treasureLevel = 1;
+  const oldLocation = "stream";
+  const newLocation = "road3";
+  const treasureLevel = 1;
 
   let output = reducer(
     {
@@ -4436,9 +4480,9 @@ test("If you repaid the wizard, it is safe to cross", () => {
 });
 
 test("If you don't owe the wizard, you can cross safely", () => {
-  let oldLocation = "stream";
-  let newLocation = "road3";
-  let treasureLevel = 1;
+  const oldLocation = "stream";
+  const newLocation = "road3";
+  const treasureLevel = 1;
 
   let output = reducer(
     {
@@ -4482,9 +4526,9 @@ test("If you don't owe the wizard, you can cross safely", () => {
 });
 
 test("You won't get cursed twice", () => {
-  let oldLocation = "stream";
-  let newLocation = "road3";
-  let treasureLevel = 1;
+  const oldLocation = "stream";
+  const newLocation = "road3";
+  const treasureLevel = 1;
 
   let output = reducer(
     {
@@ -4528,10 +4572,10 @@ test("You won't get cursed twice", () => {
 });
 
 test("When enter puddle, time in cave increases", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "puddle";
+  const oldLocation = "defecatory";
+  const newLocation = "puddle";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4549,11 +4593,11 @@ test("When enter puddle, time in cave increases", () => {
 });
 
 test("When enter puddle, if the dragon is not poisoned, and enough time has elapsed, you get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "puddle";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "puddle";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4577,11 +4621,11 @@ test("When enter puddle, if the dragon is not poisoned, and enough time has elap
 });
 
 test("When enter puddle, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "puddle";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "puddle";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4601,10 +4645,10 @@ test("When enter puddle, if enough time has elapsed but dragon is poisoned, you 
 });
 
 test("When enter dung, time in cave increases", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "dung";
+  const oldLocation = "defecatory";
+  const newLocation = "dung";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4622,11 +4666,11 @@ test("When enter dung, time in cave increases", () => {
 });
 
 test("When enter dung, if the dragon is not poisoned, and enough time has elapsed, you get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "dung";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "dung";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4650,11 +4694,11 @@ test("When enter dung, if the dragon is not poisoned, and enough time has elapse
 });
 
 test("When enter dung, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "dung";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "dung";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4674,10 +4718,10 @@ test("When enter dung, if enough time has elapsed but dragon is poisoned, you do
 });
 
 test("When enter crevice, time in cave increases", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "crevice";
+  const oldLocation = "defecatory";
+  const newLocation = "crevice";
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4695,11 +4739,11 @@ test("When enter crevice, time in cave increases", () => {
 });
 
 test("When enter crevice, if the dragon is not poisoned and you are not wearing poopy clothes, and enough time has elapsed, you get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "crevice";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "crevice";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4723,11 +4767,11 @@ test("When enter crevice, if the dragon is not poisoned and you are not wearing 
 });
 
 test("When enter crevice, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "crevice";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "crevice";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4747,11 +4791,11 @@ test("When enter crevice, if enough time has elapsed but dragon is poisoned, you
 });
 
 test("When enter crevice, if enough time has elapsed but you are wearing poopy clothes, you don't get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "crevice";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "crevice";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4773,11 +4817,11 @@ test("When enter crevice, if enough time has elapsed but you are wearing poopy c
 });
 
 test("When enter crevice, if enough time has elapsed and you have poopy clothes but are not wearing them, you get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "crevice";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "crevice";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4803,11 +4847,11 @@ test("When enter crevice, if enough time has elapsed and you have poopy clothes 
 });
 
 test("When enter crevice, if enough time has elapsed and you have are wearing clothes but they are not poopy, you get singed.", () => {
-  let oldLocation = "defecatory";
-  let newLocation = "crevice";
-  let timeInCave = 2;
+  const oldLocation = "defecatory";
+  const newLocation = "crevice";
+  const timeInCave = 2;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4833,11 +4877,11 @@ test("When enter crevice, if enough time has elapsed and you have are wearing cl
 });
 
 test("When exit crevice, if berries are in the puddle and you are wearing poopy clothes, dragon is poisoned.", () => {
-  let oldLocation = "crevice";
-  let newLocation = "defecatory";
-  let timeInCave = 2;
+  const oldLocation = "crevice";
+  const newLocation = "defecatory";
+  const timeInCave = 2;
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     dragonPoisoned: false,
@@ -4849,7 +4893,7 @@ test("When exit crevice, if berries are in the puddle and you are wearing poopy 
       puddle: ["berries"],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
@@ -4858,7 +4902,7 @@ test("When exit crevice, if berries are in the puddle and you are wearing poopy 
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(true);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(1);
   expect(keyEvents[0].eventInfo.milestone).toBe("dragonPoisoned");
 
@@ -4866,11 +4910,11 @@ test("When exit crevice, if berries are in the puddle and you are wearing poopy 
 });
 
 test("When exit crevice, if berries are in the puddle but you are not wearing poopy clothes, dragon is not poisoned.", () => {
-  let oldLocation = "crevice";
-  let newLocation = "defecatory";
-  let timeInCave = 2;
+  const oldLocation = "crevice";
+  const newLocation = "defecatory";
+  const timeInCave = 2;
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     dragonPoisoned: false,
@@ -4882,7 +4926,7 @@ test("When exit crevice, if berries are in the puddle but you are not wearing po
       puddle: ["berries"],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
@@ -4891,18 +4935,18 @@ test("When exit crevice, if berries are in the puddle but you are not wearing po
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
 test("When exit crevice, if you are wearing poopy clothes but clothes aren't in the puddle, dragon is not poisoned.", () => {
-  let oldLocation = "crevice";
-  let newLocation = "defecatory";
-  let timeInCave = 2;
+  const oldLocation = "crevice";
+  const newLocation = "defecatory";
+  const timeInCave = 2;
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     dragonPoisoned: false,
@@ -4914,7 +4958,7 @@ test("When exit crevice, if you are wearing poopy clothes but clothes aren't in 
       puddle: [],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
@@ -4923,18 +4967,18 @@ test("When exit crevice, if you are wearing poopy clothes but clothes aren't in 
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
 test("When exit crevice, if berries are in the puddle but your clothes weren't poopy, dragon is not poisoned", () => {
-  let oldLocation = "crevice";
-  let newLocation = "defecatory";
-  let timeInCave = 2;
+  const oldLocation = "crevice";
+  const newLocation = "defecatory";
+  const timeInCave = 2;
 
-  const input = {
+  const input: GameState = {
     ...newGameState,
     playerLocation: oldLocation,
     dragonPoisoned: false,
@@ -4946,7 +4990,7 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
       puddle: ["berries"],
     },
   };
-  let output = reducer(input, {
+  const output = reducer(input, {
     action: "movePlayer",
     newLocation: newLocation,
   });
@@ -4955,18 +4999,18 @@ test("When exit crevice, if berries are in the puddle but your clothes weren't p
   expect(output.reputation).toEqual(newGameState.reputation);
   expect(output.singeCount).toEqual(newGameState.singeCount);
   expect(output.dragonPoisoned).toBe(false);
-  let keyEvents = inferKeyEvents(input, output);
+  const keyEvents = inferKeyEvents(input, output);
   expect(keyEvents.length).toBe(0);
 
   expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, true];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (all case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, true];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -4985,12 +5029,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, false];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (poisoned + asleep case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, false];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5009,12 +5053,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, true];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (poisoned + dead case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, true];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5033,12 +5077,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, true];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (asleep + dead case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, true];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5057,12 +5101,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, true];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (dead case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, true];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5081,12 +5125,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, false];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (poisoned case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, false];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5105,12 +5149,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, false];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (asleep case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, false];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5129,12 +5173,12 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
   expect(output.singeCount).toEqual(newGameState.singeCount);
 });
 
-test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", () => {
-  let oldLocation = "caveEntrance";
-  let newLocation = "lair";
-  let [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, false];
+test("When enter lair, get singed if dragon is not poisoned, dead, or asleep  (none case).", () => {
+  const oldLocation = "caveEntrance";
+  const newLocation = "lair";
+  const [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, false];
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: oldLocation,
@@ -5154,11 +5198,11 @@ test("When enter lair, get singed if dragon is not poisoned, dead, or asleep.", 
 });
 
 test("Paying the blacksmith will give you the sword", () => {
-  let location = "blacksmith";
-  let item = "sword";
-  let startingGold = 50;
+  const location = "blacksmith";
+  const item = "sword";
+  const startingGold = 50;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       ownSword: false,
@@ -5191,11 +5235,11 @@ test("Paying the blacksmith will give you the sword", () => {
 });
 
 test("Paying the blacksmith will not give you the sword if you don't have enough money", () => {
-  let location = "blacksmith";
-  let item = "sword";
-  let startingGold = 20;
+  const location = "blacksmith";
+  const item = "sword";
+  const startingGold = 20;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       ownSword: false,
@@ -5226,11 +5270,11 @@ test("Paying the blacksmith will not give you the sword if you don't have enough
 });
 
 test("Paying the blacksmith will not give you the sword if you already own it, even if the sword is at the smithy", () => {
-  let location = "blacksmith";
-  let item = "sword";
-  let startingGold = 50;
+  const location = "blacksmith";
+  const item = "sword";
+  const startingGold = 50;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       ownSword: true,
@@ -5261,10 +5305,10 @@ test("Paying the blacksmith will not give you the sword if you already own it, e
 });
 
 test("Paying the youth has no effect", () => {
-  let location = "youth";
-  let startingGold = 50;
+  const location = "youth";
+  const startingGold = 50;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5287,11 +5331,11 @@ test("Paying the youth has no effect", () => {
 });
 
 test("If you have not already made a deal with the wizard, paying the wizard will give you the score and lock you into debt", () => {
-  let location = "wizard";
-  let item = "score";
-  let startingGold = 0;
+  const location = "wizard";
+  const item = "score";
+  const startingGold = 0;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5320,11 +5364,11 @@ test("If you have not already made a deal with the wizard, paying the wizard wil
 });
 
 test("If you have not already made a deal with the wizard, paying the wizard will give you the score and lock you into debt. It you already earned treasure, that will be recorded as pre-debt", () => {
-  let location = "wizard";
-  let item = "score";
-  let startingGold = 0;
+  const location = "wizard";
+  const item = "score";
+  const startingGold = 0;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5354,11 +5398,11 @@ test("If you have not already made a deal with the wizard, paying the wizard wil
 });
 
 test("If you have traded the wizard, they will not take debt even if you have gold", () => {
-  let location = "wizard";
-  let item = "score";
-  let startingGold = 300;
+  const location = "wizard";
+  const item = "score";
+  const startingGold = 300;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5387,10 +5431,10 @@ test("If you have traded the wizard, they will not take debt even if you have go
 });
 
 test("If you are in debt but didn't earn treasure when you try to pay the wizard", () => {
-  let location = "wizard";
-  let startingGold = 0;
+  const location = "wizard";
+  const startingGold = 0;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5413,10 +5457,10 @@ test("If you are in debt but didn't earn treasure when you try to pay the wizard
 });
 
 test("If you are in debt and earned treasure level 1", () => {
-  let location = "wizard";
-  let startingGold = 120;
+  const location = "wizard";
+  const startingGold = 120;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5441,10 +5485,10 @@ test("If you are in debt and earned treasure level 1", () => {
 });
 
 test("If you are in debt and earned treasure level 1 but already had treasure level 1, debt is not paid", () => {
-  let location = "wizard";
-  let startingGold = 120;
+  const location = "wizard";
+  const startingGold = 120;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5468,10 +5512,10 @@ test("If you are in debt and earned treasure level 1 but already had treasure le
 });
 
 test("If you are in debt and earned treasure level 2", () => {
-  let location = "wizard";
-  let startingGold = 220;
+  const location = "wizard";
+  const startingGold = 220;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5496,10 +5540,10 @@ test("If you are in debt and earned treasure level 2", () => {
 });
 
 test("If you are in debt and earned treasure level 2 but had level 1 pre-debt", () => {
-  let location = "wizard";
-  let startingGold = 220;
+  const location = "wizard";
+  const startingGold = 220;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5525,10 +5569,10 @@ test("If you are in debt and earned treasure level 2 but had level 1 pre-debt", 
 });
 
 test("If you are in debt and earned treasure level 3", () => {
-  let location = "wizard";
-  let startingGold = 320;
+  const location = "wizard";
+  const startingGold = 320;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5553,10 +5597,10 @@ test("If you are in debt and earned treasure level 3", () => {
 });
 
 test("If you are in debt and earned treasure level 3 but had level 1 pre-debt", () => {
-  let location = "wizard";
-  let startingGold = 320;
+  const location = "wizard";
+  const startingGold = 320;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,
@@ -5582,10 +5626,10 @@ test("If you are in debt and earned treasure level 3 but had level 1 pre-debt", 
 });
 
 test("If you already paid debt, wizard won't take again", () => {
-  let location = "wizard";
-  let startingGold = 150;
+  const location = "wizard";
+  const startingGold = 150;
 
-  let output = reducer(
+  const output = reducer(
     {
       ...newGameState,
       playerLocation: location,

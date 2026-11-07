@@ -1,17 +1,22 @@
-import React from "react";
 import Stats from "./stats";
 import Share from "@skedwards88/shared-components/src/components/Share";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
+import {type GameState} from "../logic/init";
+import {type DisplayState} from "./App";
+import {type ReducerPayload} from "../logic/reducer";
 
 export default function GameWon({
   dispatchGameState,
   gameState,
   setCurrentDisplay,
-}) {
+}: {
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  gameState: GameState;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+}): React.JSX.Element {
   const {userId, sessionId} = useMetadataContext();
 
-  let gameEndText;
-  gameEndText = `You arrive at the city gates ${
+  const gameEndText = `You arrive at the city gates ${
     gameState.horseMounted
       ? `proudly mounted on your horse.\n\nReputation +1`
       : "weary from the long walk. "
@@ -74,7 +79,7 @@ export default function GameWon({
             gold: gameState.gold,
             maxGold: gameState.maxGold,
           })}
-          url="https://skedwards88.github.io/dragon/"
+          url="https://dragon.twistedtrailgames.com/"
           origin="game over"
           className="close"
           content="SHARE"
@@ -86,7 +91,17 @@ export default function GameWon({
   );
 }
 
-function getWinShareText({reputation, maxReputation, gold, maxGold}) {
+function getWinShareText({
+  reputation,
+  maxReputation,
+  gold,
+  maxGold,
+}: {
+  reputation: number;
+  maxReputation: number;
+  gold: number;
+  maxGold: number;
+}): string {
   let resultText = "";
   if (reputation === maxReputation && gold === maxGold) {
     resultText = `I earned the maximum score on Dragon Hero!`;

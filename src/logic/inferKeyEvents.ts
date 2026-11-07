@@ -1,5 +1,19 @@
-export function inferKeyEvents(oldState, newState) {
-  let keyEvents = [];
+import {type GameState} from "./init";
+
+type KeyEvent = {
+  eventName: "keyEvent";
+  eventInfo: {
+    milestone: string;
+    // any other fields besides milestone are allowed
+    [key: string]: string | number | boolean;
+  };
+};
+
+export function inferKeyEvents(
+  oldState: GameState,
+  newState: GameState,
+): KeyEvent[] {
+  const keyEvents: KeyEvent[] = [];
 
   // game progressed beyond inn
   if (oldState.firstCourtyardEntry && !newState.firstCourtyardEntry) {
@@ -82,7 +96,11 @@ export function inferKeyEvents(oldState, newState) {
     });
   }
 
-  if (newState.playerLocation === "gate" && oldState.treasureLevel && oldState.playerLocation != "gate") {
+  if (
+    newState.playerLocation === "gate" &&
+    oldState.treasureLevel &&
+    oldState.playerLocation != "gate"
+  ) {
     keyEvents.push({
       eventName: "keyEvent",
       eventInfo: {

@@ -8,7 +8,7 @@ A text adventure puzzle game.
 
 **Time:** 20 minutes
 
-[Play Now!](https://skedwards88.github.io/dragon/)
+[Play Now!](https://dragon.twistedtrailgames.com/)
 
 ![Game icon](src/images/icon_192.png)
 

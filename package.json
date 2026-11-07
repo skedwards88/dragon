@@ -12,8 +12,8 @@
     "dev": "webpack-dev-server --mode development",
     "start": "webpack-dev-server",
     "eslint": "npx eslint --ignore-pattern .gitignore . --fix",
-        "tslint": "npx tsc --noEmit",
-"prettier": "npx prettier --write .",
+    "tslint": "npx tsc --noEmit",
+    "prettier": "npx prettier --write .",
     "style": "npx stylelint '**/*.css' --fix",
     "lint": "npm run eslint && npm run tslint && npm run prettier && npm run style"
   },

@@ -1,10 +1,20 @@
-import React from "react";
+import {type GameState} from "../logic/init";
 import {items} from "../logic/items";
 import {locations} from "../logic/locations";
+import {type ReducerPayload} from "../logic/reducer";
+import {type DisplayState} from "./App";
 
-function InventoryItems({dispatchGameState, gameState, setCurrentDisplay}) {
+function InventoryItems({
+  dispatchGameState,
+  gameState,
+  setCurrentDisplay,
+}: {
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  gameState: GameState;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+}): React.JSX.Element[] {
   const itemsInInventory = gameState.itemLocations.inventory;
-  return Array.from(itemsInInventory).map((item) => {
+  return itemsInInventory.map((item) => {
     return (
       <div className="inventoryItem" key={item}>
         <div key={item}>{items[item].getDescription(gameState)}</div>
@@ -48,7 +58,11 @@ export default function Inventory({
   gameState,
   setCurrentDisplay,
   dispatchGameState,
-}) {
+}: {
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+}): React.JSX.Element {
   return (
     <div className="App" id="inventory-display">
       <div className="description" key="description">

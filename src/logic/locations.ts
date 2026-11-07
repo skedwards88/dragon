@@ -1,50 +1,52 @@
-import {ItemInteraction} from "./items";
+import {type GameState} from "./init";
+import {
+  createItemInteraction,
+  type ItemInteraction,
+  type ItemMovement,
+} from "./items";
 
-class Location {
-  constructor({
-    id,
-    getDisplayName = function () {
-      return id;
+export type Direction = "N" | "S" | "E" | "W";
+
+export type Connections = Record<Direction, LocationName | ""> & {
+  A: LocationName[];
+};
+
+type LocationInfo = {
+  id: string;
+  getDisplayName: (gameState: GameState) => string;
+  getBackgroundName: (gameState: GameState) => string;
+  getConnections: (gameState: GameState) => Connections;
+  dropPreposition: string;
+  getSentient: (gameState: GameState) => boolean;
+  getHuman: () => boolean;
+  getDescription: (gameState: GameState) => string;
+  onEnterGameStateEffect?: (gameState: GameState) => Partial<GameState>;
+  onExitGameStateEffect?: (gameState: GameState) => Partial<GameState>;
+  onEnterItemLocationEffect?: (
+    gameState: GameState,
+  ) => ItemMovement | undefined;
+  onExitItemLocationEffect?: (gameState: GameState) => ItemMovement | undefined;
+  getCustomPay: (gameState: GameState) => ItemInteraction;
+};
+
+function createLocation(
+  options: Pick<LocationInfo, "id" | "getConnections" | "getDescription"> &
+    Partial<LocationInfo>,
+): LocationInfo {
+  return {
+    getDisplayName: () => options.id,
+    getBackgroundName: () => options.id,
+    dropPreposition: "at",
+    getSentient: () => false,
+    getHuman: () => false,
+    getCustomPay: (): ItemInteraction => {
+      return createItemInteraction({});
     },
-    getBackgroundName = function () {
-      return id;
-    },
-    getConnections = function () {
-      return {};
-    },
-    dropPreposition = "at",
-    getSentient = function () {
-      return false;
-    },
-    getHuman = function () {
-      return false;
-    },
-    getDescription,
-    onEnterGameStateEffect,
-    onExitGameStateEffect,
-    onEnterItemLocationEffect,
-    onExitItemLocationEffect,
-    getCustomPay = function () {
-      return new ItemInteraction({});
-    },
-  }) {
-    this.id = id;
-    this.getDisplayName = getDisplayName;
-    this.getBackgroundName = getBackgroundName;
-    this.getSentient = getSentient;
-    this.getHuman = getHuman;
-    this.dropPreposition = dropPreposition;
-    this.getConnections = getConnections;
-    this.getDescription = getDescription;
-    this.onEnterGameStateEffect = onEnterGameStateEffect;
-    this.onExitGameStateEffect = onExitGameStateEffect;
-    this.onEnterItemLocationEffect = onEnterItemLocationEffect;
-    this.onExitItemLocationEffect = onExitItemLocationEffect;
-    this.getCustomPay = getCustomPay;
-  }
+    ...options,
+  };
 }
 
-const room = new Location({
+const room = createLocation({
   id: "room",
   getConnections: function () {
     return {
@@ -59,7 +61,7 @@ const room = new Location({
   getDescription: function (gameState) {
     let text = "You are in a bedroom with a window, wardrobe, and door. ";
 
-    if (gameState.itemLocations.room.includes("lute")) {
+    if (gameState.itemLocations["room"].includes("lute")) {
       text += "A lute leans against the bed. ";
     }
 
@@ -70,7 +72,7 @@ const room = new Location({
   },
 });
 
-const window = new Location({
+const window = createLocation({
   id: "window",
   getConnections: function () {
     return {
@@ -89,7 +91,7 @@ const window = new Location({
   },
 });
 
-const wardrobe = new Location({
+const wardrobe = createLocation({
   id: "wardrobe",
   getConnections: function () {
     return {
@@ -103,14 +105,14 @@ const wardrobe = new Location({
   dropPreposition: "in",
   getDescription: function (gameState) {
     return `Inside the wardrobe, there is a mirror${
-      gameState.itemLocations.wardrobe.includes("clothes")
+      gameState.itemLocations["wardrobe"].includes("clothes")
         ? " and a set of clothes"
         : ""
     }. `;
   },
 });
 
-const mirror = new Location({
+const mirror = createLocation({
   id: "mirror",
   getConnections: function () {
     return {
@@ -131,7 +133,7 @@ const mirror = new Location({
   },
 });
 
-const inn = new Location({
+const inn = createLocation({
   id: "inn",
   getDisplayName: function (gameState) {
     return `${gameState.playerLocation === "room" ? "Door" : "Inn"}`;
@@ -148,7 +150,7 @@ const inn = new Location({
   dropPreposition: "in",
   getDescription: function (gameState) {
     return `You enter what appears to be the common room of an inn. ${
-      gameState.itemLocations.inn.includes("apple") &&
+      gameState.itemLocations["inn"].includes("apple") &&
       gameState.appleBitesRemaining === 5
         ? "A complementary apple rests on the table. "
         : ""
@@ -162,10 +164,11 @@ const inn = new Location({
     if (gameState.naked) {
       return {reputation: gameState.reputation - 1};
     }
+    return {};
   },
 });
 
-const courtyard = new Location({
+const courtyard = createLocation({
   id: "courtyard",
   getConnections: function () {
     return {
@@ -191,11 +194,11 @@ const courtyard = new Location({
   onExitGameStateEffect: function (gameState) {
     if (gameState.firstCourtyardEntry) {
       return {firstCourtyardEntry: false};
-    }
+    } else return {};
   },
 });
 
-const fountain = new Location({
+const fountain = createLocation({
   id: "fountain",
   dropPreposition: "in",
   getConnections: function () {
@@ -222,7 +225,7 @@ const fountain = new Location({
   },
 });
 
-const lawn = new Location({
+const lawn = createLocation({
   id: "lawn",
   getDisplayName: function () {
     return "Manor";
@@ -292,12 +295,12 @@ const lawn = new Location({
         gold: gameState.gold + 50,
         reputation: gameState.reputation + reputationIncrease,
       };
-    }
+    } else return {};
   },
   onExitGameStateEffect: function (gameState) {
     if (gameState.savedBaby && !gameState.receivedBabyReward) {
       return {manorFire: false, receivedBabyReward: true};
-    }
+    } else return {};
   },
   onEnterItemLocationEffect: function (gameState) {
     if (gameState.savedBaby && !gameState.receivedBabyReward) {
@@ -306,11 +309,11 @@ const lawn = new Location({
         oldLocation: "inventory",
         newLocation: "outOfPlay",
       };
-    }
+    } else return undefined;
   },
 });
 
-const entryway = new Location({
+const entryway = createLocation({
   id: "entryway",
   dropPreposition: "in",
   getBackgroundName: function (gameState) {
@@ -336,7 +339,7 @@ const entryway = new Location({
 
     let text = "You stand in the entrance of the burning manor. ";
 
-    if (gameState.itemLocations.nursery.includes("baby")) {
+    if (gameState.itemLocations["nursery"].includes("baby")) {
       text += "You hear a baby crying upstairs. ";
     }
 
@@ -358,13 +361,13 @@ const entryway = new Location({
     return text;
   },
   onEnterGameStateEffect: function (gameState) {
-    if (gameState.itemLocations.inventory.includes("baby")) {
+    if (gameState.itemLocations["inventory"].includes("baby")) {
       return {babyCough: true};
-    }
+    } else return {};
   },
 });
 
-const nursery = new Location({
+const nursery = createLocation({
   id: "nursery",
   dropPreposition: "in",
   getConnections: function () {
@@ -378,7 +381,7 @@ const nursery = new Location({
   },
   getDescription: function (gameState) {
     if (gameState.manorFire) {
-      if (gameState.itemLocations.nursery.includes("baby")) {
+      if (gameState.itemLocations["nursery"].includes("baby")) {
         return "You stand in a nursery. You see a baby wailing in the crib under an open window. The open window must be the only thing keeping the baby alive in this smoke. ";
       } else {
         return "You stand in a nursery with an empty crib. The fire continues to burn, pouring smoke into the room. ";
@@ -390,11 +393,11 @@ const nursery = new Location({
   onEnterGameStateEffect: function (gameState) {
     if (!gameState.handkerchiefDamp || !gameState.playerMasked) {
       return {playerCough: true};
-    }
+    } else return {};
   },
 });
 
-const nurseryWindow = new Location({
+const nurseryWindow = createLocation({
   id: "nurseryWindow",
   getDisplayName: function () {
     return "Window";
@@ -416,7 +419,7 @@ const nurseryWindow = new Location({
   },
 });
 
-const smithy = new Location({
+const smithy = createLocation({
   id: "smithy",
   getDisplayName: function () {
     return "Blacksmith shop";
@@ -435,7 +438,7 @@ const smithy = new Location({
     let text =
       "You stand in front of a blacksmith shop. From the shop, you can see the city gate and the inn courtyard. The blacksmith is working in front of the shop. ";
 
-    if (gameState.itemLocations.smithy.includes("sword")) {
+    if (gameState.itemLocations["smithy"].includes("sword")) {
       text +=
         "In front of the shop, you see a sword gleaming as if someone was recently polishing it. ";
     }
@@ -443,7 +446,7 @@ const smithy = new Location({
   },
 });
 
-const blacksmith = new Location({
+const blacksmith = createLocation({
   id: "blacksmith",
   dropPreposition: "by",
   getSentient: function () {
@@ -474,7 +477,7 @@ const blacksmith = new Location({
 
     if (
       !gameState.ownSword &&
-      gameState.itemLocations.smithy.includes("sword")
+      gameState.itemLocations["smithy"].includes("sword")
     ) {
       text += `\n\n"Are you interested in buying that sword?" they ask. "It costs ${gameState.swordCost} gold. " `;
     }
@@ -485,13 +488,13 @@ const blacksmith = new Location({
       return {
         reputation: gameState.reputation - 1,
       };
-    }
+    } else return {};
   },
   getCustomPay: function (gameState) {
-    function writeDescription(gameState) {
+    function writeDescription(gameState: GameState): string | undefined {
       if (
         !gameState.ownSword &&
-        gameState.itemLocations.smithy.includes("sword")
+        gameState.itemLocations["smithy"].includes("sword")
       ) {
         if (gameState.gold >= gameState.swordCost) {
           return `You hand the blacksmith ${gameState.swordCost} gold in exchange for the sword. `;
@@ -499,12 +502,13 @@ const blacksmith = new Location({
           return `The blacksmith looks at your gold. "It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." `;
         }
       }
+      return undefined;
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (
         !gameState.ownSword &&
-        gameState.itemLocations.smithy.includes("sword") &&
+        gameState.itemLocations["smithy"].includes("sword") &&
         gameState.gold >= gameState.swordCost
       ) {
         return {
@@ -512,12 +516,13 @@ const blacksmith = new Location({
           gold: gameState.gold - gameState.swordCost,
         };
       }
+      return {};
     }
 
-    function getItemMovements(gameState) {
+    function getItemMovements(gameState: GameState): ItemMovement[] {
       if (
         !gameState.ownSword &&
-        gameState.itemLocations.smithy.includes("sword") &&
+        gameState.itemLocations["smithy"].includes("sword") &&
         gameState.gold >= gameState.swordCost
       ) {
         return [
@@ -528,25 +533,30 @@ const blacksmith = new Location({
           },
         ];
       }
+      return [];
     }
 
-    return new ItemInteraction({
+    const description = writeDescription(gameState);
+
+    return {
       gameEffect: getGameEffect(gameState),
       itemMovements: getItemMovements(gameState),
-      description: writeDescription(gameState),
-    });
+      ...(description && {description}),
+    };
   },
 });
 
-const pasture = new Location({
+const pasture = createLocation({
   id: "pasture",
   getDisplayName: function (gameState) {
-    const pastureHasHorse = gameState.itemLocations?.pasture.includes("horse");
+    const pastureHasHorse =
+      gameState.itemLocations["pasture"].includes("horse");
     return pastureHasHorse && !gameState.horseDead ? "horse" : "pasture";
   },
   getSentient: function (gameState) {
     return (
-      gameState.itemLocations.pasture.includes("horse") && !gameState.horseDead
+      gameState.itemLocations["pasture"].includes("horse") &&
+      !gameState.horseDead
     );
   },
   dropPreposition: "at",
@@ -563,7 +573,7 @@ const pasture = new Location({
     let text = "You are standing in a wide field just outside the city gates. ";
 
     if (
-      gameState.itemLocations.pasture.includes("horse") &&
+      gameState.itemLocations["pasture"].includes("horse") &&
       !gameState.horseDead &&
       !gameState.horseTethered
     ) {
@@ -574,7 +584,7 @@ const pasture = new Location({
   },
 });
 
-const gate = new Location({
+const gate = createLocation({
   id: "gate",
   dropPreposition: "at",
   getConnections: function () {
@@ -602,11 +612,11 @@ const gate = new Location({
       return {
         reputation: gameState.reputation + reputationChange,
       };
-    }
+    } else return {};
   },
 });
 
-const youth = new Location({
+const youth = createLocation({
   id: "youth",
   getSentient: function () {
     return true;
@@ -638,11 +648,11 @@ const youth = new Location({
       return {
         reputation: gameState.reputation - 1,
       };
-    }
+    } else return {};
   },
 });
 
-const road1 = new Location({
+const road1 = createLocation({
   id: "road1",
   dropPreposition: "on",
   getDisplayName: function () {
@@ -670,7 +680,7 @@ const road1 = new Location({
   },
 });
 
-const road2 = new Location({
+const road2 = createLocation({
   id: "road2",
   dropPreposition: "on",
   getDisplayName: function () {
@@ -700,7 +710,7 @@ const road2 = new Location({
   },
 });
 
-const road3 = new Location({
+const road3 = createLocation({
   id: "road3",
   dropPreposition: "on",
   getDisplayName: function () {
@@ -751,7 +761,7 @@ const road3 = new Location({
         gold: gameState.gold - treasureTaken,
         reputation: gameState.reputation - 1,
       };
-    }
+    } else return {};
   },
 
   onExitGameStateEffect: function (gameState) {
@@ -765,11 +775,11 @@ const road3 = new Location({
         // you get cursed when you leave instead of when you enter so that the proper text displays
         cursed: true,
       };
-    }
+    } else return {};
   },
 });
 
-const stream = new Location({
+const stream = createLocation({
   id: "stream",
   dropPreposition: "in",
   getConnections: function () {
@@ -795,7 +805,7 @@ const stream = new Location({
   },
 });
 
-const clearing = new Location({
+const clearing = createLocation({
   id: "clearing",
   dropPreposition: "in",
   getConnections: function (gameState) {
@@ -820,7 +830,7 @@ const clearing = new Location({
 
     if (
       gameState.horseDead &&
-      gameState.itemLocations.clearing.includes("horse")
+      gameState.itemLocations["clearing"].includes("horse")
     ) {
       text +=
         "\n\nA dead horse lies on the ground, foam and partially chewed berries coming from its mouth. ";
@@ -829,7 +839,7 @@ const clearing = new Location({
   },
 });
 
-const squirrel = new Location({
+const squirrel = createLocation({
   id: "squirrel",
   getDisplayName: function (gameState) {
     return gameState.squirrelDead ? "dead squirrel" : "squirrel";
@@ -861,7 +871,7 @@ const squirrel = new Location({
   },
 });
 
-const wizard = new Location({
+const wizard = createLocation({
   id: "wizard",
   getSentient: function () {
     return true;
@@ -887,11 +897,11 @@ const wizard = new Location({
     }
 
     if (
-      gameState.itemLocations.wizard.includes("score") &&
+      gameState.itemLocations["wizard"].includes("score") &&
       !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
     ) {
       text += `\n\n"I have a musical score that will be useful. I would trade it for ${
-        gameState.itemLocations.inventory.includes("sword")
+        gameState.itemLocations["inventory"].includes("sword")
           ? "your fine sword or "
           : ""
       }gold," the wizard says. \n\n"Alas, I see your gold pouch is not as heavy as it could be. It is certainly not enough to buy this score!" \n\n"However, I believe this score will lead to treasure if you combine it with your wit. Instead of requiring a payment now, I would accept a promised payment, and will take half the treasure that you earn from the dragon's lair." \n\n"All promised payments are final. All payments completed at time of purchase are refundable." `;
@@ -908,9 +918,9 @@ const wizard = new Location({
     return text;
   },
   getCustomPay: function (gameState) {
-    function writeDescription(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (
-        gameState.itemLocations.wizard.includes("score") &&
+        gameState.itemLocations["wizard"].includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
         return `You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. `;
@@ -949,9 +959,9 @@ const wizard = new Location({
       return `"Although I would like your gold, you have no debts to me."`;
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (
-        gameState.itemLocations.wizard.includes("score") &&
+        gameState.itemLocations["wizard"].includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
         return {
@@ -978,11 +988,12 @@ const wizard = new Location({
           gold: gameState.gold - treasureTakenPostDeal / 2,
         };
       }
+      return {};
     }
 
-    function getItemMovements(gameState) {
+    function getItemMovements(gameState: GameState): ItemMovement[] {
       if (
-        gameState.itemLocations.wizard.includes("score") &&
+        gameState.itemLocations["wizard"].includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade)
       ) {
         return [
@@ -993,22 +1004,23 @@ const wizard = new Location({
           },
         ];
       }
+      return [];
     }
 
-    return new ItemInteraction({
+    return {
       gameEffect: getGameEffect(gameState),
       itemMovements: getItemMovements(gameState),
       description: writeDescription(gameState),
-    });
+    };
   },
 });
 
-const cliff = new Location({
+const cliff = createLocation({
   id: "cliff",
   dropPreposition: "on",
   getConnections: function (gameState) {
     return {
-      N: gameState.itemLocations.inventory.includes("horse")
+      N: gameState.itemLocations["inventory"].includes("horse")
         ? ""
         : "caveEntrance",
       S: "clearing",
@@ -1020,7 +1032,7 @@ const cliff = new Location({
 
   getDescription: function (gameState) {
     let text = "";
-    if (gameState.itemLocations.inventory.includes("horse")) {
+    if (gameState.itemLocations["inventory"].includes("horse")) {
       text += `The horse cannot make it up the rocky cliff. You must return to the clearing. `;
     } else {
       text += `You scramble on the rocky cliff. Above you is the entrance to a cave. Below you is a clearing next to a stream. `;
@@ -1029,7 +1041,7 @@ const cliff = new Location({
   },
 });
 
-const caveEntrance = new Location({
+const caveEntrance = createLocation({
   id: "caveEntrance",
   getDisplayName: function () {
     return "Cave entrance";
@@ -1061,7 +1073,7 @@ const caveEntrance = new Location({
   },
 });
 
-const defecatory = new Location({
+const defecatory = createLocation({
   id: "defecatory",
   dropPreposition: "in",
   getConnections: function () {
@@ -1078,7 +1090,7 @@ const defecatory = new Location({
   },
 });
 
-const puddle = new Location({
+const puddle = createLocation({
   id: "puddle",
   dropPreposition: "in",
   getConnections: function () {
@@ -1109,7 +1121,7 @@ const puddle = new Location({
   },
 });
 
-const crevice = new Location({
+const crevice = createLocation({
   id: "crevice",
   dropPreposition: "in",
   getConnections: function () {
@@ -1141,18 +1153,17 @@ const crevice = new Location({
   },
   onExitGameStateEffect: function (gameState) {
     // if the berries are in the puddle and you are poopy_hidden, the dragon is poisoned
-
     if (
-      gameState.itemLocations.puddle.includes("berries") &&
+      gameState.itemLocations["puddle"].includes("berries") &&
       gameState.clothesPoopy &&
       !gameState.naked
     ) {
       return {dragonPoisoned: true};
-    }
+    } else return {};
   },
 });
 
-const dung = new Location({
+const dung = createLocation({
   id: "dung",
   dropPreposition: "in",
   getDisplayName: function () {
@@ -1186,7 +1197,7 @@ const dung = new Location({
   },
 });
 
-const lair = new Location({
+const lair = createLocation({
   id: "lair",
   dropPreposition: "in",
   getConnections: function () {
@@ -1242,11 +1253,11 @@ const lair = new Location({
         singeCount: gameState.singeCount + 1,
         reputation: gameState.reputation - 1,
       };
-    }
+    } else return {};
   },
 });
 
-export function dragonDescription(gameState) {
+export function dragonDescription(gameState: GameState): string {
   const timeInterval = gameState.timeInCave % 4;
 
   let text = "";
@@ -1258,7 +1269,7 @@ export function dragonDescription(gameState) {
       gameState.clothesPoopy &&
       !gameState.naked &&
       gameState.playerLocation === "crevice" &&
-      gameState.itemLocations.puddle.includes("berries")
+      gameState.itemLocations["puddle"].includes("berries")
     ) {
       text +=
         "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? \n\n";
@@ -1269,7 +1280,7 @@ export function dragonDescription(gameState) {
       (gameState.clothesPoopy &&
         !gameState.naked &&
         gameState.playerLocation === "crevice" &&
-        gameState.itemLocations.puddle.includes("berries"))
+        gameState.itemLocations["puddle"].includes("berries"))
     ) {
       text += "The dragon prowls into the cavern. ";
       // not poop and not hidden
@@ -1299,7 +1310,7 @@ export function dragonDescription(gameState) {
       ) {
         text += "It seems unaware of your location. ";
         // dragon drinks
-        if (gameState.itemLocations.puddle.includes("berries")) {
+        if (gameState.itemLocations["puddle"].includes("berries")) {
           text +=
             "\n\nThe dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. ";
         } else {
@@ -1349,8 +1360,8 @@ export const locations = {
   crevice: crevice,
   dung: dung,
   lair: lair,
-};
+} as const;
 
-export default {
-  locations,
-};
+export type LocationName = keyof typeof locations;
+
+export type AlterItemLocationName = "inventory" | "outOfPlay";

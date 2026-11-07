@@ -1,24 +1,80 @@
-import {locations} from "./locations.js";
-import {items} from "./items.js";
+import {
+  type AlterItemLocationName,
+  type LocationName,
+  locations,
+} from "./locations";
+import {type ItemName, type ItemInfo, items} from "./items";
 
-function buildStartingLocations() {
-  const startingItemLocations = {
-    inventory: [],
-    outOfPlay: [],
-  };
+export type GameState = {
+  reputation: number;
+  gold: number;
+  timeInCave: number;
+  swordCost: number;
+  maxSwordCost: number;
+  ownSword: boolean;
+  manorFire: boolean;
+  naked: boolean;
+  squirrelDead: boolean;
+  horseDead: boolean;
+  horseTethered: boolean;
+  horseMounted: boolean;
+  playerPoisoned: boolean;
+  clothesPoopy: boolean;
+  handkerchiefDamp: boolean;
+  playerMasked: boolean;
+  babyCough: boolean;
+  playerCough: boolean;
+  savedBaby: boolean;
+  receivedBabyReward: boolean;
+  playedForYouth: boolean;
+  offeredHandkerchiefToYouth: boolean;
+  cursed: boolean;
+  firstCourtyardEntry: boolean;
+  dragonPoisoned: boolean;
+  dragonAsleep: boolean;
+  dragonDead: boolean;
+  treasureAmount: number;
+  treasureLevel: number;
+  preCreditTreasureLevel: number;
+  singeCount: number;
+  gotScoreByCredit: boolean;
+  paidDebt: boolean;
+  gotScoreByTrade: boolean;
+  maxReputation: number;
+  maxGold: number;
+  appleBitesRemaining: number;
+  playerLocation: LocationName;
+  consequenceText: string;
+  locationConsequenceText: string;
+  itemLocations: ItemLocations;
+  journalPagesRemaining: number;
+  journalEntry: GameState | null;
+};
 
-  Object.keys(locations).forEach(
-    (location) => (startingItemLocations[location] = []),
-  );
+type ItemLocations = Record<LocationName | AlterItemLocationName, ItemName[]>;
 
-  for (const [item, itemInfo] of Object.entries(items)) {
-    startingItemLocations[itemInfo.spawnLocation].push(item);
+function buildStartingLocations(): ItemLocations {
+  const allLocations = [
+    ...(Object.keys(locations) as LocationName[]),
+    "inventory",
+    "outOfPlay",
+  ] as const;
+
+  const startingItemLocations = Object.fromEntries(
+    allLocations.map((key) => [key, [] as ItemName[]]),
+  ) as ItemLocations;
+
+  for (const [itemName, itemInfo] of Object.entries(items) as [
+    ItemName,
+    ItemInfo,
+  ][]) {
+    startingItemLocations[itemInfo.spawnLocation].push(itemName);
   }
 
   return startingItemLocations;
 }
 
-export function init() {
+export function init(): GameState {
   const startingItemLocations = buildStartingLocations();
 
   return {
@@ -59,15 +115,10 @@ export function init() {
     maxReputation: 17,
     maxGold: 310,
     appleBitesRemaining: 5,
-
     playerLocation: "room",
-
     consequenceText: "",
-
     locationConsequenceText: "",
-
     itemLocations: startingItemLocations,
-
     journalPagesRemaining: 3,
     journalEntry: null,
   };

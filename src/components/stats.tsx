@@ -1,6 +1,14 @@
-import React from "react";
-
-export default function Stats({reputation, maxReputation, gold, maxGold}) {
+export default function Stats({
+  reputation,
+  maxReputation,
+  gold,
+  maxGold,
+}: {
+  reputation: number;
+  maxReputation: number;
+  gold: number;
+  maxGold: number;
+}): React.JSX.Element {
   return (
     <div id="stats">
       <div className="stat">

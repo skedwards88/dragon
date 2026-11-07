@@ -523,7 +523,7 @@ button:disabled {
 }
 
 /* Wider screen */
-@media (min-width: 600px) {
+@media (width >= 600px) {
   .App {
     max-width: 60vw;
     margin: auto;
@@ -556,7 +556,7 @@ button:disabled {
 }
 
 /* Wide and tall screen */
-@media (min-width: 800px) and (min-height: 600px) {
+@media (width >= 800px) and (height >= 600px) {
   .App {
     --default-font-size: min(0.6cm, 5vmin);
   }

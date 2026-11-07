@@ -1,14 +1,24 @@
-import React from "react";
-import {locations} from "../logic/locations";
+import {type Connections, type Direction, locations} from "../logic/locations";
 import Stats from "./stats";
-import {items} from "../logic/items";
+import {type ItemName, items} from "../logic/items";
 import Share from "@skedwards88/shared-components/src/components/Share";
 import {isRunningStandalone} from "@skedwards88/shared-components/src/logic/isRunningStandalone";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
+import {type GameState} from "../logic/init";
+import {type DisplayState} from "./App";
+import {type ReducerPayload} from "../logic/reducer";
 
-function LocationItems({gameState, dispatchGameState, setCurrentDisplay}) {
+function LocationItems({
+  gameState,
+  dispatchGameState,
+  setCurrentDisplay,
+}: {
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+}): React.JSX.Element[] {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
-  return Array.from(itemsAtLocation).map((item) => {
+  return itemsAtLocation.map((item) => {
     return (
       <button
         onClick={() => {
@@ -29,12 +39,18 @@ function NavigationList({
   gameState,
   dispatchGameState,
   setCurrentDisplay,
-  locationName,
-}) {
+  backgroundName,
+}: {
+  showPhoto: boolean;
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+  backgroundName: string;
+}): React.JSX.Element {
   return (
     <div id="navigation" className="navigation-list">
       {showPhoto ? (
-        <div className={"listNavigationImage " + locationName}></div>
+        <div className={"listNavigationImage " + backgroundName}></div>
       ) : (
         <></>
       )}
@@ -51,10 +67,18 @@ function NavigationList({
   );
 }
 
-function Connections({gameState, dispatchGameState}) {
+function Connections({
+  gameState,
+  dispatchGameState,
+}: {
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+}): React.JSX.Element[] {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
+
   const connectionValues = Object.values(connections).flatMap((i) => i);
+
   return connectionValues.map((connection) => {
     if (connection) {
       return (
@@ -68,7 +92,7 @@ function Connections({gameState, dispatchGameState}) {
           {locations[connection].getDisplayName(gameState)}
         </button>
       );
-    }
+    } else return <></>;
   });
 }
 
@@ -77,29 +101,34 @@ function MapInteractions({
   itemsAtLocation,
   dispatchGameState,
   setCurrentDisplay,
-}) {
-  let interactionDivs = <></>;
+}: {
+  connections: Connections;
+  itemsAtLocation: ItemName[];
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+}): React.JSX.Element {
+  let interactionDivs;
   if (connections["A"].length) {
     const interactions = connections["A"];
 
-    interactionDivs = Array.from(interactions).map((interaction) => {
-      return (
-        <button
-          className="connection"
-          onClick={() =>
-            dispatchGameState({
-              action: "movePlayer",
-              newLocation: interaction,
-            })
-          }
-          id={interaction}
-          key={interaction}
-        ></button>
-      );
+    interactionDivs = interactions.map((interaction) => {
+      <button
+        className="connection"
+        onClick={() =>
+          dispatchGameState({
+            action: "movePlayer",
+            newLocation: interaction,
+          })
+        }
+        id={interaction}
+        key={interaction}
+      ></button>;
     });
+  } else {
+    interactionDivs = <></>;
   }
 
-  const itemDivs = Array.from(itemsAtLocation).map((item) => {
+  const itemDivs = itemsAtLocation.map((item) => {
     return (
       <button
         onClick={() => {
@@ -121,12 +150,24 @@ function MapInteractions({
   );
 }
 
-function MapLocation({direction, connections, gameState, dispatchGameState}) {
-  if (!connections[direction]) {
+function MapLocation({
+  direction,
+  connections,
+  gameState,
+  dispatchGameState,
+}: {
+  direction: Direction;
+  connections: Connections;
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+}): React.JSX.Element {
+  const connection = connections[direction];
+
+  if (!connection) {
     return <button className="connection" id={direction} disabled></button>;
   }
 
-  const name = locations[connections[direction]].getDisplayName(gameState);
+  const name = locations[connection].getDisplayName(gameState);
 
   return (
     <button
@@ -134,7 +175,7 @@ function MapLocation({direction, connections, gameState, dispatchGameState}) {
       onClick={() =>
         dispatchGameState({
           action: "movePlayer",
-          newLocation: connections[direction],
+          newLocation: connection,
         })
       }
       id={direction}
@@ -144,47 +185,57 @@ function MapLocation({direction, connections, gameState, dispatchGameState}) {
   );
 }
 
-function Map({gameState, dispatchGameState, setCurrentDisplay, showPhoto}) {
+function Map({
+  gameState,
+  dispatchGameState,
+  setCurrentDisplay,
+  showPhoto,
+}: {
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+  showPhoto: boolean;
+}): React.JSX.Element {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
-  const locationName =
+  const backgroundName =
     locations[gameState.playerLocation].getBackgroundName(gameState);
   return (
     <div id="navigation" className="navigation-map">
       <div id="map">
         {MapLocation({
           direction: "N",
-          connections: connections,
-          gameState: gameState,
-          dispatchGameState: dispatchGameState,
+          connections,
+          gameState,
+          dispatchGameState,
         })}
         {MapLocation({
           direction: "W",
-          connections: connections,
-          gameState: gameState,
-          dispatchGameState: dispatchGameState,
+          connections,
+          gameState,
+          dispatchGameState,
         })}
-        <div id="A" className={showPhoto ? locationName : ""}>
+        <div id="A" className={showPhoto ? backgroundName : ""}>
           {MapInteractions({
-            connections: connections,
-            dispatchGameState: dispatchGameState,
-            itemsAtLocation: itemsAtLocation,
-            setCurrentDisplay: setCurrentDisplay,
+            connections,
+            dispatchGameState,
+            itemsAtLocation,
+            setCurrentDisplay,
           })}
         </div>
         {MapLocation({
           direction: "E",
-          connections: connections,
-          gameState: gameState,
-          dispatchGameState: dispatchGameState,
+          connections,
+          gameState,
+          dispatchGameState,
         })}
         {MapLocation({
           direction: "S",
-          connections: connections,
-          gameState: gameState,
-          dispatchGameState: dispatchGameState,
+          connections,
+          gameState,
+          dispatchGameState,
         })}
       </div>
     </div>
@@ -199,10 +250,18 @@ export default function Location({
   setShowMap,
   showPhoto,
   setShowPhoto,
-}) {
+}: {
+  gameState: GameState;
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+  showMap: boolean;
+  setShowMap: React.Dispatch<React.SetStateAction<boolean>>;
+  showPhoto: boolean;
+  setShowPhoto: React.Dispatch<React.SetStateAction<boolean>>;
+}): React.JSX.Element {
   const {userId, sessionId} = useMetadataContext();
 
-  const locationName =
+  const backgroundName =
     locations[gameState.playerLocation].getBackgroundName(gameState);
 
   return (
@@ -226,7 +285,7 @@ export default function Location({
         <Share
           appName="Dragon Hero"
           text="Check out this text adventure puzzle!"
-          url="https://skedwards88.github.io/dragon/"
+          url="https://dragon.twistedtrailgames.com/"
           origin="control bar"
           id="share"
           userId={userId}
@@ -264,7 +323,7 @@ export default function Location({
           dispatchGameState={dispatchGameState}
           setCurrentDisplay={setCurrentDisplay}
           showPhoto={showPhoto}
-          locationName={locationName}
+          backgroundName={backgroundName}
         />
       )}
       <div id="non-navigation-buttons" className="buttons">
