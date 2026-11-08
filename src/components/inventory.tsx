@@ -1,8 +1,8 @@
-import {type GameState} from "../logic/init";
+import type {GameState} from "../logic/init";
 import {items} from "../logic/items";
 import {locations} from "../logic/locations";
-import {type ReducerPayload} from "../logic/reducer";
-import {type DisplayState} from "./App";
+import type {ReducerPayload} from "../logic/reducer";
+import type {DisplayState} from "./App";
 
 function InventoryItems({
   dispatchGameState,
@@ -20,32 +20,32 @@ function InventoryItems({
         <div key={item}>{items[item].getDescription(gameState)}</div>
         <button
           onClick={() => {
-            dispatchGameState({item: item, action: "useItem"});
+            dispatchGameState({item, action: "useItem"});
             setCurrentDisplay("consequence");
           }}
           className="item-action"
-          key={item + "-use"}
+          key={`${item}-use`}
         >
           {items[item].getUseVerb(gameState)}
         </button>
         <button
           onClick={() => {
-            dispatchGameState({item: item, action: "dropItem"});
+            dispatchGameState({item, action: "dropItem"});
             setCurrentDisplay("consequence");
           }}
           className="item-action"
-          key={item + "-drop"}
+          key={`${item}-drop`}
         >
           Drop
         </button>
         <button
           disabled={!locations[gameState.playerLocation].getSentient(gameState)}
           onClick={() => {
-            dispatchGameState({item: item, action: "giveItem"});
+            dispatchGameState({item, action: "giveItem"});
             setCurrentDisplay("consequence");
           }}
           className="item-action"
-          key={item + "-give"}
+          key={`${item}-give`}
         >
           Give
         </button>
@@ -75,14 +75,14 @@ export default function Inventory({
           setCurrentDisplay={setCurrentDisplay}
         />
         <div className="inventoryItem" key="journal">
-          <div key="journal">{`journal with ${gameState.journalPagesRemaining} pages left`}</div>
+          <div key="journal">{`journal with ${String(gameState.journalPagesRemaining)} pages left`}</div>
           <button
             onClick={() => {
               dispatchGameState({action: "readJournal"});
               setCurrentDisplay("consequence");
             }}
             className="item-action"
-            key={"journal-read"}
+            key="journal-read"
           >
             Read
           </button>
@@ -93,13 +93,13 @@ export default function Inventory({
               setCurrentDisplay("consequence");
             }}
             className="item-action"
-            key={"journal-write"}
+            key="journal-write"
           >
             Write
           </button>
         </div>
         <div className="inventoryItem" key="gold">
-          <div key="gold">{gameState.gold + " gold"}</div>
+          <div key="gold">{`${String(gameState.gold)} gold`}</div>
           <button
             disabled={
               !locations[gameState.playerLocation].getSentient(gameState)
@@ -109,7 +109,7 @@ export default function Inventory({
               setCurrentDisplay("consequence");
             }}
             className="item-action"
-            key={"gold-give"}
+            key="gold-give"
           >
             Pay
           </button>
@@ -119,7 +119,9 @@ export default function Inventory({
         <button
           key="back"
           className="close"
-          onClick={() => setCurrentDisplay("location")}
+          onClick={() => {
+            setCurrentDisplay("location");
+          }}
         >
           Close Inventory
         </button>

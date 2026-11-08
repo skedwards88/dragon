@@ -1,4 +1,4 @@
-import {type GameState} from "./init";
+import type {GameState} from "./init";
 
 type KeyEvent = {
   eventName: "keyEvent";
@@ -99,7 +99,7 @@ export function inferKeyEvents(
   if (
     newState.playerLocation === "gate" &&
     oldState.treasureLevel &&
-    oldState.playerLocation != "gate"
+    oldState.playerLocation !== "gate"
   ) {
     keyEvents.push({
       eventName: "keyEvent",

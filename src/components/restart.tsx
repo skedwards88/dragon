@@ -1,5 +1,5 @@
-import {type ReducerPayload} from "../logic/reducer";
-import {type DisplayState} from "./App";
+import type {ReducerPayload} from "../logic/reducer";
+import type {DisplayState} from "./App";
 
 export default function Restart({
   setCurrentDisplay,
@@ -22,7 +22,12 @@ export default function Restart({
           Yes
         </button>
 
-        <button className="close" onClick={() => setCurrentDisplay("location")}>
+        <button
+          className="close"
+          onClick={() => {
+            setCurrentDisplay("location");
+          }}
+        >
           No
         </button>
       </div>

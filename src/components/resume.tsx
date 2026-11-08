@@ -1,5 +1,5 @@
-import {type ReducerPayload} from "../logic/reducer";
-import {type DisplayState} from "./App";
+import type {ReducerPayload} from "../logic/reducer";
+import type {DisplayState} from "./App";
 
 export default function Resume({
   setCurrentDisplay,
@@ -10,9 +10,14 @@ export default function Resume({
 }): React.JSX.Element {
   return (
     <div className="App">
-      <div className="description">{`Continue from last point?`}</div>
+      <div className="description">Continue from last point?</div>
       <div id="non-navigation-buttons" className="buttons">
-        <button className="close" onClick={() => setCurrentDisplay("location")}>
+        <button
+          className="close"
+          onClick={() => {
+            setCurrentDisplay("location");
+          }}
+        >
           Continue
         </button>
         <button

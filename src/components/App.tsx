@@ -149,30 +149,45 @@ function App(): React.JSX.Element {
     case "installOverview":
       return (
         <InstallOverview
-          closeAction={() => setCurrentDisplay("location")}
-          pwaInstallAction={() => setCurrentDisplay("pwaInstall")}
+          closeAction={() => {
+            setCurrentDisplay("location");
+          }}
+          pwaInstallAction={() => {
+            setCurrentDisplay("pwaInstall");
+          }}
           installPromptEvent={installPromptEvent}
           showInstallButton={showInstallButton}
           handleInstall={handleInstall}
-          googleAppLink={
-            "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
-          }
+          googleAppLink="https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
           userId={userId}
           sessionId={sessionId}
-        ></InstallOverview>
+        />
       );
 
     case "pwaInstall":
       return (
         <PWAInstall
-          closeAction={() => setCurrentDisplay("location")}
-          googleAppLink={
-            "https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
-          }
-          pwaLink={"https://dragon.twistedtrailgames.com/"}
+          closeAction={() => {
+            setCurrentDisplay("location");
+          }}
+          googleAppLink="https://play.google.com/store/apps/details?id=dragon.io.github.skedwards88.twa&hl=en_US"
+          pwaLink="https://dragon.twistedtrailgames.com/"
           userId={userId}
           sessionId={sessionId}
-        ></PWAInstall>
+        />
+      );
+
+    case "location":
+      return (
+        <Location
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+          setCurrentDisplay={setCurrentDisplay}
+          showMap={showMap}
+          setShowMap={setShowMap}
+          showPhoto={showPhoto}
+          setShowPhoto={setShowPhoto}
+        />
       );
 
     default:

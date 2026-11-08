@@ -56,16 +56,19 @@ export type GameState = {
 type ItemLocations = Record<LocationName | AlterItemLocationName, ItemName[]>;
 
 const allLocations = [
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   ...(Object.keys(locations) as LocationName[]),
   "inventory",
   "outOfPlay",
 ] as const;
 
 function buildStartingLocations(): ItemLocations {
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   const startingItemLocations = Object.fromEntries(
     allLocations.map((key) => [key, [] as ItemName[]]),
   ) as ItemLocations;
 
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
   for (const [itemName, itemInfo] of Object.entries(items) as [
     ItemName,
     ItemInfo,
@@ -77,12 +80,15 @@ function buildStartingLocations(): ItemLocations {
 }
 
 function savedStateValidQ(
-  savedState: GameState,
-  checkJournalEntry: boolean = true,
-): boolean {
-  if (typeof savedState !== "object" || savedState === null) {
+  input: unknown,
+  checkJournalEntry = true,
+): input is GameState {
+  if (typeof input !== "object" || input === null) {
     return false;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- object narrowed above; reading keys as unknown
+  const savedState = input as Record<string, unknown>;
 
   // All number fields must be numbers and finite
   for (const key of [
@@ -146,14 +152,24 @@ function savedStateValidQ(
   }
 
   // player must be in valid location
-  if (!Object.keys(locations).includes(savedState.playerLocation)) {
+  const playerLocation = savedState["playerLocation"];
+  if (
+    typeof playerLocation !== "string" ||
+    !Object.keys(locations).includes(playerLocation)
+  ) {
     return false;
   }
 
-  const itemLocations = savedState.itemLocations;
-  if (typeof itemLocations !== "object" || itemLocations === null) {
+  const itemLocationsUntyped = savedState["itemLocations"];
+  if (
+    typeof itemLocationsUntyped !== "object" ||
+    itemLocationsUntyped === null
+  ) {
     return false;
   }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- object narrowed above; reading keys as unknown
+  const itemLocations = itemLocationsUntyped as Record<string, unknown>;
 
   // There must be an items entry for every location, and only known items at each location
   for (const locationName of allLocations) {
@@ -165,8 +181,9 @@ function savedStateValidQ(
       if (
         typeof itemAtLocation !== "string" ||
         !Object.keys(items).includes(itemAtLocation)
-      )
+      ) {
         return false;
+      }
     }
   }
 
@@ -180,8 +197,8 @@ function savedStateValidQ(
   // journal entry must be valid if exists (but don't need the journal entry of the journal entry to be valid since it doesn't get used)
   if (
     checkJournalEntry &&
-    savedState.journalEntry !== null &&
-    !savedStateValidQ(savedState.journalEntry, false)
+    savedState["journalEntry"] !== null &&
+    !savedStateValidQ(savedState["journalEntry"], false)
   ) {
     return false;
   }
@@ -191,9 +208,9 @@ function savedStateValidQ(
 
 export function init({useSaved}: {useSaved: boolean}): GameState {
   if (useSaved) {
-    const savedState = getFromStorage<GameState>("dragonHeroGameState");
+    const savedState = getFromStorage<unknown>("dragonHeroGameState");
 
-    if (savedState && savedStateValidQ(savedState)) {
+    if (savedStateValidQ(savedState)) {
       return {...savedState, resumedFromSaved: true};
     }
   }

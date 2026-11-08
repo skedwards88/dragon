@@ -4,9 +4,9 @@ import {type ItemName, items} from "../logic/items";
 import Share from "@skedwards88/shared-components/src/components/Share";
 import {isRunningStandalone} from "@skedwards88/shared-components/src/logic/isRunningStandalone";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
-import {type GameState} from "../logic/init";
-import {type DisplayState} from "./App";
-import {type ReducerPayload} from "../logic/reducer";
+import type {GameState} from "../logic/init";
+import type {DisplayState} from "./App";
+import type {ReducerPayload} from "../logic/reducer";
 
 function LocationItems({
   gameState,
@@ -22,7 +22,7 @@ function LocationItems({
     return (
       <button
         onClick={() => {
-          dispatchGameState({action: "takeItem", item: item});
+          dispatchGameState({action: "takeItem", item});
           setCurrentDisplay("consequence");
         }}
         className="item"
@@ -50,10 +50,8 @@ function NavigationList({
   return (
     <div id="navigation" className="navigation-list">
       {showPhoto ? (
-        <div className={"listNavigationImage " + backgroundName}></div>
-      ) : (
-        <></>
-      )}
+        <div className={`listNavigationImage ${backgroundName}`} />
+      ) : null}
       <LocationItems
         gameState={gameState}
         dispatchGameState={dispatchGameState}
@@ -73,27 +71,29 @@ function Connections({
 }: {
   gameState: GameState;
   dispatchGameState: React.Dispatch<ReducerPayload>;
-}): React.JSX.Element[] {
+}): React.JSX.Element {
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 
-  const connectionValues = Object.values(connections).flatMap((i) => i);
+  const connectionValues = Object.values(connections)
+    .flatMap((i) => i)
+    .filter((connection) => connection !== "");
 
-  return connectionValues.map((connection) => {
-    if (connection) {
-      return (
+  return (
+    <>
+      {connectionValues.map((connection) => {
         <button
           className="connection"
           key={connection}
-          onClick={() =>
-            dispatchGameState({action: "movePlayer", newLocation: connection})
-          }
+          onClick={() => {
+            dispatchGameState({action: "movePlayer", newLocation: connection});
+          }}
         >
           {locations[connection].getDisplayName(gameState)}
-        </button>
-      );
-    } else return <></>;
-  });
+        </button>;
+      })}
+    </>
+  );
 }
 
 function MapInteractions({
@@ -107,38 +107,31 @@ function MapInteractions({
   dispatchGameState: React.Dispatch<ReducerPayload>;
   setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
 }): React.JSX.Element {
-  let interactionDivs;
-  if (connections["A"].length) {
-    const interactions = connections["A"];
-
-    interactionDivs = interactions.map((interaction) => {
-      <button
-        className="connection"
-        onClick={() =>
-          dispatchGameState({
-            action: "movePlayer",
-            newLocation: interaction,
-          })
-        }
-        id={interaction}
-        key={interaction}
-      ></button>;
-    });
-  } else {
-    interactionDivs = <></>;
-  }
+  const interactionDivs = connections.A.map((interaction) => {
+    <button
+      className="connection"
+      onClick={() => {
+        dispatchGameState({
+          action: "movePlayer",
+          newLocation: interaction,
+        });
+      }}
+      id={interaction}
+      key={interaction}
+    />;
+  });
 
   const itemDivs = itemsAtLocation.map((item) => {
     return (
       <button
         onClick={() => {
-          dispatchGameState({action: "takeItem", item: item});
+          dispatchGameState({action: "takeItem", item});
           setCurrentDisplay("consequence");
         }}
         className="item"
         key={item}
         id={item}
-      ></button>
+      />
     );
   });
 
@@ -164,7 +157,7 @@ function MapLocation({
   const connection = connections[direction];
 
   if (!connection) {
-    return <button className="connection" id={direction} disabled></button>;
+    return <button className="connection" id={direction} disabled />;
   }
 
   const name = locations[connection].getDisplayName(gameState);
@@ -172,12 +165,12 @@ function MapLocation({
   return (
     <button
       className="connection"
-      onClick={() =>
+      onClick={() => {
         dispatchGameState({
           action: "movePlayer",
           newLocation: connection,
-        })
-      }
+        });
+      }}
       id={direction}
     >
       <p>{name}</p>
@@ -269,19 +262,30 @@ export default function Location({
       <div id="controls">
         <button
           id="showMap"
-          className={"showMap " + showMap}
-          onClick={() => setShowMap(!showMap)}
-        ></button>
+          className={`showMap ${String(showMap)}`}
+          onClick={() => {
+            setShowMap(!showMap);
+          }}
+        />
         <button
           id="showPhoto"
-          className={"showPhoto " + showPhoto}
-          onClick={() => setShowPhoto(!showPhoto)}
-        ></button>
-        <button id="info" onClick={() => setCurrentDisplay("info")}></button>
+          className={`showPhoto ${String(showPhoto)}`}
+          onClick={() => {
+            setShowPhoto(!showPhoto);
+          }}
+        />
+        <button
+          id="info"
+          onClick={() => {
+            setCurrentDisplay("info");
+          }}
+        />
         <button
           id="restart"
-          onClick={() => setCurrentDisplay("restart")}
-        ></button>
+          onClick={() => {
+            setCurrentDisplay("restart");
+          }}
+        />
         <Share
           appName="Dragon Hero"
           text="Check out this text adventure puzzle!"
@@ -290,15 +294,15 @@ export default function Location({
           id="share"
           userId={userId}
           sessionId={sessionId}
-        ></Share>
+        />
         {!isRunningStandalone() ? (
           <button
             id="install"
-            onClick={() => setCurrentDisplay("installOverview")}
-          ></button>
-        ) : (
-          <></>
-        )}
+            onClick={() => {
+              setCurrentDisplay("installOverview");
+            }}
+          />
+        ) : null}
       </div>
       <Stats
         reputation={gameState.reputation}
@@ -329,7 +333,9 @@ export default function Location({
       <div id="non-navigation-buttons" className="buttons">
         <button
           className="inventory"
-          onClick={() => setCurrentDisplay("inventory")}
+          onClick={() => {
+            setCurrentDisplay("inventory");
+          }}
         >
           Inventory
         </button>

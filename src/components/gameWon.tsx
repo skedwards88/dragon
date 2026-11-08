@@ -1,9 +1,9 @@
 import Stats from "./stats";
 import Share from "@skedwards88/shared-components/src/components/Share";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
-import {type GameState} from "../logic/init";
-import {type DisplayState} from "./App";
-import {type ReducerPayload} from "../logic/reducer";
+import type {GameState} from "../logic/init";
+import type {DisplayState} from "./App";
+import type {ReducerPayload} from "../logic/reducer";
 
 export default function GameWon({
   dispatchGameState,
@@ -34,7 +34,7 @@ export default function GameWon({
       : ""
   }${
     gameState.singeCount
-      ? `\n\nYou have ${gameState.singeCount} singe mark${
+      ? `\n\nYou have ${String(gameState.singeCount)} singe mark${
           gameState.singeCount > 1 ? "s" : ""
         } and no eyebrows, courtesy of the dragon's flame. `
       : ""
@@ -85,7 +85,7 @@ export default function GameWon({
           content="SHARE"
           userId={userId}
           sessionId={sessionId}
-        ></Share>
+        />
       </div>
     </div>
   );
@@ -106,7 +106,7 @@ function getWinShareText({
   if (reputation === maxReputation && gold === maxGold) {
     resultText = `I earned the maximum score on Dragon Hero!`;
   } else {
-    resultText = `I beat Dragon Hero: ${reputation}/${maxReputation} reputation, ${gold}/${maxGold} gold.`;
+    resultText = `I beat Dragon Hero: ${String(reputation)}/${String(maxReputation)} reputation, ${String(gold)}/${String(maxGold)} gold.`;
   }
 
   return resultText;

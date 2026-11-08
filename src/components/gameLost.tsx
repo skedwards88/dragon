@@ -1,6 +1,6 @@
-import {type GameState} from "../logic/init";
-import {type ReducerPayload} from "../logic/reducer";
-import {type DisplayState} from "./App";
+import type {GameState} from "../logic/init";
+import type {ReducerPayload} from "../logic/reducer";
+import type {DisplayState} from "./App";
 import Stats from "./stats";
 
 export default function GameLost({
