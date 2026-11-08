@@ -9,15 +9,14 @@ import type {DisplayState} from "./App";
 import type {ReducerPayload} from "../logic/reducer";
 
 function LocationItems({
-  gameState,
+  itemsAtLocation,
   dispatchGameState,
   setCurrentDisplay,
 }: {
-  gameState: GameState;
+  itemsAtLocation: ItemName[];
   dispatchGameState: React.Dispatch<ReducerPayload>;
   setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
 }): React.JSX.Element {
-  const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
   return (
     <>
       {itemsAtLocation.map((item) => {
@@ -57,7 +56,7 @@ function NavigationList({
         <div className={`listNavigationImage ${backgroundName}`} />
       ) : null}
       <LocationItems
-        gameState={gameState}
+        itemsAtLocation={gameState.itemLocations[gameState.playerLocation]}
         dispatchGameState={dispatchGameState}
         setCurrentDisplay={setCurrentDisplay}
       />
@@ -202,38 +201,38 @@ function Map({
   return (
     <div id="navigation" className="navigation-map">
       <div id="map">
-        {MapLocation({
-          direction: "N",
-          connections,
-          gameState,
-          dispatchGameState,
-        })}
-        {MapLocation({
-          direction: "W",
-          connections,
-          gameState,
-          dispatchGameState,
-        })}
+        <MapLocation
+          direction="N"
+          connections={connections}
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+        />
+        <MapLocation
+          direction="W"
+          connections={connections}
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+        />
         <div id="A" className={showPhoto ? backgroundName : ""}>
-          {MapInteractions({
-            connections,
-            dispatchGameState,
-            itemsAtLocation,
-            setCurrentDisplay,
-          })}
+          <MapInteractions
+            connections={connections}
+            dispatchGameState={dispatchGameState}
+            itemsAtLocation={itemsAtLocation}
+            setCurrentDisplay={setCurrentDisplay}
+          />
         </div>
-        {MapLocation({
-          direction: "E",
-          connections,
-          gameState,
-          dispatchGameState,
-        })}
-        {MapLocation({
-          direction: "S",
-          connections,
-          gameState,
-          dispatchGameState,
-        })}
+        <MapLocation
+          direction="E"
+          connections={connections}
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+        />
+        <MapLocation
+          direction="S"
+          connections={connections}
+          gameState={gameState}
+          dispatchGameState={dispatchGameState}
+        />
       </div>
     </div>
   );
