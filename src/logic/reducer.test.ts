@@ -7,7 +7,16 @@ const newGameState = init({useSaved: false});
 
 describe("reducer", () => {
   test("New game resets state", () => {
-    const output = reducer(newGameState, {action: "newGame"});
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 0,
+        gold: 5000,
+        horseDead: true,
+        savedBaby: true,
+      },
+      {action: "newGame"},
+    );
 
     expect(output).toMatchInlineSnapshot(`
    {
