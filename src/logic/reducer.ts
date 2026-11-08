@@ -5,23 +5,23 @@ import {type LocationName, locations} from "./locations";
 function appendConsequenceToDescription({
   gameEffect,
   description,
-  newGameState,
+  gameState,
 }: {
   gameEffect: Partial<GameState>;
   description: string;
-  newGameState: GameState;
+  gameState: GameState;
 }): string {
   let updatedDescription = description;
 
   if (gameEffect.reputation != null) {
-    const reputationDiff = gameEffect.reputation - newGameState.reputation;
+    const reputationDiff = gameEffect.reputation - gameState.reputation;
     updatedDescription += `\n\nReputation ${
       reputationDiff > 0 ? "+" : ""
     }${String(reputationDiff)}`;
   }
 
   if (gameEffect.gold != null) {
-    const goldDiff = gameEffect.gold - newGameState.gold;
+    const goldDiff = gameEffect.gold - gameState.gold;
     updatedDescription += `\n\nGold ${goldDiff > 0 ? "+" : ""}${String(goldDiff)}`;
   }
 
@@ -30,12 +30,12 @@ function appendConsequenceToDescription({
 
 function updateLocations({
   itemMovements,
-  newGameState,
+  gameState,
 }: {
   itemMovements: ItemMovement[];
-  newGameState: GameState;
+  gameState: GameState;
 }): GameState["itemLocations"] {
-  let itemLocations = newGameState.itemLocations;
+  let itemLocations = structuredClone(gameState.itemLocations);
 
   for (const {item, oldLocation, newLocation} of itemMovements) {
     if (oldLocation === newLocation) continue;
@@ -79,9 +79,8 @@ export function reducer(
     case "takeItem": {
       const item = payload.item;
       const playerLocation = currentGameState.playerLocation;
-      const newGameState = structuredClone(currentGameState);
 
-      const customTakeResult = items[item].getCustomTake(newGameState);
+      const customTakeResult = items[item].getCustomTake(currentGameState);
 
       const {gameEffect, targetItemDestination, itemMovements} =
         customTakeResult;
@@ -96,21 +95,21 @@ export function reducer(
       if (description === "") {
         description = `You now have ${
           ["a", "e", "i", "o", "u"].includes(
-            items[item].getDescription(newGameState)[0].toLowerCase(),
+            items[item].getDescription(currentGameState)[0].toLowerCase(),
           )
             ? "an"
             : "a"
-        } ${items[item].getDescription(newGameState)}.`;
+        } ${items[item].getDescription(currentGameState)}.`;
       }
       description = appendConsequenceToDescription({
         gameEffect,
         description,
-        newGameState,
+        gameState: currentGameState,
       });
 
       const itemLocations = updateLocations({
         itemMovements,
-        newGameState,
+        gameState: currentGameState,
       });
 
       return {
@@ -123,9 +122,8 @@ export function reducer(
     }
     case "useItem": {
       const item = payload.item;
-      const newGameState = structuredClone(currentGameState);
 
-      const customUseResult = items[item].getCustomUse(newGameState);
+      const customUseResult = items[item].getCustomUse(currentGameState);
 
       const {gameEffect, targetItemDestination, itemMovements} =
         customUseResult;
@@ -144,12 +142,12 @@ export function reducer(
       description = appendConsequenceToDescription({
         gameEffect,
         description,
-        newGameState,
+        gameState: currentGameState,
       });
 
       const itemLocations = updateLocations({
         itemMovements,
-        newGameState,
+        gameState: currentGameState,
       });
 
       return {
@@ -163,9 +161,8 @@ export function reducer(
     case "dropItem": {
       const item = payload.item;
       const playerLocation = currentGameState.playerLocation;
-      const newGameState = structuredClone(currentGameState);
 
-      const customDropResult = items[item].getCustomDrop(newGameState);
+      const customDropResult = items[item].getCustomDrop(currentGameState);
 
       const {gameEffect, targetItemDestination, itemMovements} =
         customDropResult;
@@ -181,19 +178,19 @@ export function reducer(
         description = `You drop the ${item} ${
           locations[playerLocation].dropPreposition
         } the ${locations[playerLocation]
-          .getDisplayName(newGameState)
+          .getDisplayName(currentGameState)
           .toLowerCase()}.`;
       }
 
       description = appendConsequenceToDescription({
         gameEffect,
         description,
-        newGameState,
+        gameState: currentGameState,
       });
 
       const itemLocations = updateLocations({
         itemMovements,
-        newGameState,
+        gameState: currentGameState,
       });
 
       return {
@@ -206,10 +203,9 @@ export function reducer(
     }
     case "pay": {
       const playerLocation = currentGameState.playerLocation;
-      const newGameState = structuredClone(currentGameState);
 
       const customPayResult =
-        locations[playerLocation].getCustomPay(newGameState);
+        locations[playerLocation].getCustomPay(currentGameState);
 
       const {gameEffect, itemMovements} = customPayResult;
       let {description} = customPayResult;
@@ -218,23 +214,23 @@ export function reducer(
         // no change if we already have a description
       } else if (Object.keys(gameEffect).length || itemMovements.length) {
         description = `You pay the ${locations[playerLocation]
-          .getDisplayName(newGameState)
+          .getDisplayName(currentGameState)
           .toLowerCase()}.`;
       } else {
         description = `The ${locations[playerLocation]
-          .getDisplayName(newGameState)
+          .getDisplayName(currentGameState)
           .toLowerCase()} is not interested in your gold.`;
       }
 
       description = appendConsequenceToDescription({
         gameEffect,
         description,
-        newGameState,
+        gameState: currentGameState,
       });
 
       const itemLocations = updateLocations({
         itemMovements,
-        newGameState,
+        gameState: currentGameState,
       });
 
       return {
@@ -248,9 +244,8 @@ export function reducer(
     case "giveItem": {
       const item = payload.item;
       const playerLocation = currentGameState.playerLocation;
-      const newGameState = structuredClone(currentGameState);
 
-      const customGiveResult = items[item].getCustomGive(newGameState);
+      const customGiveResult = items[item].getCustomGive(currentGameState);
 
       const {gameEffect, targetItemDestination, itemMovements} =
         customGiveResult;
@@ -267,32 +262,32 @@ export function reducer(
       } else if (targetItemDestination === "outOfPlay") {
         // if item goes out of play
         description = `You give the ${item} to the ${locations[playerLocation]
-          .getDisplayName(newGameState)
+          .getDisplayName(currentGameState)
           .toLowerCase()}.`;
       } else if (locations[playerLocation].getHuman()) {
         // if giving to human
         description = `The ${locations[playerLocation]
-          .getDisplayName(newGameState)
+          .getDisplayName(currentGameState)
           .toLowerCase()} does not want your ${items[item].getDescription(
-          newGameState,
+          currentGameState,
         )} but agrees to hold it for you.`;
       } else {
         description = `The ${locations[playerLocation]
-          .getDisplayName(newGameState)
+          .getDisplayName(currentGameState)
           .toLowerCase()} does not want your ${items[item].getDescription(
-          newGameState,
+          currentGameState,
         )}.`;
       }
 
       description = appendConsequenceToDescription({
         gameEffect,
         description,
-        newGameState,
+        gameState: currentGameState,
       });
 
       const itemLocations = updateLocations({
         itemMovements,
-        newGameState,
+        gameState: currentGameState,
       });
 
       return {
@@ -306,40 +301,39 @@ export function reducer(
     case "movePlayer": {
       const newLocation = payload.newLocation;
       const oldLocation = currentGameState.playerLocation;
-      const newGameState = structuredClone(currentGameState);
 
       // update game state
       let gameStateChanges: Partial<GameState> = {};
 
       const customExitStateEffect =
-        locations[oldLocation].onExitGameStateEffect?.(newGameState);
+        locations[oldLocation].onExitGameStateEffect?.(currentGameState);
       gameStateChanges = {...gameStateChanges, ...customExitStateEffect};
 
       const customEnterStateEffect =
-        locations[newLocation].onEnterGameStateEffect?.(newGameState);
+        locations[newLocation].onEnterGameStateEffect?.(currentGameState);
       gameStateChanges = {...gameStateChanges, ...customEnterStateEffect};
 
       // update location consequence text
       let consequence = "";
       if (gameStateChanges.reputation != null) {
         const reputationDiff =
-          gameStateChanges.reputation - newGameState.reputation;
+          gameStateChanges.reputation - currentGameState.reputation;
         consequence += `\n\nReputation ${
           reputationDiff >= 0 ? "+" : ""
         }${String(reputationDiff)}`;
       }
       if (gameStateChanges.gold != null) {
-        const goldDiff = gameStateChanges.gold - newGameState.gold;
+        const goldDiff = gameStateChanges.gold - currentGameState.gold;
         consequence += `\n\nGold ${goldDiff >= 0 ? "+" : ""}${String(goldDiff)}`;
       }
 
       // update item locations
       const itemMovements: ItemMovement[] = [];
       const customEnterItemLocationEffect =
-        locations[newLocation].onEnterItemLocationEffect?.(newGameState);
+        locations[newLocation].onEnterItemLocationEffect?.(currentGameState);
 
       const customExitItemLocationEffect =
-        locations[oldLocation].onExitItemLocationEffect?.(newGameState);
+        locations[oldLocation].onExitItemLocationEffect?.(currentGameState);
 
       if (customEnterItemLocationEffect) {
         itemMovements.push(customEnterItemLocationEffect);
@@ -351,7 +345,7 @@ export function reducer(
 
       const itemLocations = updateLocations({
         itemMovements,
-        newGameState,
+        gameState: currentGameState,
       });
 
       return {
