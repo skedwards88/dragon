@@ -25,6 +25,8 @@ export default function Info({
         {`Story by Colin\nBuilt by Sarah\nArtwork (mostly) by Dall-e`}
         <hr />
         <a href="./privacy.html">Privacy policy</a>
+        <br />
+        <small>tl;dr: We only collect anonymous data about usage.</small>
       </div>
       <button
         className="close"
