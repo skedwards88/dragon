@@ -97,7 +97,9 @@ function App(): React.JSX.Element {
     return (
       <GameLost
         dispatchGameState={dispatchGameState}
-        gameState={gameState}
+        maxReputation={gameState.maxReputation}
+        gold={gameState.gold}
+        maxGold={gameState.maxGold}
         setCurrentDisplay={setCurrentDisplay}
       />
     );
@@ -107,7 +109,17 @@ function App(): React.JSX.Element {
     return (
       <GameWon
         dispatchGameState={dispatchGameState}
-        gameState={gameState}
+        horseMounted={gameState.horseMounted}
+        naked={gameState.naked}
+        clothesPoopy={gameState.clothesPoopy}
+        playerPoisoned={gameState.playerPoisoned}
+        singeCount={gameState.singeCount}
+        cursed={gameState.cursed}
+        dragonDead={gameState.dragonDead}
+        reputation={gameState.reputation}
+        maxReputation={gameState.maxReputation}
+        gold={gameState.gold}
+        maxGold={gameState.maxGold}
         setCurrentDisplay={setCurrentDisplay}
       />
     );
