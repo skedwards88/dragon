@@ -16,22 +16,26 @@ function LocationItems({
   gameState: GameState;
   dispatchGameState: React.Dispatch<ReducerPayload>;
   setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
-}): React.JSX.Element[] {
+}): React.JSX.Element {
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
-  return itemsAtLocation.map((item) => {
-    return (
-      <button
-        onClick={() => {
-          dispatchGameState({action: "takeItem", item});
-          setCurrentDisplay("consequence");
-        }}
-        className="item"
-        key={item}
-      >
-        {items[item].displayName || item}
-      </button>
-    );
-  });
+  return (
+    <>
+      {itemsAtLocation.map((item) => {
+        return (
+          <button
+            onClick={() => {
+              dispatchGameState({action: "takeItem", item});
+              setCurrentDisplay("consequence");
+            }}
+            className="item"
+            key={item}
+          >
+            {items[item].displayName || item}
+          </button>
+        );
+      })}
+    </>
+  );
 }
 
 function NavigationList({
