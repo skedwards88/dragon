@@ -6,6 +6,8 @@ import {
 import {type ItemName, type ItemInfo, items} from "./items";
 import {getFromStorage} from "@skedwards88/shared-components/src/logic/safeStorage";
 
+const LAST_BREAKING_CHANGE = "20261108";
+
 export type GameState = {
   reputation: number;
   gold: number;
@@ -51,6 +53,7 @@ export type GameState = {
   journalPagesRemaining: number;
   journalEntry: GameState | null;
   resumedFromSaved: boolean;
+  lastBreakingChange: string;
 };
 
 type ItemLocations = Record<LocationName | AlterItemLocationName, ItemName[]>;
@@ -89,6 +92,10 @@ function savedStateValidQ(
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion -- object narrowed above; reading keys as unknown
   const savedState = input as Record<string, unknown>;
+
+  if (savedState["lastBreakingChange"] !== LAST_BREAKING_CHANGE) {
+    return false;
+  }
 
   // All number fields must be numbers and finite
   for (const key of [
@@ -262,5 +269,6 @@ export function init({useSaved}: {useSaved: boolean}): GameState {
     journalPagesRemaining: 3,
     journalEntry: null,
     resumedFromSaved: false,
+    lastBreakingChange: LAST_BREAKING_CHANGE,
   };
 }
