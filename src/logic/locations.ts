@@ -1241,7 +1241,6 @@ const lair = createLocation({
     return text;
   },
   onEnterGameStateEffect(gameState) {
-    // todo maybe shouldn't get singed when enter...but then would need to get singed any time you try to do something at this location
     if (
       !gameState.dragonAsleep &&
       !gameState.dragonDead &&

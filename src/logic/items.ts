@@ -836,7 +836,7 @@ const horse = createItem({
     function writeDescription(gameState: GameState): string {
       return gameState.horseMounted
         ? "You unmount the horse, keeping hold of the horse's reins. "
-        : "You mount the horse. Much easier than walking!"; // todo should you be allowed to mount inside a building?
+        : "You mount the horse. Much easier than walking!";
     }
 
     function getGameEffect(gameState: GameState): Partial<GameState> {
