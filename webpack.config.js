@@ -20,12 +20,6 @@ const definePlugin = new webpack.DefinePlugin({
 });
 
 module.exports = (env, argv) => {
-  if (argv.mode === "development") {
-    console.log("RUNNING IN DEV MODE. Service worker will not generate.");
-  } else {
-    console.log("RUNNING IN NON-DEV MODE. Service worker will generate.");
-  }
-
   const htmlPlugin = new HtmlWebpackPlugin({
     // Need to use template because need 'root' div for react injection. templateContent doesn't play nice with title, so just use a template file instead.
     template: "./src/index.html",
@@ -33,9 +27,8 @@ module.exports = (env, argv) => {
 
   const privacyHtmlPlugin = new HtmlWebpackPlugin({
     filename: "privacy.html",
-    template: require.resolve(
-      "@skedwards88/shared-components/src/components/privacy.template.html",
-    ),
+    template:
+      require.resolve("@skedwards88/shared-components/src/components/privacy.template.html"),
     inject: false,
     templateParameters: {
       appName,
@@ -118,7 +111,7 @@ module.exports = (env, argv) => {
     module: {
       rules: [
         {
-          test: /\.(js|jsx)$/,
+          test: /\.(js|jsx|ts|tsx)$/,
           include: [
             path.resolve(__dirname, "src"),
             path.dirname(
@@ -126,7 +119,13 @@ module.exports = (env, argv) => {
             ),
           ],
           loader: "babel-loader",
-          options: {presets: ["@babel/env"]},
+          options: {
+            presets: [
+              "@babel/env",
+              ["@babel/preset-react", {runtime: "automatic"}],
+              "@babel/preset-typescript",
+            ],
+          },
         },
         {
           test: /\.css$/i,
@@ -138,7 +137,7 @@ module.exports = (env, argv) => {
         },
       ],
     },
-    resolve: {extensions: ["*", ".js", ".jsx"]},
+    resolve: {extensions: ["*", ".js", ".jsx", ".ts", ".tsx"]},
     output: {
       publicPath: "",
       filename: "bundle.[fullhash].js",
@@ -148,6 +147,6 @@ module.exports = (env, argv) => {
     devServer: {
       static: "./dist",
     },
-    plugins: plugins,
+    plugins,
   };
 };

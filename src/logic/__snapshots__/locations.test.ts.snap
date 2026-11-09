@@ -1,6 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`dragon description when conditions met: timeInCave 0, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description when conditions met: timeInCave 0, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle, 1`] = `
 "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
 
 The dragon prowls into the cavern. It seems unaware of your location. 
@@ -8,7 +8,7 @@ The dragon prowls into the cavern. It seems unaware of your location.
 The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
 `;
 
-exports[`dragon description when conditions met: timeInCave 1, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description when conditions met: timeInCave 1, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle, 1`] = `
 "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
 
 The dragon prowls into the cavern. It seems unaware of your location. 
@@ -16,7 +16,7 @@ The dragon prowls into the cavern. It seems unaware of your location.
 The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
 `;
 
-exports[`dragon description when conditions met: timeInCave 2, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description when conditions met: timeInCave 2, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle, 1`] = `
 "You jump as you hear the dragon just outside the cavern. Wasn't the dragon just in the lair? 
 
 The dragon prowls into the cavern. It seems unaware of your location. 
@@ -24,55 +24,55 @@ The dragon prowls into the cavern. It seems unaware of your location.
 The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
 `;
 
-exports[`dragon description when conditions met: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description when conditions met: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation puddle, 1`] = `
 "The dragon prowls into the cavern. It seems unaware of your location. 
 
 The dragon drinks from the puddle. It starts foaming at the mouth. Enraged and in pain, it stumbles back to the lair. "
 `;
 
-exports[`dragon description with increasing time when conditions not met: timeInCave 0, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `""`;
+exports[`location descriptions dragon description with increasing time when conditions not met: timeInCave 0, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory, 1`] = `""`;
 
-exports[`dragon description with increasing time when conditions not met: timeInCave 1, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `"You hear coins clanking from the other room, as if a large beast is rising from a sea of treasure. "`;
+exports[`location descriptions dragon description with increasing time when conditions not met: timeInCave 1, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory, 1`] = `"You hear coins clanking from the other room, as if a large beast is rising from a sea of treasure. "`;
 
-exports[`dragon description with increasing time when conditions not met: timeInCave 2, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `"You hear the dragon just outside. "`;
+exports[`location descriptions dragon description with increasing time when conditions not met: timeInCave 2, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory, 1`] = `"You hear the dragon just outside. "`;
 
-exports[`dragon description with increasing time when conditions not met: timeInCave 3, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory,  1`] = `
+exports[`location descriptions dragon description with increasing time when conditions not met: timeInCave 3, dragonPoisoned false, clothesPoopy false, naked false, playerLocation dung, berryLocation inventory, 1`] = `
 "The dragon prowls into the cavern. "I KNEW I SMELT A HUMAN." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. 
 
 As you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure."
 `;
 
-exports[`dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy false, naked false, playerLocation crevice, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy false, naked false, playerLocation crevice, berryLocation puddle, 1`] = `
 "The dragon prowls into the cavern. "I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peers into the crevice and spots you. The dragon singes you before you can fight or run. 
 
 As you smother the flames, you hear the dragon return to its lair to guard its treasure."
 `;
 
-exports[`dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation dung,  1`] = `
+exports[`location descriptions dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation crevice, berryLocation dung, 1`] = `
 "The dragon prowls into the cavern. It seems unaware of your location. 
 
 The dragon drinks from the puddle, then returns to the lair to guard its treasure. "
 `;
 
-exports[`dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation dung, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked false, playerLocation dung, berryLocation puddle, 1`] = `
 "The dragon prowls into the cavern. "YOU DO NOT SMELL LIKE A HUMAN BUT YOU LOOK LIKE ONE." You hide in a nearby crevice to avoid death, but the dragon still manages to singe you. 
 
 As you exit the crevice and smother the flames, you hear the dragon return to its lair to guard its treasure. "
 `;
 
-exports[`dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked true, playerLocation crevice, berryLocation puddle,  1`] = `
+exports[`location descriptions dragon description with time up when conditions are not met in different ways: timeInCave 3, dragonPoisoned false, clothesPoopy true, naked true, playerLocation crevice, berryLocation puddle, 1`] = `
 "The dragon prowls into the cavern. "I SMELL A HUMAN SOMEWHERE NEARBY." The dragon peers into the crevice and spots you. The dragon singes you before you can fight or run. 
 
 As you smother the flames, you hear the dragon return to its lair to guard its treasure."
 `;
 
-exports[`lawn description: naked false, babyCough false, playerCough false 1`] = `
+exports[`location descriptions lawn description: naked false, babyCough false, playerCough false 1`] = `
 "You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked false, babyCough false, playerCough true 1`] = `
+exports[`location descriptions lawn description: naked false, babyCough false, playerCough true 1`] = `
 "You hear a voice: "My baby! You saved my baby! Please take this gold as thanks." 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
@@ -80,13 +80,13 @@ As you take the gold, you let out a racking cough. It seems that you should have
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked false, babyCough true, playerCough false 1`] = `
+exports[`location descriptions lawn description: naked false, babyCough true, playerCough false 1`] = `
 "You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked false, babyCough true, playerCough true 1`] = `
+exports[`location descriptions lawn description: naked false, babyCough true, playerCough true 1`] = `
 "You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks." 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
@@ -94,13 +94,13 @@ As you take the gold, you let out a racking cough. It seems that you should have
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked true, babyCough false, playerCough false 1`] = `
+exports[`location descriptions lawn description: naked true, babyCough false, playerCough false 1`] = `
 "You hear a voice: "My baby! You saved my baby! Please take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked true, babyCough false, playerCough true 1`] = `
+exports[`location descriptions lawn description: naked true, babyCough false, playerCough true 1`] = `
 "You hear a voice: "My baby! You saved my baby! Please take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 
@@ -108,13 +108,13 @@ As you take the gold, you let out a racking cough. It seems that you should have
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked true, babyCough true, playerCough false 1`] = `
+exports[`location descriptions lawn description: naked true, babyCough true, playerCough false 1`] = `
 "You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 Behind you, you hear the roof collapse. Finally, the crowd is able to douse the flames. "
 `;
 
-exports[`lawn description: naked true, babyCough true, playerCough true 1`] = `
+exports[`location descriptions lawn description: naked true, babyCough true, playerCough true 1`] = `
 "You hear a voice: "My baby! You saved my baby!" The baby coughs from the smoke. The parent glares at you, "My baby has a terrible cough from being carried through the smoke. Regardless, take this gold as thanks. And perhaps buy yourself some clothes," they say, eyeing your naked body. 
 
 As you take the gold, you let out a racking cough. It seems that you should have taken measures to avoid breathing the smoke. They pass you the gold quickly, eager to get away from your coughing. 

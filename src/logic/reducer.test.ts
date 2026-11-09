@@ -1,0 +1,5482 @@
+import {type GameState, init} from "./init";
+import {reducer} from "./reducer";
+import {inferKeyEvents} from "./inferKeyEvents";
+import type {LocationName} from "./locations";
+
+const newGameState = init({useSaved: false});
+
+describe("reducer", () => {
+  test("New game resets state", () => {
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 0,
+        gold: 5000,
+        horseDead: true,
+        savedBaby: true,
+      },
+      {action: "newGame"},
+    );
+
+    expect(output).toMatchInlineSnapshot(`
+     {
+       "appleBitesRemaining": 5,
+       "babyCough": false,
+       "clothesPoopy": false,
+       "consequenceText": "",
+       "cursed": false,
+       "dragonAsleep": false,
+       "dragonDead": false,
+       "dragonPoisoned": false,
+       "firstCourtyardEntry": true,
+       "gold": 0,
+       "gotScoreByCredit": false,
+       "gotScoreByTrade": false,
+       "handkerchiefDamp": false,
+       "horseDead": false,
+       "horseMounted": false,
+       "horseTethered": false,
+       "itemLocations": {
+         "blacksmith": [],
+         "caveEntrance": [],
+         "clearing": [
+           "berries",
+         ],
+         "cliff": [],
+         "courtyard": [
+           "handkerchief",
+         ],
+         "crevice": [],
+         "defecatory": [],
+         "dung": [],
+         "entryway": [],
+         "fountain": [],
+         "gate": [],
+         "inn": [
+           "apple",
+         ],
+         "inventory": [],
+         "lair": [
+           "treasure",
+         ],
+         "lawn": [],
+         "mirror": [],
+         "nursery": [
+           "baby",
+         ],
+         "nurseryWindow": [],
+         "outOfPlay": [],
+         "pasture": [
+           "horse",
+         ],
+         "puddle": [],
+         "road1": [],
+         "road2": [],
+         "road3": [],
+         "room": [
+           "lute",
+         ],
+         "smithy": [
+           "sword",
+         ],
+         "squirrel": [],
+         "stream": [],
+         "wardrobe": [
+           "clothes",
+         ],
+         "window": [],
+         "wizard": [
+           "score",
+         ],
+         "youth": [],
+       },
+       "journalEntry": null,
+       "journalPagesRemaining": 3,
+       "lastBreakingChange": "20261108",
+       "locationConsequenceText": "",
+       "manorFire": true,
+       "maxGold": 310,
+       "maxReputation": 17,
+       "maxSwordCost": 50,
+       "naked": true,
+       "offeredHandkerchiefToYouth": false,
+       "ownSword": false,
+       "paidDebt": false,
+       "playedForYouth": false,
+       "playerCough": false,
+       "playerLocation": "room",
+       "playerMasked": false,
+       "playerPoisoned": false,
+       "preCreditTreasureLevel": 0,
+       "receivedBabyReward": false,
+       "reputation": 10,
+       "resumedFromSaved": false,
+       "savedBaby": false,
+       "singeCount": 0,
+       "squirrelDead": false,
+       "swordCost": 40,
+       "timeInCave": 0,
+       "treasureAmount": 300,
+       "treasureLevel": 0,
+     }
+    `);
+  });
+
+  test("Taking the sword from the smithy increases sword cost (once) and reduces reputation (every time)", () => {
+    const item = "sword";
+    const location = "smithy";
+    const output = reducer(
+      {...newGameState, playerLocation: location},
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.swordCost).toMatchInlineSnapshot(`50`);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+
+         Reputation -1"
+      `);
+
+    const output2 = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+
+    expect(output2.reputation).toMatchInlineSnapshot(`8`);
+    expect(output2.swordCost).toMatchInlineSnapshot(`50`);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output2.consequenceText).toMatchInlineSnapshot(`
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+
+         Reputation -1"
+      `);
+  });
+
+  test("Playing the lute for the youth will boost reputation only once", () => {
+    const item = "lute";
+    const location = "youth";
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`11`);
+    expect(output.playedForYouth).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You play a song for the crying youth. The music seems to cheer the youth up. 
+
+         Reputation +1"
+      `);
+
+    const output2 = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output2.reputation).toMatchInlineSnapshot(`11`);
+    expect(output2.playedForYouth).toBe(true);
+    expect(output2.consequenceText).toMatchInlineSnapshot(
+      `"They appreciate the music, but don't seem keen to listen all day. "`,
+    );
+  });
+
+  test("Removing your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
+    const item = "clothes";
+    let location: LocationName = "youth";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You strip down. The youth eyes you suspiciously.
+
+         Reputation -1"
+      `);
+
+    location = "blacksmith";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You strip down. The blacksmith eyes you suspiciously.
+
+         Reputation -1"
+      `);
+
+    location = "inn";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You strip down. The innkeeper eyes you suspiciously.
+
+         Reputation -1"
+      `);
+
+    location = "wizard";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
+
+    location = "lawn";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`"You strip down. "`);
+  });
+
+  test("Dropping your clothes in the presence of a person (besides the wizard) will lose reputation", () => {
+    const item = "clothes";
+    let location: LocationName = "youth";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You strip down and drop your clothes by the youth. The youth eyes you suspiciously.
+
+         Reputation -1"
+      `);
+
+    location = "blacksmith";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You strip down and drop your clothes by the blacksmith. The blacksmith eyes you suspiciously.
+
+         Reputation -1"
+      `);
+
+    location = "inn";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`9`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You strip down and drop your clothes in the inn. The innkeeper eyes you suspiciously.
+
+         Reputation -1"
+      `);
+
+    location = "wizard";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You strip down and drop your clothes by the wizard. "`,
+    );
+
+    location = "fountain";
+    output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        naked: false,
+        itemLocations: {...newGameState.itemLocations, inventory: [item]},
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You strip down and drop your clothes in the fountain. Your clothes look much cleaner now. "`,
+    );
+  });
+
+  test("Dropping clothes in the dung pile will make them poopy", () => {
+    const item = "clothes";
+    const location = "dung";
+    const originalState1: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
+    };
+    const newState1 = reducer(originalState1, {
+      action: "dropItem",
+      item,
+    });
+
+    expect(newState1.reputation).toMatchInlineSnapshot(`10`);
+    expect(newState1.clothesPoopy).toBe(true);
+
+    let keyEvents = inferKeyEvents(originalState1, newState1);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("clothesPoopy");
+
+    expect(newState1.naked).toBe(true);
+    expect(newState1.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(newState1.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(newState1.consequenceText).toMatchInlineSnapshot(
+      `"You drop your clothes in the dung. "`,
+    );
+
+    const originalState2: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      clothesPoopy: true,
+    };
+    const newState2 = reducer(originalState2, {
+      action: "dropItem",
+      item,
+    });
+
+    expect(newState2.reputation).toMatchInlineSnapshot(`10`);
+    expect(newState2.clothesPoopy).toBe(true);
+
+    // if the clothes are already poopy, doesn't send analytics again
+    keyEvents = inferKeyEvents(originalState2, newState2);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(newState2.naked).toBe(true);
+    expect(newState2.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(newState2.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(newState2.consequenceText).toMatchInlineSnapshot(
+      `"You drop your clothes in the dung. "`,
+    );
+  });
+
+  test("Dropping clothes in water will make them not poopy", () => {
+    const item = "clothes";
+    let location: LocationName = "fountain";
+    const input1: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      clothesPoopy: true,
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
+    };
+    let output = reducer(input1, {
+      action: "dropItem",
+      item,
+    });
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+    expect(output.clothesPoopy).toBe(false);
+
+    let keyEvents = inferKeyEvents(input1, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop your clothes in the fountain. Your clothes look much cleaner now. "`,
+    );
+
+    location = "stream";
+    const input2: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      clothesPoopy: true,
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
+    };
+    output = reducer(input2, {
+      action: "dropItem",
+      item,
+    });
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+    expect(output.clothesPoopy).toBe(false);
+    keyEvents = inferKeyEvents(input2, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop your clothes in the stream. Your clothes look much cleaner now. "`,
+    );
+
+    location = "puddle";
+    const input3: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      clothesPoopy: true,
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
+    };
+    output = reducer(input3, {
+      action: "dropItem",
+      item,
+    });
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+
+    keyEvents = inferKeyEvents(input1, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`,
+    );
+
+    location = "puddle";
+    const input4: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      clothesPoopy: true,
+      itemLocations: {...newGameState.itemLocations, inventory: [item]},
+    };
+    output = reducer(input4, {
+      action: "dropItem",
+      item,
+    });
+
+    expect(output.reputation).toMatchInlineSnapshot(`10`);
+
+    keyEvents = inferKeyEvents(input1, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("clothesWashed");
+
+    expect(output.naked).toBe(true);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop your clothes in the puddle. Your clothes look much cleaner now. "`,
+    );
+  });
+
+  test("Eating the apple does not remove it from inventory", () => {
+    const item = "apple";
+    let biteNumber = 1;
+    let output = reducer(
+      {
+        ...newGameState,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(
+      newGameState.appleBitesRemaining - biteNumber,
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You take a bite from the apple, feeling refreshed. "`,
+    );
+
+    biteNumber++;
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(
+      newGameState.appleBitesRemaining - biteNumber,
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You take a bite from the apple, feeling refreshed. It looks like there are a few bites remaining. "`,
+    );
+
+    biteNumber++;
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(
+      newGameState.appleBitesRemaining - biteNumber,
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You take a bite from the apple, feeling refreshed. It looks like there are a couple of bites remaining. "`,
+    );
+
+    biteNumber++;
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(
+      newGameState.appleBitesRemaining - biteNumber,
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You take a bite from the apple, wondering if you'll be able to find another apple. It looks like there is one bite remaining. "`,
+    );
+
+    biteNumber++;
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(
+      newGameState.appleBitesRemaining - biteNumber,
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You take the last bite from the apple, feeling regret that there isn't any more. "`,
+    );
+
+    biteNumber++;
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(0);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You nibble at the core, but there isn't much flesh remaining. "`,
+    );
+
+    biteNumber++;
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inn).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.appleBitesRemaining).toStrictEqual(0);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You nibble at the core, but there isn't much flesh remaining. "`,
+    );
+  });
+
+  test("Dropping the apple will give you the horse if the horse is present and if the apple is not eaten. The apple will go out of game.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining(["horse"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"This horse seems very interested in food. The horse walks over to eat the apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`,
+    );
+  });
+
+  test("Giving the apple will give you the horse if the horse is present and if the apple is not eaten. The apple will go out of game.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining(["horse"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"This horse seems very interested in food. The horse walks over to eat the apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`,
+    );
+  });
+
+  test("Dropping the apple will give you the horse if the horse is present and if the apple is partially eaten. The apple will go out of game.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 2,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining(["horse"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you dropped. While he is preoccupied, you grab the reins. You now have a horse."`,
+    );
+  });
+
+  test("Giving the apple will give you the horse if the horse is present and if the apple is partially eaten. The apple will go out of game.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 2,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining(["horse"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"This horse seems very interested in food. The horse walks over to eat the partially eaten apple that you offered. While he is preoccupied, you grab the reins. You now have a horse."`,
+    );
+  });
+
+  test("Dropping the apple will not give you the horse if the apple is fully eaten. The apple will just be dropped at location.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 0,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"This horse seems very interested in food. The horse walks over to eat the apple core that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins."`,
+    );
+  });
+
+  test("Giving the apple will not give you the horse if the apple is fully eaten. The apple will just be dropped at location.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 0,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The horse does not want your apple core."`,
+    );
+  });
+
+  test("Dropping the apple at the pasture will not matter if the horse is not at the pasture.", () => {
+    const item = "apple";
+    const location = "pasture";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        appleBitesRemaining: 0,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+          pasture: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["horse"]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the apple at the pasture."`,
+    );
+  });
+
+  test("Giving the apple to the squirrel will effectively drop it.", () => {
+    const item = "apple";
+    const location = "squirrel";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          inn: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The squirrel does not want your fresh apple."`,
+    );
+  });
+
+  test("Wearing handkerchief, not damp, in entryway", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, not damp, in nursery", () => {
+    const item = "handkerchief";
+    const location = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, not damp, in nurseryWindow", () => {
+    const item = "handkerchief";
+    const location = "nurseryWindow";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. On its own, the handkerchief does little to block the smoke. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, not damp, in inn", () => {
+    const item = "handkerchief";
+    const location = "inn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, damp, in entryway", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, damp, in nursery", () => {
+    const item = "handkerchief";
+    const location = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, damp, in nurseryWindow", () => {
+    const item = "handkerchief";
+    const location = "nurseryWindow";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. The damp handkerchief lets you breath more easily. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, damp, in inn", () => {
+    const item = "handkerchief";
+    const location = "inn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Removing handkerchief, not damp, in entryway", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You remove the handkerchief from your nose and mouth. "`,
+    );
+    expect(output.playerMasked).toBe(false);
+  });
+
+  test("Removing handkerchief, damp, in entryway", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You remove the handkerchief from your nose and mouth. The smoke fills your lungs, making you cough. "`,
+    );
+    expect(output.playerMasked).toBe(false);
+  });
+
+  test("Wearing handkerchief, not damp, in entryway, no fire", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        manorFire: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief, damp, in entryway, no fire", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: false,
+        manorFire: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Wearing handkerchief in cave", () => {
+    const item = "handkerchief";
+    const location = "crevice";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You tie the handkerchief around your nose and mouth. Even with it, the stench reaches your nose. "`,
+    );
+    expect(output.playerMasked).toBe(true);
+  });
+
+  test("Removing handkerchief in cave", () => {
+    const item = "handkerchief";
+    const location = "crevice";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You remove the handkerchief from your nose and mouth. "`,
+    );
+    expect(output.playerMasked).toBe(false);
+  });
+
+  test("Dropping handkerchief when wearing it in fire", () => {
+    const item = "handkerchief";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: true,
+        manorFire: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You remove the handkerchief from your nose and mouth and drop it in the entryway. The smoke fills your lungs, making you cough. "`,
+    );
+    expect(output.playerMasked).toBe(false);
+  });
+
+  test("Dropping handkerchief when wearing it in cave", () => {
+    const item = "handkerchief";
+    const location = "crevice";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: false,
+        playerMasked: true,
+        manorFire: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You remove the handkerchief from your nose and mouth and drop it in the crevice. "`,
+    );
+    expect(output.playerMasked).toBe(false);
+    expect(output.handkerchiefDamp).toBe(false);
+  });
+
+  test("Dropping handkerchief when wearing it in fountain", () => {
+    const item = "handkerchief";
+    const location = "fountain";
+
+    const input1: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      handkerchiefDamp: false,
+      playerMasked: true,
+      manorFire: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: ["handkerchief"],
+      },
+    };
+    const output = reducer(input1, {
+      action: "dropItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You remove the handkerchief from your nose and mouth and drop it in the fountain. "`,
+    );
+    expect(output.playerMasked).toBe(false);
+    expect(output.handkerchiefDamp).toBe(true);
+
+    const keyEvents = inferKeyEvents(input1, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("handkerchiefDamp");
+  });
+
+  test("Giving the handkerchief to youth once increases reputation and gives plot details. Giving again does nothing.", () => {
+    const item = "handkerchief";
+    const location = "youth";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        handkerchiefDamp: true,
+        playerMasked: true,
+        offeredHandkerchiefToYouth: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." 
+
+         The youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. 
+
+         Reputation +1"
+      `);
+    expect(output.playerMasked).toBe(true);
+    expect(output.offeredHandkerchiefToYouth).toBe(true);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.youth).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(output, {
+      action: "giveItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The youth does not want your damp handkerchief but agrees to hold it for you."`,
+    );
+    expect(output.playerMasked).toBe(true);
+    expect(output.offeredHandkerchiefToYouth).toBe(true);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.youth).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+  });
+
+  test("The baby has no use", () => {
+    const item = "baby";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          nursery: [],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"It's unclear what use this baby has. "`,
+    );
+  });
+
+  test("Dropping the baby in the nursery returns it to the crib and un-saves it", () => {
+    const item = "baby";
+    const location = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        savedBaby: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          nursery: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You place the baby back in the crib. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.savedBaby).toBe(false);
+  });
+
+  test("Dropping the baby out the window saves it and removes it from game", () => {
+    const item = "baby";
+    const location = "nurseryWindow";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        savedBaby: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          nursery: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the baby out of the open window. The crowd below catches the baby. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.savedBaby).toBe(true);
+  });
+
+  test("Dropping the baby away from the nursery/window just makes it cry more", () => {
+    const item = "baby";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        savedBaby: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          nursery: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the crying baby. It cries even louder. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.savedBaby).toBe(false);
+  });
+
+  test("Taking the baby from nursery gives cough hint", () => {
+    const item = "baby";
+    const location = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          nursery: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You pick up the baby from the crib. The baby coughs as you move it away from the open window. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+  });
+
+  test("Taking the baby from somewhere besides nursery does not give cough hint", () => {
+    const item = "baby";
+    const location = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You now have a crying baby."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+  });
+
+  test("Using the sword to on sleeping dragon", () => {
+    const item = "sword";
+    const location = "lair";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: true,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    };
+    const output = reducer(input, {
+      action: "useItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. 
+
+         Reputation +2"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.dragonAsleep).toBe(true);
+    expect(output.dragonDead).toBe(true);
+
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("dragonDead");
+
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 2);
+  });
+
+  test("Using the sword to on poisoned not sleeping dragon", () => {
+    const item = "sword";
+    const location = "lair";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: false,
+      dragonPoisoned: true,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    };
+    const output = reducer(input, {
+      action: "useItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. 
+
+         Reputation -1"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.dragonAsleep).toBe(false);
+    expect(output.dragonPoisoned).toBe(true);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(output.dragonDead).toBe(false);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(1);
+  });
+
+  test("Using the sword to on not poisoned not sleeping dragon", () => {
+    const item = "sword";
+    const location = "lair";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: false,
+      dragonPoisoned: false,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    };
+    const output = reducer(input, {
+      action: "useItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You try to cut off the dragon's head, but it singes you as soon as you get close enough. 
+
+         Reputation -1"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.dragonAsleep).toBe(false);
+    expect(output.dragonPoisoned).toBe(false);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(output.dragonDead).toBe(false);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(1);
+  });
+
+  test("Using the sword not on dragon", () => {
+    const item = "sword";
+    const location = "inn";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: location,
+      dragonAsleep: false,
+      dragonPoisoned: false,
+      dragonDead: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        inventory: [item],
+      },
+    };
+    const output = reducer(input, {
+      action: "useItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You slash the sword through the air, looking a bit foolish. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.dragonAsleep).toBe(false);
+    expect(output.dragonPoisoned).toBe(false);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(output.dragonDead).toBe(false);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(0);
+  });
+
+  test("Taking the sword from the blacksmith if you haven't paid will lose reputation (every time) and increase cose (once)", () => {
+    const item = "sword";
+    const location = "smithy";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        ownSword: false,
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+
+         Reputation -1"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.swordCost).toStrictEqual(newGameState.swordCost + 10);
+
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+
+         Reputation -1"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 2);
+    expect(output.swordCost).toStrictEqual(newGameState.swordCost + 10);
+  });
+
+  test("Taking the sword from the blacksmith if you have paid is a normal take", () => {
+    const item = "sword";
+    const location = "smithy";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        ownSword: true,
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You now have a sword."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.swordCost).toStrictEqual(newGameState.swordCost);
+  });
+
+  test("You can't take the sword from the wizard if you traded it to the wizard", () => {
+    const item = "sword";
+    const location = "wizard";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gotScoreByTrade: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"Ah you would like to exchange? You must first give me the score."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+  });
+
+  test("You can take the sword from the wizard if you didn't trade it to the wizard", () => {
+    const item = "sword";
+    const location = "wizard";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gotScoreByTrade: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You now have a sword."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+  });
+
+  test("Give the sword to the wizard for the score as long as you haven't bargained yet. You can't take the sword back directly.", () => {
+    const item = "sword";
+    const location = "wizard";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gotScoreByTrade: false,
+        gotScoreByCredit: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: ["score"],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You give your sword to the wizard. In exchange, they give you the musical score. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining(["score"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.gotScoreByTrade).toBe(true);
+
+    // trade back
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"Ah you would like to exchange? You must first give me the score."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining(["score"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.gotScoreByTrade).toBe(true);
+  });
+
+  test("If you paid for the score, you can't trade for the score; giving the sword is a normal give and taking back is a normal take.", () => {
+    const item = "sword";
+    const location = "wizard";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gotScoreByTrade: false,
+        gotScoreByCredit: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: ["score"],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The wizard does not want your sword but agrees to hold it for you."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["score"]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.gotScoreByTrade).toBe(false);
+    expect(output.gotScoreByCredit).toBe(true);
+
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You now have a sword."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["score"]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.gotScoreByTrade).toBe(false);
+    expect(output.gotScoreByCredit).toBe(true);
+  });
+
+  test("If the wizard doesn't have the score, giving the sword is a normal give.", () => {
+    const item = "sword";
+    const location = "wizard";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gotScoreByTrade: false,
+        gotScoreByCredit: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The wizard does not want your sword but agrees to hold it for you."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["score"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining(["score"]),
+    );
+    expect(output.gotScoreByTrade).toBe(false);
+    expect(output.gotScoreByCredit).toBe(false);
+
+    // take back
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You now have a sword."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining(["score"]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining(["score"]),
+    );
+    expect(output.gotScoreByTrade).toBe(false);
+    expect(output.gotScoreByCredit).toBe(false);
+  });
+
+  test("You can't take the horse if it is dead", () => {
+    const item = "horse";
+    const location = "stream";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: true,
+        horseTethered: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"This dead horse is too heavy to carry. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+  });
+
+  test("You can't take the horse directly", () => {
+    const item = "horse";
+    const location = "stream";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: false,
+        horseMounted: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: [item],
+          inventory: ["apple", "berries"],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(false);
+  });
+
+  test("If the horse is tethered, you can take it", () => {
+    const item = "horse";
+    const location = "stream";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        horseMounted: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You take back the horse's reins. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(true);
+  });
+
+  test("When you give the horse, you automatically unmount but the horse is still tethered", () => {
+    const item = "horse";
+    const location = "wizard";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: false,
+        horseMounted: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The wizard does not want your voracious horse but agrees to hold it for you."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(true);
+  });
+
+  test("If you drop the horse, it is no longer tethered", () => {
+    const item = "horse";
+    const location = "wizard";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        horseMounted: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(false);
+  });
+
+  test("If you  drop the horse when mounted, it is no longer tethered", () => {
+    const item = "horse";
+    const location = "wizard";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        horseMounted: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(false);
+  });
+
+  test("If you drop the horse at the same place as the berries are, it dies. The berries are still available.", () => {
+    const item = "horse";
+    const location = "gate";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        horseMounted: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["berries"],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You unmount the horse and let go of the horse's reins. The horse starts to eat the berries. After a few mouthfuls, it foams at the mouth and falls over dead. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining(["berries"]),
+    );
+    expect(output.horseDead).toBe(true);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(false);
+  });
+
+  test("If you drop the horse at the clearing, it doesn't die if the berries are no longer there", () => {
+    const item = "horse";
+    const location = "clearing";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        horseMounted: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You unmount the horse and let go of the horse's reins. The horse shakes its mane, glad to have a free head. It starts nosing around for food to munch. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(false);
+  });
+
+  test("Using the horse will mount if unmounted", () => {
+    const item = "horse";
+    const location = "clearing";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: false,
+        horseMounted: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You mount the horse. Much easier than walking!"`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(true);
+    expect(output.horseTethered).toBe(true);
+  });
+
+  test("Using the horse will unmount if mounted but will keep the horse tethered", () => {
+    const item = "horse";
+    const location = "clearing";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: false,
+        horseMounted: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You unmount the horse, keeping hold of the horse's reins. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.horseMounted).toBe(false);
+    expect(output.horseTethered).toBe(true);
+  });
+
+  test("Eating the berries will lose reputation and get poisoned but berries will still be available. Eating again will do the same.", () => {
+    const item = "berries";
+    const location = "stream";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        playerPoisoned: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "useItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
+
+         Reputation -1"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.playerPoisoned).toBe(true);
+
+    output = reducer(output, {
+      action: "useItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
+
+         Reputation -1"
+      `);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 2);
+    expect(output.playerPoisoned).toBe(true);
+  });
+
+  test("If you drop the berries at the squirrel, it dies, but it won't die twice", () => {
+    const item = "berries";
+    const location = "squirrel";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        squirrelDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.squirrelDead).toBe(true);
+
+    output = reducer(output, {
+      action: "dropItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the berries by the dead squirrel."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.squirrelDead).toBe(true);
+  });
+
+  test("If you drop the berries at the horse, it dies, but it won't die twice", () => {
+    const item = "berries";
+    const location = "stream";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["horse"],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+
+    output = reducer(output, {
+      action: "dropItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the berries in the stream."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+  });
+
+  test("If you drop the berries at the horse, it won't die if it is tethered", () => {
+    const item = "berries";
+    const location = "stream";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["horse"],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the berries in the stream."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+  });
+
+  test("If you drop the berries at the horse and squirrel, they both die, but not twice", () => {
+    const item = "berries";
+    const location = "squirrel";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        squirrelDead: false,
+        horseDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["horse"],
+        },
+      },
+      {
+        action: "dropItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The squirrel eats the berries that you dropped. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. The horse eats the berries that you dropped. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+    expect(output.squirrelDead).toBe(true);
+
+    output = reducer(output, {
+      action: "dropItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You drop the berries by the dead squirrel."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+    expect(output.squirrelDead).toBe(true);
+  });
+
+  test("If you give the berries to the squirrel, it dies, but it won't die twice", () => {
+    const item = "berries";
+    const location = "squirrel";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        squirrelDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.squirrelDead).toBe(true);
+
+    output = reducer(output, {
+      action: "giveItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The dead squirrel does not want your handful of berries."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.squirrelDead).toBe(true);
+  });
+
+  test("If you give the berries to the horse, it dies, but it won't die twice", () => {
+    const item = "berries";
+    const location = "pasture";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["horse"],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+
+    // giving isn't technically allowed anymore since the pasture is not sentient without the horse
+    // but this is what would happen if it was
+    output = reducer(output, {
+      action: "giveItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The pasture does not want your handful of berries."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+  });
+
+  test("If you give the berries to the horse, it won't die even if it is tethered", () => {
+    const item = "berries";
+    const location = "stream";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        horseDead: false,
+        horseTethered: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["horse"],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The stream does not want your handful of berries."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+  });
+
+  test("If you give the berries to the squirrel and the horse is present, only the squirrel dies", () => {
+    const item = "berries";
+    const location = "squirrel";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        squirrelDead: false,
+        horseDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: ["horse"],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.squirrelDead).toBe(true);
+
+    // giving to the horse is not enabled since the dead squirrel is not sentient
+    // but here's what would happen if it was
+    output = reducer(output, {
+      action: "giveItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The horse eats the berries that you offered. After a few seconds, it foams at the mouth and falls over, dead. Oh dear. "`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+    expect(output.squirrelDead).toBe(true);
+
+    output = reducer(output, {
+      action: "giveItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The dead squirrel does not want your handful of berries."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(true);
+    expect(output.squirrelDead).toBe(true);
+  });
+
+  test("The wizard refuses the berries", () => {
+    const item = "berries";
+    const location = "wizard";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        squirrelDead: false,
+        horseDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The wizard politely refuses the berries. "Those will give you a life changing experience," he says."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.squirrelDead).toBe(false);
+  });
+
+  test("Other sentients will just hold the berries", () => {
+    const item = "berries";
+    const location = "blacksmith";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        squirrelDead: false,
+        horseDead: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+          [location]: [],
+        },
+      },
+      {
+        action: "giveItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The blacksmith does not want your handful of berries but agrees to hold it for you."`,
+    );
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.horseDead).toBe(false);
+    expect(output.squirrelDead).toBe(false);
+  });
+
+  test("If the dragon is dead, you take all the treasure", () => {
+    const item = "treasure";
+    const location = "lair";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        dragonDead: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
+
+         Gold +300"
+      `);
+    expect(output.treasureLevel).toBe(3);
+    expect(output.gold).toBe(newGameState.gold + 300);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+  });
+
+  test("If the dragon is asleep but not dead lets you take some treasure but not all, even on second try. Treasure still remains in lair. You get singed each time.", () => {
+    const item = "treasure";
+    const location = "lair";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        dragonDead: false,
+        dragonAsleep: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
+
+         Reputation -1
+
+         Gold +200"
+      `);
+    expect(output.treasureLevel).toBe(2);
+    expect(output.gold).toBe(newGameState.gold + 200);
+    expect(output.singeCount).toBe(newGameState.singeCount + 1);
+    expect(output.reputation).toBe(newGameState.reputation - 1);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon snores, releasing a burst of flame that singes your eyebrows. 
+
+         Reputation -1
+
+         Gold 0"
+      `);
+    expect(output.treasureLevel).toBe(2);
+    expect(output.gold).toBe(newGameState.gold + 200);
+    expect(output.singeCount).toBe(newGameState.singeCount + 2);
+    expect(output.reputation).toBe(newGameState.reputation - 2);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+  });
+
+  test("If the dragon is poisoned but not asleep/dead, you can take some treasure", () => {
+    const item = "treasure";
+    const location = "lair";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        dragonDead: false,
+        dragonAsleep: false,
+        dragonPoisoned: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
+
+         Reputation -2
+
+         Gold +100"
+      `);
+    expect(output.treasureLevel).toBe(1);
+    expect(output.gold).toBe(newGameState.gold + 100);
+    expect(output.singeCount).toBe(newGameState.singeCount + 2);
+    expect(output.reputation).toBe(newGameState.reputation - 2);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. 
+
+         Reputation -2
+
+         Gold 0"
+      `);
+    expect(output.treasureLevel).toBe(1);
+    expect(output.gold).toBe(newGameState.gold + 100);
+    expect(output.singeCount).toBe(newGameState.singeCount + 4);
+    expect(output.reputation).toBe(newGameState.reputation - 4);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+  });
+
+  test("If the dragon is not poisoned or anything, you can't take any treasure", () => {
+    const item = "treasure";
+    const location = "lair";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        dragonDead: false,
+        dragonAsleep: false,
+        dragonPoisoned: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You try to steal the treasure, but the dragon singes you before you can get close. 
+
+         Reputation -1"
+      `);
+    expect(output.treasureLevel).toBe(0);
+    expect(output.gold).toBe(newGameState.gold);
+    expect(output.singeCount).toBe(newGameState.singeCount + 1);
+    expect(output.reputation).toBe(newGameState.reputation - 1);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(output, {
+      action: "takeItem",
+      item,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You try to steal the treasure, but the dragon singes you before you can get close. 
+
+         Reputation -1"
+      `);
+    expect(output.treasureLevel).toBe(0);
+    expect(output.gold).toBe(newGameState.gold);
+    expect(output.singeCount).toBe(newGameState.singeCount + 2);
+    expect(output.reputation).toBe(newGameState.reputation - 2);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+  });
+
+  test("You can take the treasure in increments, getting singed along the way", () => {
+    const item = "treasure";
+    const location = "lair";
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        dragonDead: false,
+        dragonAsleep: false,
+        dragonPoisoned: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          [location]: [item],
+        },
+      },
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You try to steal the treasure, but the dragon singes you before you can get close. 
+
+         Reputation -1"
+      `);
+    expect(output.treasureLevel).toBe(0);
+    expect(output.gold).toBe(newGameState.gold);
+    expect(output.singeCount).toBe(newGameState.singeCount + 1);
+    expect(output.reputation).toBe(newGameState.reputation - 1);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(
+      {...output, dragonPoisoned: true},
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
+
+         Reputation -2
+
+         Gold +100"
+      `);
+    expect(output.treasureLevel).toBe(1);
+    expect(output.gold).toBe(newGameState.gold + 100);
+    expect(output.singeCount).toBe(newGameState.singeCount + 3);
+    expect(output.reputation).toBe(newGameState.reputation - 3);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(
+      {...output, dragonPoisoned: true, dragonAsleep: true},
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
+
+         Reputation -1
+
+         Gold +100"
+      `);
+    expect(output.treasureLevel).toBe(2);
+    expect(output.gold).toBe(newGameState.gold + 200);
+    expect(output.singeCount).toBe(newGameState.singeCount + 4);
+    expect(output.reputation).toBe(newGameState.reputation - 4);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+
+    output = reducer(
+      {...output, dragonPoisoned: true, dragonAsleep: true, dragonDead: true},
+      {
+        action: "takeItem",
+        item,
+      },
+    );
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
+
+         Gold +100"
+      `);
+    expect(output.treasureLevel).toBe(3);
+    expect(output.gold).toBe(newGameState.gold + 300);
+    expect(output.singeCount).toBe(newGameState.singeCount + 4);
+    expect(output.reputation).toBe(newGameState.reputation - 4);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+  });
+
+  test("Moving player, no consequences", () => {
+    const oldLocation = "inn";
+    const newLocation = "room";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output).toStrictEqual({
+      ...newGameState,
+      playerLocation: newLocation,
+    });
+  });
+
+  test("Entering the inn when naked will lose reputation", () => {
+    const oldLocation = "courtyard";
+    const newLocation = "inn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+  });
+
+  test("Leaving the courtyard the first time is different", () => {
+    const oldLocation = "courtyard";
+    const newLocation = "fountain";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      firstCourtyardEntry: true,
+    };
+    let output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.firstCourtyardEntry).toStrictEqual(false);
+
+    let keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("firstCourtyardEntry");
+
+    const input2 = output;
+    output = reducer(input2, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.firstCourtyardEntry).toStrictEqual(false);
+    // analytics not called again
+    keyEvents = inferKeyEvents(input2, output);
+    expect(keyEvents).toHaveLength(0);
+  });
+
+  test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, clothed", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: false,
+        babyCough: false,
+        naked: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 2);
+    expect(output.gold).toStrictEqual(newGameState.gold + 50);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation +2
+
+         Gold +50"
+      `);
+  });
+
+  test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, clothed", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: true,
+        babyCough: false,
+        naked: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
+    expect(output.gold).toStrictEqual(newGameState.gold + 50);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation +1
+
+         Gold +50"
+      `);
+  });
+
+  test("Entering the lawn: saved baby, not rewarded yet, no cough, baby cough, clothed", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: false,
+        babyCough: true,
+        naked: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
+    expect(output.gold).toStrictEqual(newGameState.gold + 50);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation +1
+
+         Gold +50"
+      `);
+  });
+
+  test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, not clothed", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: false,
+        babyCough: false,
+        naked: true,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
+    expect(output.gold).toStrictEqual(newGameState.gold + 50);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation +1
+
+         Gold +50"
+      `);
+  });
+
+  test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, not clothed", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: true,
+        babyCough: false,
+        naked: true,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 0);
+    expect(output.gold).toStrictEqual(newGameState.gold + 50);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation +0
+
+         Gold +50"
+      `);
+  });
+
+  test("Entering the lawn: saved baby, not rewarded yet, cough, baby cough, not clothed", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: true,
+        babyCough: true,
+        naked: true,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.gold).toStrictEqual(newGameState.gold + 50);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1
+
+         Gold +50"
+      `);
+  });
+
+  test("Entering the lawn: baby goes out of play", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+    const item = "baby";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: true,
+        babyCough: true,
+        naked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [item],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[oldLocation]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[newLocation]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+  });
+
+  test("Entering the lawn: baby goes out of play, does not error if baby already was out of play", () => {
+    const oldLocation = "entryway";
+    const newLocation = "lawn";
+    const item = "baby";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        savedBaby: true,
+        receivedBabyReward: false,
+        playerCough: true,
+        babyCough: true,
+        naked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          outOfPlay: [item],
+          inventory: [],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[oldLocation]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[newLocation]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.outOfPlay).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+  });
+
+  test("Exiting the lawn puts out the fire if the baby was saved", () => {
+    const oldLocation = "lawn";
+    const newLocation = "entryway";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: true,
+      receivedBabyReward: false,
+      manorFire: true,
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.savedBaby).toBe(true);
+    expect(output.manorFire).toBe(false);
+    expect(output.receivedBabyReward).toBe(true);
+
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("savedBaby");
+    expect(keyEvents[0].eventInfo["throughWindow"]).toBe(true);
+    expect(keyEvents[0].eventInfo["woreDampMask"]).toBe(true);
+  });
+
+  test("Exiting the lawn does not put out the fire if the baby was not saved", () => {
+    const oldLocation = "lawn";
+    const newLocation = "entryway";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      savedBaby: false,
+      receivedBabyReward: false,
+      manorFire: true,
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.savedBaby).toBe(false);
+    expect(output.manorFire).toBe(true);
+    expect(output.receivedBabyReward).toBe(false);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+  });
+
+  test("Taking the baby into the entryway gives it a cough", () => {
+    const oldLocation = "nursery";
+    const newLocation = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        manorFire: true,
+        babyCough: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["baby"],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.babyCough).toBe(true);
+    expect(output.manorFire).toBe(true);
+  });
+
+  test("The baby doesn't develop a cough if you don't bring it with you", () => {
+    const oldLocation = "nursery";
+    const newLocation = "entryway";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        manorFire: true,
+        babyCough: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          nursery: ["baby"],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.babyCough).toBe(false);
+    expect(output.manorFire).toBe(true);
+  });
+
+  test("If you get to the nursery without wearing the damp handkerchief, you get a cough", () => {
+    const oldLocation = "entryway";
+    const newLocation = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        handkerchiefDamp: false,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.playerCough).toBe(true);
+  });
+
+  test("Wearing a dry handkerchief doesn't protect from cough", () => {
+    const oldLocation = "entryway";
+    const newLocation = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        handkerchiefDamp: false,
+        playerMasked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.playerCough).toBe(true);
+  });
+
+  test("Having but not wearing a damp handkerchief doesn't protect from cough", () => {
+    const oldLocation = "entryway";
+    const newLocation = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        handkerchiefDamp: true,
+        playerMasked: false,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.playerCough).toBe(true);
+  });
+
+  test("Wearing a damp handkerchief protects from cough", () => {
+    const oldLocation = "entryway";
+    const newLocation = "nursery";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        handkerchiefDamp: true,
+        playerMasked: true,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: ["handkerchief"],
+        },
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.playerCough).toBe(false);
+  });
+
+  test("Talking to the blacksmith when naked will lose reputation", () => {
+    const oldLocation = "smithy";
+    const newLocation = "blacksmith";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+  });
+
+  test("Talking to the youth when naked will lose reputation", () => {
+    const oldLocation = "gate";
+    const newLocation = "youth";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+  });
+
+  test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked.", () => {
+    const oldLocation = "road1";
+    const newLocation = "gate";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+    expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+    expect(keyEvents[0].eventInfo["reputation"]).toBe(
+      newGameState.reputation - 1,
+    );
+  });
+
+  test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if wearing poopy clothes.", () => {
+    const oldLocation = "road1";
+    const newLocation = "gate";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+      naked: false,
+      clothesPoopy: true,
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+    expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+    expect(keyEvents[0].eventInfo["reputation"]).toBe(
+      newGameState.reputation - 1,
+    );
+  });
+
+  test("Moving to the gate when treasure is earned will trigger game end changes. Points lost if naked, but extra points not lost if clothes poopy.", () => {
+    const oldLocation = "road1";
+    const newLocation = "gate";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+      naked: true,
+      clothesPoopy: true,
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+    expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+    expect(keyEvents[0].eventInfo["reputation"]).toBe(
+      newGameState.reputation - 1,
+    );
+  });
+
+  test("Moving to the gate when treasure is earned will trigger game end changes. Points gained if mounted.", () => {
+    const oldLocation = "road1";
+    const newLocation = "gate";
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      treasureLevel: 1,
+      gold: 110,
+      naked: false,
+      clothesPoopy: false,
+      horseMounted: true,
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("completed_game");
+    expect(keyEvents[0].eventInfo["gold"]).toBe(110);
+    expect(keyEvents[0].eventInfo["reputation"]).toBe(
+      newGameState.reputation + 1,
+    );
+  });
+
+  test("If you cross the stream without repaying the wizard, you get cursed", () => {
+    const oldLocation = "stream";
+    const newLocation = "road3";
+    const treasureLevel = 1;
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        gotScoreByCredit: true,
+        paidDebt: false,
+        treasureLevel,
+        cursed: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.gold).toStrictEqual(newGameState.gold - 100);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1
+
+         Gold -100"
+      `);
+
+    // The game state doesn't reflect cursed until you leave the location though
+    output = reducer(
+      {
+        ...output,
+        playerLocation: newLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation: oldLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(oldLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.gold).toStrictEqual(newGameState.gold - 100);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(true);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("If you haven't earned any treasure, it is safe to cross", () => {
+    const oldLocation = "stream";
+    const newLocation = "road3";
+    const treasureLevel = 0;
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        gotScoreByCredit: true,
+        paidDebt: false,
+        treasureLevel,
+        cursed: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+    output = reducer(
+      {
+        ...output,
+        playerLocation: newLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation: oldLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(oldLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("If you repaid the wizard, it is safe to cross", () => {
+    const oldLocation = "stream";
+    const newLocation = "road3";
+    const treasureLevel = 1;
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        gotScoreByCredit: true,
+        paidDebt: true,
+        treasureLevel,
+        cursed: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(true);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+    output = reducer(
+      {
+        ...output,
+        playerLocation: newLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation: oldLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(oldLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(true);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("If you don't owe the wizard, you can cross safely", () => {
+    const oldLocation = "stream";
+    const newLocation = "road3";
+    const treasureLevel = 1;
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        gotScoreByCredit: false,
+        paidDebt: false,
+        treasureLevel,
+        cursed: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+    output = reducer(
+      {
+        ...output,
+        playerLocation: newLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation: oldLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(oldLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(false);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("You won't get cursed twice", () => {
+    const oldLocation = "stream";
+    const newLocation = "road3";
+    const treasureLevel = 1;
+
+    let output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        gotScoreByCredit: true,
+        paidDebt: false,
+        treasureLevel,
+        cursed: true,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(true);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+
+    output = reducer(
+      {
+        ...output,
+        playerLocation: newLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation: oldLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(oldLocation);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.gold).toStrictEqual(newGameState.gold);
+    expect(output.treasureLevel).toStrictEqual(treasureLevel);
+    expect(output.paidDebt).toBe(false);
+    expect(output.cursed).toBe(true);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter puddle, time in cave increases", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "puddle";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter puddle, if the dragon is not poisoned, and enough time has elapsed, you get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "puddle";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: false,
+        timeInCave,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1"
+      `);
+  });
+
+  test("When enter puddle, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "puddle";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: true,
+        timeInCave,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter dung, time in cave increases", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "dung";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter dung, if the dragon is not poisoned, and enough time has elapsed, you get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "dung";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: false,
+        timeInCave,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1"
+      `);
+  });
+
+  test("When enter dung, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "dung";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: true,
+        timeInCave,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter crevice, time in cave increases", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "crevice";
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter crevice, if the dragon is not poisoned and you are not wearing poopy clothes, and enough time has elapsed, you get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "crevice";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: false,
+        timeInCave,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1"
+      `);
+  });
+
+  test("When enter crevice, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "crevice";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: true,
+        timeInCave,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter crevice, if enough time has elapsed but you are wearing poopy clothes, you don't get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "crevice";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: false,
+        timeInCave,
+        naked: false,
+        clothesPoopy: true,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter crevice, if enough time has elapsed and you have poopy clothes but are not wearing them, you get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "crevice";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: false,
+        timeInCave,
+        naked: true,
+        clothesPoopy: true,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1"
+      `);
+  });
+
+  test("When enter crevice, if enough time has elapsed and you have are wearing clothes but they are not poopy, you get singed.", () => {
+    const oldLocation = "defecatory";
+    const newLocation = "crevice";
+    const timeInCave = 2;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned: false,
+        timeInCave,
+        naked: false,
+        clothesPoopy: false,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave + 1);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`
+         "
+
+         Reputation -1"
+      `);
+  });
+
+  test("When exit crevice, if berries are in the puddle and you are wearing poopy clothes, dragon is poisoned.", () => {
+    const oldLocation = "crevice";
+    const newLocation = "defecatory";
+    const timeInCave = 2;
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: false,
+      timeInCave,
+      naked: false,
+      clothesPoopy: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        puddle: ["berries"],
+      },
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.dragonPoisoned).toBe(true);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(1);
+    expect(keyEvents[0].eventInfo.milestone).toBe("dragonPoisoned");
+
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When exit crevice, if berries are in the puddle but you are not wearing poopy clothes, dragon is not poisoned.", () => {
+    const oldLocation = "crevice";
+    const newLocation = "defecatory";
+    const timeInCave = 2;
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: false,
+      timeInCave,
+      naked: true,
+      clothesPoopy: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        puddle: ["berries"],
+      },
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.dragonPoisoned).toBe(false);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When exit crevice, if you are wearing poopy clothes but clothes aren't in the puddle, dragon is not poisoned.", () => {
+    const oldLocation = "crevice";
+    const newLocation = "defecatory";
+    const timeInCave = 2;
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: false,
+      timeInCave,
+      naked: false,
+      clothesPoopy: true,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        puddle: [],
+      },
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.dragonPoisoned).toBe(false);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When exit crevice, if berries are in the puddle but your clothes weren't poopy, dragon is not poisoned", () => {
+    const oldLocation = "crevice";
+    const newLocation = "defecatory";
+    const timeInCave = 2;
+
+    const input: GameState = {
+      ...newGameState,
+      playerLocation: oldLocation,
+      dragonPoisoned: false,
+      timeInCave,
+      naked: false,
+      clothesPoopy: false,
+      itemLocations: {
+        ...newGameState.itemLocations,
+        puddle: ["berries"],
+      },
+    };
+    const output = reducer(input, {
+      action: "movePlayer",
+      newLocation,
+    });
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+    expect(output.dragonPoisoned).toBe(false);
+    const keyEvents = inferKeyEvents(input, output);
+    expect(keyEvents).toHaveLength(0);
+
+    expect(output.locationConsequenceText).toMatchInlineSnapshot(`""`);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (all case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, true];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (poisoned + asleep case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [true, true, false];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (poisoned + dead case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, true];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (asleep + dead case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, true];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (dead case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, true];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (poisoned case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [true, false, false];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep (asleep case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [false, true, false];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount);
+  });
+
+  test("When enter lair, get singed if dragon is not poisoned, dead, or asleep  (none case).", () => {
+    const oldLocation = "caveEntrance";
+    const newLocation = "lair";
+    const [dragonPoisoned, dragonAsleep, dragonDead] = [false, false, false];
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: oldLocation,
+        dragonPoisoned,
+        dragonDead,
+        dragonAsleep,
+      },
+      {
+        action: "movePlayer",
+        newLocation,
+      },
+    );
+    expect(output.playerLocation).toStrictEqual(newLocation);
+    expect(output.timeInCave).toStrictEqual(newGameState.timeInCave);
+    expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
+    expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
+  });
+
+  test("Paying the blacksmith will give you the sword", () => {
+    const location = "blacksmith";
+    const item = "sword";
+    const startingGold = 50;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        ownSword: false,
+        playerLocation: location,
+        gold: startingGold,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          smithy: [item],
+        },
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations.smithy).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.ownSword).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold - output.swordCost);
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         "You hand the blacksmith 40 gold in exchange for the sword. 
+
+         Gold -40"
+      `);
+  });
+
+  test("Paying the blacksmith will not give you the sword if you don't have enough money", () => {
+    const location = "blacksmith";
+    const item = "sword";
+    const startingGold = 20;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        ownSword: false,
+        playerLocation: location,
+        gold: startingGold,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          smithy: [item],
+        },
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.smithy).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.ownSword).toBe(false);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The blacksmith looks at your gold. "It looks like you don't have enough gold to buy this sword. Come back once you have enough gold, or try your luck without it." "`,
+    );
+  });
+
+  test("Paying the blacksmith will not give you the sword if you already own it, even if the sword is at the smithy", () => {
+    const location = "blacksmith";
+    const item = "sword";
+    const startingGold = 50;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        ownSword: true,
+        playerLocation: location,
+        gold: startingGold,
+        itemLocations: {
+          ...newGameState.itemLocations,
+          inventory: [],
+          smithy: [item],
+        },
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations.smithy).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.ownSword).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The blacksmith is not interested in your gold."`,
+    );
+  });
+
+  test("Paying the youth has no effect", () => {
+    const location = "youth";
+    const startingGold = 50;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output).toStrictEqual({
+      ...newGameState,
+      playerLocation: location,
+      gold: startingGold,
+      consequenceText: output.consequenceText,
+    });
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"The youth is not interested in your gold."`,
+    );
+  });
+
+  test("If you have not already made a deal with the wizard, paying the wizard will give you the score and lock you into debt", () => {
+    const location = "wizard";
+    const item = "score";
+    const startingGold = 0;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        gotScoreByCredit: false,
+        gotScoreByTrade: false,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.gotScoreByCredit).toBe(true);
+    expect(output.paidDebt).toBe(false);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.preCreditTreasureLevel).toStrictEqual(0);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`,
+    );
+  });
+
+  test("If you have not already made a deal with the wizard, paying the wizard will give you the score and lock you into debt. It you already earned treasure, that will be recorded as pre-debt", () => {
+    const location = "wizard";
+    const item = "score";
+    const startingGold = 0;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        gotScoreByCredit: false,
+        gotScoreByTrade: false,
+        treasureLevel: 1,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.gotScoreByCredit).toBe(true);
+    expect(output.paidDebt).toBe(false);
+    expect(output.preCreditTreasureLevel).toStrictEqual(1);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `"You promise the wizard half of the treasure that you hope to earn and pocket the musical score. As you shake on the deal, a shimmering barrier appears over the stream, then fades. "`,
+    );
+  });
+
+  test("If you have traded the wizard, they will not take debt even if you have gold", () => {
+    const location = "wizard";
+    const item = "score";
+    const startingGold = 300;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 3,
+        gotScoreByCredit: false,
+        gotScoreByTrade: true,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.itemLocations.inventory).toStrictEqual(
+      expect.not.arrayContaining([item]),
+    );
+    expect(output.itemLocations[location]).toStrictEqual(
+      expect.arrayContaining([item]),
+    );
+    expect(output.gotScoreByCredit).toBe(false);
+    expect(output.paidDebt).toBe(false);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `""Although I would like your gold, you have no debts to me.""`,
+    );
+  });
+
+  test("If you are in debt but didn't earn treasure when you try to pay the wizard", () => {
+    const location = "wizard";
+    const startingGold = 0;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 0,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(false);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `""Hmm...You have not earned any treasure. Use your wits!""`,
+    );
+  });
+
+  test("If you are in debt and earned treasure level 1", () => {
+    const location = "wizard";
+    const startingGold = 120;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 1,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold - 50);
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+
+         Gold -50"
+      `);
+  });
+
+  test("If you are in debt and earned treasure level 1 but already had treasure level 1, debt is not paid", () => {
+    const location = "wizard";
+    const startingGold = 120;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 1,
+        preCreditTreasureLevel: 1,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(false);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `""Hmm...You have not earned any more treasure. Use your wits!""`,
+    );
+  });
+
+  test("If you are in debt and earned treasure level 2", () => {
+    const location = "wizard";
+    const startingGold = 220;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 2,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold - 100);
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+
+         Gold -100"
+      `);
+  });
+
+  test("If you are in debt and earned treasure level 2 but had level 1 pre-debt", () => {
+    const location = "wizard";
+    const startingGold = 220;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 2,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+        preCreditTreasureLevel: 1,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold - 50);
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+
+         Gold -50"
+      `);
+  });
+
+  test("If you are in debt and earned treasure level 3", () => {
+    const location = "wizard";
+    const startingGold = 320;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 3,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold - 150);
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
+
+         Gold -150"
+      `);
+  });
+
+  test("If you are in debt and earned treasure level 3 but had level 1 pre-debt", () => {
+    const location = "wizard";
+    const startingGold = 320;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 3,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: false,
+        preCreditTreasureLevel: 1,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold - 100);
+    expect(output.consequenceText).toMatchInlineSnapshot(`
+         ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
+
+         Gold -100"
+      `);
+  });
+
+  test("If you already paid debt, wizard won't take again", () => {
+    const location = "wizard";
+    const startingGold = 150;
+
+    const output = reducer(
+      {
+        ...newGameState,
+        playerLocation: location,
+        gold: startingGold,
+        treasureLevel: 3,
+        gotScoreByCredit: true,
+        gotScoreByTrade: false,
+        paidDebt: true,
+      },
+      {
+        action: "pay",
+      },
+    );
+
+    expect(output.paidDebt).toBe(true);
+    expect(output.gold).toStrictEqual(startingGold);
+    expect(output.consequenceText).toMatchInlineSnapshot(
+      `""Although I would like your gold, you have no debts to me.""`,
+    );
+  });
+});

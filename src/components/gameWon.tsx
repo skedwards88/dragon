@@ -1,46 +1,71 @@
-import React from "react";
 import Stats from "./stats";
 import Share from "@skedwards88/shared-components/src/components/Share";
 import {useMetadataContext} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
+import type {GameState} from "../logic/init";
+import type {DisplayState} from "./App";
+import type {ReducerPayload} from "../logic/reducer";
 
 export default function GameWon({
   dispatchGameState,
-  gameState,
+  horseMounted,
+  naked,
+  clothesPoopy,
+  playerPoisoned,
+  singeCount,
+  cursed,
+  dragonDead,
+  reputation,
+  maxReputation,
+  gold,
+  maxGold,
   setCurrentDisplay,
-}) {
+}: {
+  dispatchGameState: React.Dispatch<ReducerPayload>;
+  horseMounted: GameState["horseMounted"];
+  naked: GameState["naked"];
+  clothesPoopy: GameState["clothesPoopy"];
+  playerPoisoned: GameState["playerPoisoned"];
+  singeCount: GameState["singeCount"];
+  cursed: GameState["cursed"];
+  dragonDead: GameState["dragonDead"];
+  reputation: GameState["reputation"];
+  maxReputation: GameState["maxReputation"];
+  gold: GameState["gold"];
+  maxGold: GameState["maxGold"];
+  setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
+}): React.JSX.Element {
   const {userId, sessionId} = useMetadataContext();
 
-  let gameEndText;
-  gameEndText = `You arrive at the city gates ${
-    gameState.horseMounted
+  const gameEndText = `You arrive at the city gates ${
+    horseMounted
       ? `proudly mounted on your horse.\n\nReputation +1`
       : "weary from the long walk. "
   }\n\nA crowd has gathered, curious about the fate of the person who willingly entered the dragon's lair. ${
-    gameState.naked
+    naked
       ? `\n\nThe townsfolk jeer at your lack of clothes.\n\nReputation -1`
       : ""
   }${
-    gameState.clothesPoopy && !gameState.naked
+    clothesPoopy && !naked
       ? "\n\nThe townsfolk gag at the horrid smell emanating from you clothes and give you a wide berth.\n\nReputation -1"
       : ""
   }${
-    gameState.playerPoisoned
+    playerPoisoned
       ? "\n\nYour face is still splotchy and swollen from eating the berries. "
       : ""
   }${
-    gameState.singeCount
-      ? `\n\nYou have ${gameState.singeCount} singe mark${
-          gameState.singeCount > 1 ? "s" : ""
+    singeCount
+      ? `\n\nYou have ${String(singeCount)} singe mark${
+          singeCount > 1 ? "s" : ""
         } and no eyebrows, courtesy of the dragon's flame. `
       : ""
   }${
-    gameState.cursed
+    cursed
       ? "\n\nAlthough the curse is not visible, a forbidding aura hangs around you. You wonder what effect the curse will have on your life."
       : ""
   }${
-    gameState.dragonDead
+    dragonDead
       ? `\n\nThe townsfolk see the gore on your sword. You hear whispers of "dragon slayer" and "hero" before the town erupts into cheers. ${
-          gameState.reputation === gameState.maxReputation
+          reputation === maxReputation
             ? "Thanks to your flawless reputation and heroism, they appoint you mayor on the spot."
             : ""
         }`
@@ -50,10 +75,10 @@ export default function GameWon({
   return (
     <div className="App" id="gameOver-display">
       <Stats
-        reputation={gameState.reputation}
-        maxReputation={gameState.maxReputation}
-        gold={gameState.gold}
-        maxGold={gameState.maxGold}
+        reputation={reputation}
+        maxReputation={maxReputation}
+        gold={gold}
+        maxGold={maxGold}
       />
       <div className="description">{gameEndText}</div>
       <div id="non-navigation-buttons" className="buttons">
@@ -69,29 +94,39 @@ export default function GameWon({
         <Share
           appName="Dragon Hero"
           text={getWinShareText({
-            reputation: gameState.reputation,
-            maxReputation: gameState.maxReputation,
-            gold: gameState.gold,
-            maxGold: gameState.maxGold,
+            reputation,
+            maxReputation,
+            gold,
+            maxGold,
           })}
-          url="https://skedwards88.github.io/dragon/"
+          url="https://dragon.twistedtrailgames.com/"
           origin="game over"
           className="close"
           content="SHARE"
           userId={userId}
           sessionId={sessionId}
-        ></Share>
+        />
       </div>
     </div>
   );
 }
 
-function getWinShareText({reputation, maxReputation, gold, maxGold}) {
+function getWinShareText({
+  reputation,
+  maxReputation,
+  gold,
+  maxGold,
+}: {
+  reputation: GameState["reputation"];
+  maxReputation: GameState["maxReputation"];
+  gold: GameState["gold"];
+  maxGold: GameState["maxGold"];
+}): string {
   let resultText = "";
   if (reputation === maxReputation && gold === maxGold) {
     resultText = `I earned the maximum score on Dragon Hero!`;
   } else {
-    resultText = `I beat Dragon Hero: ${reputation}/${maxReputation} reputation, ${gold}/${maxGold} gold.`;
+    resultText = `I beat Dragon Hero: ${String(reputation)}/${String(maxReputation)} reputation, ${String(gold)}/${String(maxGold)} gold.`;
   }
 
   return resultText;

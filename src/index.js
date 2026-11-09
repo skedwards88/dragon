@@ -1,6 +1,6 @@
 import React from "react";
 import {createRoot} from "react-dom/client";
-import App from "./App.js";
+import App from "./components/App";
 import "./App.css";
 import "@skedwards88/shared-components/src/styles/Install.css";
 import {MetadataContextProvider} from "@skedwards88/shared-components/src/components/MetadataContextProvider";
@@ -10,12 +10,13 @@ if (process.env.NODE_ENV !== "development" && "serviceWorker" in navigator) {
   const scope = "";
   window.addEventListener("load", () => {
     navigator.serviceWorker
-      .register(path, {scope: scope})
+      .register(path, {scope})
       .then((registration) => {
+        // eslint-disable-next-line no-console
         console.log("SW registered: ", registration);
       })
       .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
+        console.warn("SW registration failed: ", registrationError);
       });
   });
 }
@@ -23,7 +24,9 @@ if (process.env.NODE_ENV !== "development" && "serviceWorker" in navigator) {
 const container = document.getElementById("root");
 const root = createRoot(container);
 root.render(
-  <MetadataContextProvider>
-    <App />
-  </MetadataContextProvider>,
+  <React.StrictMode>
+    <MetadataContextProvider>
+      <App />
+    </MetadataContextProvider>
+  </React.StrictMode>,
 );

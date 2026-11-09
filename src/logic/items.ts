@@ -1,72 +1,82 @@
-import {locations} from "./locations";
+import type {GameState} from "./init";
+import {
+  type AlterItemLocationName,
+  type LocationName,
+  locations,
+} from "./locations";
 
-export class ItemInteraction {
-  constructor({
-    gameEffect,
-    description,
-    targetItemDestination,
-    itemMovements = [],
-  }) {
-    this.description = description;
-    this.gameEffect = gameEffect;
-    this.targetItemDestination = targetItemDestination;
-    this.itemMovements = itemMovements;
-  }
+export type ItemMovement = {
+  item: ItemName;
+  oldLocation: LocationName | AlterItemLocationName;
+  newLocation: LocationName | AlterItemLocationName;
+};
+
+export type ItemInteraction = {
+  description: string;
+  gameEffect: Partial<GameState>;
+  targetItemDestination?: LocationName | AlterItemLocationName;
+  itemMovements: ItemMovement[];
+};
+
+export function createItemInteraction(
+  options: Partial<ItemInteraction>,
+): ItemInteraction {
+  return {
+    itemMovements: [],
+    gameEffect: {},
+    description: "",
+    ...options,
+  };
 }
 
-class Item {
-  constructor({
-    id,
-    displayName = id,
-    spawnLocation,
-    getDescription = function () {
-      return id;
-    },
+export type ItemInfo = {
+  id: ItemName;
+  displayName: string;
+  spawnLocation: LocationName;
+  getDescription: (gameState: GameState) => string;
+  getUseVerb: (gameState: GameState) => string;
+  getCustomDrop: (gameState: GameState) => ItemInteraction;
+  getCustomGive: (gameState: GameState) => ItemInteraction;
+  getCustomTake: (gameState: GameState) => ItemInteraction;
+  getCustomUse: (gameState: GameState) => ItemInteraction;
+};
 
-    getUseVerb = function () {
-      return "Use";
+function createItem(
+  options: Pick<ItemInfo, "id" | "spawnLocation"> & Partial<ItemInfo>,
+): ItemInfo {
+  return {
+    displayName: options.id,
+    getDescription: () => options.id,
+    getUseVerb: () => "Use",
+    getCustomTake: (): ItemInteraction => {
+      return createItemInteraction({});
     },
-
-    getCustomDrop = function () {
-      return new ItemInteraction({});
+    getCustomUse: (): ItemInteraction => {
+      return createItemInteraction({});
     },
-    getCustomGive = function () {
-      return new ItemInteraction({});
+    getCustomDrop: (): ItemInteraction => {
+      return createItemInteraction({});
     },
-    getCustomTake = function () {
-      return new ItemInteraction({});
+    getCustomGive: (): ItemInteraction => {
+      return createItemInteraction({});
     },
-    getCustomUse = function () {
-      return new ItemInteraction({});
-    },
-  }) {
-    this.id = id;
-    this.displayName = displayName;
-    this.spawnLocation = spawnLocation;
-    this.getDescription = getDescription;
-
-    this.getUseVerb = getUseVerb;
-
-    this.getCustomDrop = getCustomDrop;
-    this.getCustomGive = getCustomGive;
-    this.getCustomTake = getCustomTake;
-    this.getCustomUse = getCustomUse;
-  }
+    ...options,
+  };
 }
 
-const lute = new Item({
+const lute = createItem({
   id: "lute",
   spawnLocation: "room",
-  getDescription: function () {
+  getDescription() {
     return "wooden lute";
   },
 
-  getUseVerb: function () {
+  getUseVerb() {
     return "Play";
   },
 
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "youth" && !gameState.playedForYouth) {
         return `You play a song for the crying youth. The music seems to cheer the youth up. `;
       } else if (
@@ -74,51 +84,52 @@ const lute = new Item({
         gameState.playedForYouth
       ) {
         return `They appreciate the music, but don't seem keen to listen all day. `;
-      } else {
-        return "You play a beautiful melody. ";
       }
+      return "You play a beautiful melody. ";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (gameState.playerLocation === "youth" && !gameState.playedForYouth) {
         return {
           reputation: gameState.reputation + 1,
           playedForYouth: true,
         };
       }
+      return {};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomTake: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomTake(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "room") {
         return "The lute feels familiar. ";
       }
+      return "";
     }
+    const description = writeDescription(gameState);
 
-    return new ItemInteraction({
-      description: writeDescription(gameState),
+    return createItemInteraction({
+      description,
     });
   },
 });
 
-const clothes = new Item({
+const clothes = createItem({
   id: "clothes",
   spawnLocation: "wardrobe",
-  getDescription: function (gameState) {
+  getDescription(gameState) {
     return gameState.clothesPoopy ? "poopy set of clothes" : "set of clothes";
   },
-
-  getUseVerb: function (gameState) {
+  getUseVerb(gameState) {
     return gameState.naked ? "Wear" : "Remove";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       let text = gameState.naked
         ? "You put on the clothes. "
         : "You strip down. ";
@@ -139,8 +150,10 @@ const clothes = new Item({
       return text;
     }
 
-    function getGameEffect(gameState) {
-      let gameEffect = gameState.naked ? {naked: false} : {naked: true};
+    function getGameEffect(gameState: GameState): Partial<GameState> {
+      let gameEffect: Partial<GameState> = gameState.naked
+        ? {naked: false}
+        : {naked: true};
       if (
         !gameState.naked &&
         (gameState.playerLocation === "inn" ||
@@ -155,21 +168,23 @@ const clothes = new Item({
       return gameEffect;
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomDrop: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomDrop(gameState) {
+    function writeDescription(gameState: GameState): string {
       let text = "";
       const dropPreposition =
         locations[gameState.playerLocation].dropPreposition;
 
-      gameState.naked
-        ? (text += `You drop your clothes ${dropPreposition} the ${gameState.playerLocation}. `)
-        : (text += `You strip down and drop your clothes ${dropPreposition} the ${gameState.playerLocation}. `);
+      if (gameState.naked) {
+        text += `You drop your clothes ${dropPreposition} the ${gameState.playerLocation}. `;
+      } else {
+        text += `You strip down and drop your clothes ${dropPreposition} the ${gameState.playerLocation}. `;
+      }
 
       if (!gameState.naked && gameState.playerLocation === "inn") {
         text += "The innkeeper eyes you suspiciously.";
@@ -187,8 +202,8 @@ const clothes = new Item({
       return text;
     }
 
-    function getGameEffect(gameState) {
-      let gameEffect = {naked: true};
+    function getGameEffect(gameState: GameState): Partial<GameState> {
+      let gameEffect: Partial<GameState> = {naked: true};
       if (
         !gameState.naked &&
         (gameState.playerLocation === "inn" ||
@@ -216,30 +231,30 @@ const clothes = new Item({
     }
 
     if (["fountain", "stream", "puddle"].includes(gameState.playerLocation)) {
-      return new ItemInteraction({
+      return createItemInteraction({
         description: writeDescription(gameState),
         gameEffect: getGameEffect(gameState),
       });
     }
 
     if (gameState.playerLocation === "dung") {
-      return new ItemInteraction({
+      return createItemInteraction({
         description: writeDescription(gameState),
         gameEffect: getGameEffect(gameState),
       });
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       description: writeDescription(gameState),
       gameEffect: getGameEffect(gameState),
     });
   },
 });
 
-const apple = new Item({
+const apple = createItem({
   id: "apple",
   spawnLocation: "inn",
-  getDescription: function (gameState) {
+  getDescription(gameState) {
     switch (gameState.appleBitesRemaining) {
       case 5:
         return "fresh apple";
@@ -258,11 +273,11 @@ const apple = new Item({
     }
   },
 
-  getUseVerb: function () {
+  getUseVerb() {
     return "Eat";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       switch (gameState.appleBitesRemaining) {
         case 5:
           return "You take a bite from the apple, feeling refreshed. ";
@@ -281,22 +296,23 @@ const apple = new Item({
       }
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (gameState.appleBitesRemaining > 0) {
         return {
           appleBitesRemaining: gameState.appleBitesRemaining - 1,
         };
       }
+      return {};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomDrop: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomDrop(gameState) {
+    function writeDescription(gameState: GameState): string {
       let appleDescription;
       if (gameState.appleBitesRemaining <= 0) {
         appleDescription = "apple core";
@@ -311,22 +327,24 @@ const apple = new Item({
       ) {
         if (gameState.appleBitesRemaining > 0) {
           return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped. While he is preoccupied, you grab the reins. You now have a horse.`;
-        } else {
-          return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
         }
+        return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you dropped but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
       }
 
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
         return `The squirrel sniffs at the ${appleDescription} but doesn't bite. Perhaps it needs something smaller. `;
       }
+      return "";
     }
+
+    const description = writeDescription(gameState);
 
     if (
       gameState.itemLocations[gameState.playerLocation].includes("horse") &&
       !gameState.horseTethered &&
       gameState.appleBitesRemaining > 0
     ) {
-      return new ItemInteraction({
+      return {
         gameEffect: {horseTethered: true},
         targetItemDestination: "outOfPlay",
         itemMovements: [
@@ -336,17 +354,17 @@ const apple = new Item({
             newLocation: "inventory",
           },
         ],
-        description: writeDescription(gameState),
-      });
+        description,
+      };
     }
 
-    return new ItemInteraction({
-      description: writeDescription(gameState),
+    return createItemInteraction({
+      description,
     });
   },
 
-  getCustomGive: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomGive(gameState) {
+    function writeDescription(gameState: GameState): string {
       let appleDescription;
       if (gameState.appleBitesRemaining <= 0) {
         appleDescription = "apple core";
@@ -361,22 +379,24 @@ const apple = new Item({
       ) {
         if (gameState.appleBitesRemaining > 0) {
           return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered. While he is preoccupied, you grab the reins. You now have a horse.`;
-        } else {
-          return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
         }
+        return `This horse seems very interested in food. The horse walks over to eat the ${appleDescription} that you offered but the paltry amount remaining doesn't occupy him for long. He trots away as you try to grab the reins.`;
       }
 
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
         return `The squirrel sniffs at the ${appleDescription} but doesn't bite. Perhaps it needs something smaller. `;
       }
+      return "";
     }
+
+    const description = writeDescription(gameState);
 
     if (
       gameState.itemLocations[gameState.playerLocation].includes("horse") &&
       !gameState.horseTethered &&
       gameState.appleBitesRemaining > 0
     ) {
-      return new ItemInteraction({
+      return createItemInteraction({
         gameEffect: {horseTethered: true},
         targetItemDestination: "outOfPlay",
         itemMovements: [
@@ -386,29 +406,30 @@ const apple = new Item({
             newLocation: "inventory",
           },
         ],
-        description: writeDescription(gameState),
+        description,
       });
-    } else {
-      return new ItemInteraction({});
     }
+    return createItemInteraction({});
   },
 });
 
-const handkerchief = new Item({
+const handkerchief = createItem({
   id: "handkerchief",
   spawnLocation: "courtyard",
-  getDescription: function (gameState) {
+  getDescription(gameState) {
     return gameState.handkerchiefDamp ? "damp handkerchief" : "handkerchief";
   },
-  getUseVerb: function (gameState) {
+  getUseVerb(gameState) {
     return gameState.playerMasked ? "Remove" : "Wear";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       let text = "";
-      gameState.playerMasked
-        ? (text += "You remove the handkerchief from your nose and mouth. ")
-        : (text += "You tie the handkerchief around your nose and mouth. ");
+      if (gameState.playerMasked) {
+        text += "You remove the handkerchief from your nose and mouth. ";
+      } else {
+        text += "You tie the handkerchief around your nose and mouth. ";
+      }
 
       if (
         ["entryway", "nursery", "nurseryWindow"].includes(
@@ -442,8 +463,9 @@ const handkerchief = new Item({
 
       if (
         ["dung", "defecatory", "crevice", "puddle"].includes(
-          gameState.playerLocation && !gameState.playerMasked,
-        )
+          gameState.playerLocation,
+        ) &&
+        !gameState.playerMasked
       ) {
         text += "Even with it, the stench reaches your nose. ";
       }
@@ -451,20 +473,20 @@ const handkerchief = new Item({
       return text;
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       return gameState.playerMasked
         ? {playerMasked: false}
         : {playerMasked: true};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomDrop: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomDrop(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerMasked) {
         const dropPreposition =
           locations[gameState.playerLocation].dropPreposition;
@@ -482,9 +504,10 @@ const handkerchief = new Item({
         }
         return text;
       }
+      return "";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       let gameEffect = {};
 
       if (gameState.playerMasked) {
@@ -495,25 +518,28 @@ const handkerchief = new Item({
         gameEffect = {...gameEffect, handkerchiefDamp: true};
       }
 
-      if (Object.keys(gameEffect).length) return gameEffect;
+      return gameEffect;
     }
 
-    return new ItemInteraction({
+    const description = writeDescription(gameState);
+
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      description: writeDescription(gameState),
+      description,
     });
   },
 
-  getCustomGive: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomGive(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "youth") {
         if (!gameState.offeredHandkerchiefToYouth) {
           return `You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." \n\nThe youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. `;
         }
       }
+      return "";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       let gameEffect = {};
 
       if (
@@ -527,98 +553,112 @@ const handkerchief = new Item({
         };
       }
 
-      if (Object.keys(gameEffect).length) return gameEffect;
+      return gameEffect;
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (
         gameState.playerLocation === "youth" &&
         !gameState.offeredHandkerchiefToYouth
       ) {
         return "inventory";
       }
+      return undefined;
     }
 
-    return new ItemInteraction({
+    const description = writeDescription(gameState);
+    const targetItemDestination = getTargetItemDestination(gameState);
+
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 });
 
-const baby = new Item({
+const baby = createItem({
   id: "baby",
   spawnLocation: "nursery",
-  getDescription: function () {
+  getDescription() {
     return "crying baby";
   },
-  getUseVerb: function () {
+  getUseVerb() {
     return "Use";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription() {
+  getCustomUse(): ItemInteraction {
+    function writeDescription(): string {
       return "It's unclear what use this baby has. ";
     }
 
-    return new ItemInteraction({
-      description: writeDescription(gameState),
+    return createItemInteraction({
+      description: writeDescription(),
     });
   },
 
-  getCustomDrop: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomDrop(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "nursery") {
         return "You place the baby back in the crib. ";
       } else if (gameState.playerLocation === "nurseryWindow") {
         return "You drop the baby out of the open window. The crowd below catches the baby. ";
-      } else {
-        return "You drop the crying baby. It cries even louder. ";
       }
+      return "You drop the crying baby. It cries even louder. ";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       // you "save the baby" when you pick it up. If you drop it anywhere besides the window, you no longer save it.
       if (gameState.playerLocation !== "nurseryWindow") {
         return {savedBaby: false};
       }
+      return {};
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (gameState.playerLocation === "nurseryWindow") {
         return "outOfPlay";
       }
+      return undefined;
     }
 
-    return new ItemInteraction({
+    const targetItemDestination = getTargetItemDestination(gameState);
+
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
+      ...(targetItemDestination && {targetItemDestination}),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomTake: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomTake(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "nursery") {
         return "You pick up the baby from the crib. The baby coughs as you move it away from the open window. ";
       }
+      return "";
     }
 
-    return new ItemInteraction({
+    const description = writeDescription(gameState);
+
+    return createItemInteraction({
       gameEffect: {savedBaby: true},
-      description: writeDescription(gameState),
+      description,
     });
   },
 });
 
-const sword = new Item({
+const sword = createItem({
   id: "sword",
   spawnLocation: "smithy",
-  getUseVerb: function () {
+  getUseVerb() {
     return "Attack";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (
         gameState.dragonAsleep &&
         !gameState.dragonDead &&
@@ -639,12 +679,11 @@ const sword = new Item({
         gameState.playerLocation === "lair"
       ) {
         return "You try to cut off the dragon's head, but it singes you as soon as you get close enough. ";
-      } else {
-        return "You slash the sword through the air, looking a bit foolish. ";
       }
+      return "You slash the sword through the air, looking a bit foolish. ";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (
         gameState.dragonAsleep &&
         !gameState.dragonDead &&
@@ -664,16 +703,17 @@ const sword = new Item({
           reputation: gameState.reputation - 1,
         };
       }
+      return {};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomTake: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomTake(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "smithy" && !gameState.ownSword) {
         return 'You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. ';
       }
@@ -681,17 +721,21 @@ const sword = new Item({
       if (gameState.playerLocation === "wizard" && gameState.gotScoreByTrade) {
         return "Ah you would like to exchange? You must first give me the score.";
       }
+      return "";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (gameState.playerLocation === "smithy" && !gameState.ownSword) {
         return {
           reputation: gameState.reputation - 1,
           swordCost: Math.min(gameState.swordCost + 10, gameState.maxSwordCost),
         };
       }
+      return {};
     }
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (gameState.playerLocation === "smithy" && !gameState.ownSword) {
         return "smithy";
       }
@@ -699,17 +743,20 @@ const sword = new Item({
       if (gameState.playerLocation === "wizard" && gameState.gotScoreByTrade) {
         return "wizard";
       }
+      return undefined;
     }
+    const targetItemDestination = getTargetItemDestination(gameState);
+    const description = writeDescription(gameState);
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 
-  getCustomGive: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomGive(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (
         gameState.itemLocations.wizard.includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
@@ -717,9 +764,10 @@ const sword = new Item({
       ) {
         return "You give your sword to the wizard. In exchange, they give you the musical score. ";
       }
+      return "";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       let gameEffect = {};
 
       if (
@@ -730,10 +778,12 @@ const sword = new Item({
         gameEffect = {...gameEffect, gotScoreByTrade: true};
       }
 
-      if (Object.keys(gameEffect).length) return gameEffect;
+      return gameEffect;
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (
         gameState.itemLocations.wizard.includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
@@ -741,9 +791,10 @@ const sword = new Item({
       ) {
         return "wizard";
       }
+      return undefined;
     }
 
-    function getItemMovements(gameState) {
+    function getItemMovements(gameState: GameState): ItemMovement[] {
       if (
         gameState.itemLocations.wizard.includes("score") &&
         !(gameState.gotScoreByCredit || gameState.gotScoreByTrade) &&
@@ -757,48 +808,51 @@ const sword = new Item({
           },
         ];
       }
+      return [];
     }
 
-    return new ItemInteraction({
+    const targetItemDestination = getTargetItemDestination(gameState);
+    const description = writeDescription(gameState);
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
       itemMovements: getItemMovements(gameState),
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 });
 
-const horse = new Item({
+const horse = createItem({
   id: "horse",
   spawnLocation: "pasture",
-  getDescription: function (gameState) {
+  getDescription(gameState) {
     return gameState.horseDead ? "dead horse" : "voracious horse";
   },
 
-  getUseVerb: function (gameState) {
+  getUseVerb(gameState) {
     return gameState.horseMounted ? "Unmount" : "Mount";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       return gameState.horseMounted
         ? "You unmount the horse, keeping hold of the horse's reins. "
-        : "You mount the horse. Much easier than walking!"; // todo should you be allowed to mount inside a building?
+        : "You mount the horse. Much easier than walking!";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       return gameState.horseMounted
         ? {horseMounted: false, horseTethered: true}
         : {horseMounted: true, horseTethered: true};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomDrop: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomDrop(gameState) {
+    function writeDescription(gameState: GameState): string {
       let text = "";
 
       if (gameState.horseMounted) {
@@ -820,8 +874,8 @@ const horse = new Item({
       return text;
     }
 
-    function getGameEffect(gameState) {
-      let gameEffect = {horseTethered: false};
+    function getGameEffect(gameState: GameState): Partial<GameState> {
+      let gameEffect: Partial<GameState> = {horseTethered: false};
 
       if (
         gameState.itemLocations[gameState.playerLocation].includes("berries")
@@ -836,14 +890,14 @@ const horse = new Item({
       return gameEffect;
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomTake: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomTake(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.horseDead) {
         return "This dead horse is too heavy to carry. ";
       }
@@ -851,13 +905,12 @@ const horse = new Item({
       if (!gameState.horseTethered) {
         return "You try to grab the horse's reins, but it evades you. It seems more interested in foraging for food than carrying you around. ";
       }
-
-      if (gameState.horseTethered) {
-        return "You take back the horse's reins. ";
-      }
+      return "You take back the horse's reins. ";
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (gameState.horseDead) {
         return gameState.playerLocation;
       }
@@ -865,39 +918,44 @@ const horse = new Item({
       if (!gameState.horseTethered) {
         return gameState.playerLocation;
       }
+      return undefined;
     }
 
-    return new ItemInteraction({
-      targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
+    const targetItemDestination = getTargetItemDestination(gameState);
+    const description = writeDescription(gameState);
+
+    return createItemInteraction({
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 
-  getCustomGive: function (gameState) {
-    function getGameEffect(gameState) {
+  getCustomGive(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (gameState.horseMounted) {
         return {horseMounted: false, horseTethered: true};
       }
+      return {};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
     });
   },
 });
 
-const berries = new Item({
+const berries = createItem({
   id: "berries",
   spawnLocation: "clearing",
-  getDescription: function () {
+  getDescription() {
     return "handful of berries";
   },
 
-  getUseVerb: function () {
+  getUseVerb() {
     return "Eat";
   },
-  getCustomUse: function (gameState) {
-    return new ItemInteraction({
+  getCustomUse(gameState) {
+    return createItemInteraction({
       gameEffect: {
         playerPoisoned: true,
         reputation: gameState.reputation - 1,
@@ -908,8 +966,8 @@ const berries = new Item({
     });
   },
 
-  getCustomDrop: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomDrop(gameState) {
+    function writeDescription(gameState: GameState): string {
       let text = "";
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
         text +=
@@ -926,7 +984,7 @@ const berries = new Item({
       return text;
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       let gameEffect = {};
 
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
@@ -940,17 +998,17 @@ const berries = new Item({
         gameEffect = {...gameEffect, horseDead: true};
       }
 
-      if (Object.keys(gameEffect).length) return gameEffect;
+      return gameEffect;
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomGive: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomGive(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
         return "The squirrel eats the berries that you offered. After a few seconds, it foams at the mouth and rolls over, dead. Oh dear. ";
       }
@@ -966,9 +1024,10 @@ const berries = new Item({
       if (gameState.playerLocation === "wizard") {
         return `The wizard politely refuses the berries. "Those will give you a life changing experience," he says.`;
       }
+      return "";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (gameState.playerLocation === "squirrel" && !gameState.squirrelDead) {
         return {squirrelDead: true};
       }
@@ -978,62 +1037,57 @@ const berries = new Item({
       ) {
         return {horseDead: true};
       }
+      return {};
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (gameState.playerLocation === "wizard") {
         return "inventory";
       }
+      return undefined;
     }
 
-    return new ItemInteraction({
+    const targetItemDestination = getTargetItemDestination(gameState);
+
+    const description = writeDescription(gameState);
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 });
 
-const treasure = new Item({
+const treasure = createItem({
   id: "treasure",
   spawnLocation: "lair",
 
-  getCustomTake: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomTake(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (gameState.dragonDead) {
         return "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. ";
       }
 
-      if (gameState.dragonAsleep && !gameState.dragonDead) {
+      if (gameState.dragonAsleep) {
         if (gameState.treasureLevel === 2) {
           return "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon snores, releasing a burst of flame that singes your eyebrows. ";
-        } else {
-          return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. ";
         }
+        return "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. ";
       }
 
-      if (
-        gameState.dragonPoisoned &&
-        !gameState.dragonAsleep &&
-        !gameState.dragonDead
-      ) {
+      if (gameState.dragonPoisoned) {
         if (gameState.treasureLevel) {
           return "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. ";
-        } else {
-          return "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. ";
         }
+        return "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. ";
       }
 
-      if (
-        !gameState.dragonPoisoned &&
-        !gameState.dragonAsleep &&
-        !gameState.dragonDead
-      ) {
-        return "You try to steal the treasure, but the dragon singes you before you can get close. ";
-      }
+      return "You try to steal the treasure, but the dragon singes you before you can get close. ";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (gameState.dragonDead) {
         const newTreasureLevel = 3;
         const treasureLevelDiff = newTreasureLevel - gameState.treasureLevel;
@@ -1046,7 +1100,7 @@ const treasure = new Item({
         };
       }
 
-      if (gameState.dragonAsleep && !gameState.dragonDead) {
+      if (gameState.dragonAsleep) {
         const newTreasureLevel = 2;
         const treasureLevelDiff = newTreasureLevel - gameState.treasureLevel;
         const treasureTaken =
@@ -1060,11 +1114,7 @@ const treasure = new Item({
         };
       }
 
-      if (
-        gameState.dragonPoisoned &&
-        !gameState.dragonAsleep &&
-        !gameState.dragonDead
-      ) {
+      if (gameState.dragonPoisoned) {
         const newTreasureLevel = 1;
         const treasureLevelDiff = newTreasureLevel - gameState.treasureLevel;
         const treasureTaken =
@@ -1078,45 +1128,42 @@ const treasure = new Item({
         };
       }
 
-      if (
-        !gameState.dragonPoisoned &&
-        !gameState.dragonAsleep &&
-        !gameState.dragonDead
-      ) {
-        return {
-          singeCount: gameState.singeCount + 1,
-          reputation: gameState.reputation - 1,
-        };
-      }
+      return {
+        singeCount: gameState.singeCount + 1,
+        reputation: gameState.reputation - 1,
+      };
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName {
       if (gameState.dragonDead) {
         return "outOfPlay";
-      } else {
-        return "lair";
       }
+      return "lair";
     }
 
-    return new ItemInteraction({
+    const description = writeDescription(gameState);
+
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
+      description,
     });
   },
 });
 
-const score = new Item({
+const score = createItem({
   id: "score",
   spawnLocation: "wizard",
-  getDescription: function () {
+  getDescription() {
     return "musical score";
   },
-  getUseVerb: function () {
+  getUseVerb() {
     return "Play";
   },
-  getCustomUse: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomUse(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (!gameState.itemLocations.inventory.includes("lute")) {
         return "You would like to play this song, but you have no instrument. ";
       }
@@ -1144,7 +1191,7 @@ const score = new Item({
       return "You play a lulling melody. ";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (
         gameState.dragonPoisoned &&
         !gameState.dragonAsleep &&
@@ -1169,16 +1216,17 @@ const score = new Item({
           reputation: gameState.reputation - 1,
         };
       }
+      return {};
     }
 
-    return new ItemInteraction({
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
       description: writeDescription(gameState),
     });
   },
 
-  getCustomTake: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomTake(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (!(gameState.gotScoreByCredit || gameState.gotScoreByTrade)) {
         return `"Ah ah!" The wizard shakes a finger at you. "Not for free. I would trade it for ${
           gameState.itemLocations.inventory.includes("sword")
@@ -1186,22 +1234,28 @@ const score = new Item({
             : ""
         }gold." `;
       }
+      return "";
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (!(gameState.gotScoreByCredit || gameState.gotScoreByTrade)) {
         return "wizard";
       }
+      return undefined;
     }
 
-    return new ItemInteraction({
-      targetItemDestination: getTargetItemDestination(gameState),
-      description: writeDescription(gameState),
+    const description = writeDescription(gameState);
+    const targetItemDestination = getTargetItemDestination(gameState);
+    return createItemInteraction({
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 
-  getCustomGive: function (gameState) {
-    function writeDescription(gameState) {
+  getCustomGive(gameState) {
+    function writeDescription(gameState: GameState): string {
       if (
         gameState.playerLocation === "wizard" &&
         gameState.gotScoreByTrade &&
@@ -1218,9 +1272,10 @@ const score = new Item({
       ) {
         return '"Ah ah." The wizard waggles his finger. "All sales on credit are final. The score is yours to keep, and half your resulting treasure is mine."';
       }
+      return "";
     }
 
-    function getGameEffect(gameState) {
+    function getGameEffect(gameState: GameState): Partial<GameState> {
       if (
         gameState.playerLocation === "wizard" &&
         gameState.itemLocations.inventory.includes("score") &&
@@ -1228,19 +1283,22 @@ const score = new Item({
       ) {
         return {gotScoreByTrade: false};
       }
+      return {};
     }
 
-    function getTargetItemDestination(gameState) {
+    function getTargetItemDestination(
+      gameState: GameState,
+    ): LocationName | AlterItemLocationName | undefined {
       if (
         gameState.playerLocation === "wizard" &&
         gameState.itemLocations.inventory.includes("score") &&
         gameState.itemLocations.wizard.includes("sword")
-      )
+      ) {
         if (gameState.dragonAsleep) {
           return "outOfPlay";
-        } else {
-          return "wizard";
         }
+        return "wizard";
+      }
 
       if (
         gameState.playerLocation === "wizard" &&
@@ -1249,9 +1307,10 @@ const score = new Item({
       ) {
         return "inventory";
       }
+      return undefined;
     }
 
-    function getItemMovements(gameState) {
+    function getItemMovements(gameState: GameState): ItemMovement[] {
       if (
         gameState.playerLocation === "wizard" &&
         gameState.itemLocations.inventory.includes("score") &&
@@ -1265,30 +1324,31 @@ const score = new Item({
           },
         ];
       }
+      return [];
     }
 
-    return new ItemInteraction({
+    const description = writeDescription(gameState);
+    const targetItemDestination = getTargetItemDestination(gameState);
+    return createItemInteraction({
       gameEffect: getGameEffect(gameState),
-      targetItemDestination: getTargetItemDestination(gameState),
       itemMovements: getItemMovements(gameState),
-      description: writeDescription(gameState),
+      ...(targetItemDestination && {targetItemDestination}),
+      description,
     });
   },
 });
 
 export const items = {
-  lute: lute,
-  clothes: clothes,
-  apple: apple,
-  handkerchief: handkerchief,
-  baby: baby,
-  sword: sword,
-  horse: horse,
-  berries: berries,
-  treasure: treasure,
-  score: score,
-};
-export default {
-  items,
-  ItemInteraction,
-};
+  lute,
+  clothes,
+  apple,
+  handkerchief,
+  baby,
+  sword,
+  horse,
+  berries,
+  treasure,
+  score,
+} as const;
+
+export type ItemName = keyof typeof items;
