@@ -1,4 +1,4 @@
-name: Lint
+name: Lint and test
 
 on:
   pull_request:
@@ -21,6 +21,9 @@ jobs:
 
       - name: Install requirements
         run: npm ci
+
+      - name: Test
+        run: npm t
 
       - name: Prettier
         run: npx prettier -c src/ README.md .github/workflows
