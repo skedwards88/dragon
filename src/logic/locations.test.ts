@@ -1,4 +1,4 @@
-import {locations, dragonDescription} from "./locations";
+import {locations, dragonDescription, directions} from "./locations";
 import {type GameState, init} from "./init";
 
 const newGameState = init({useSaved: false});
@@ -1234,8 +1234,8 @@ describe("location descriptions", () => {
 
     A squirrel scampers around a tree. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(
       expect.arrayContaining(["wizard", "squirrel"]),
     );
   });
@@ -1255,9 +1255,9 @@ describe("location descriptions", () => {
 
     A squirrel scampers around a tree. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(expect.arrayContaining(["squirrel"]));
-    expect(connections.A).toStrictEqual(expect.not.arrayContaining(["wizard"]));
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(expect.arrayContaining(["squirrel"]));
+    expect(interactions).toStrictEqual(expect.not.arrayContaining(["wizard"]));
   });
 
   test("clearing description, not cursed, squirrel dead", () => {
@@ -1275,8 +1275,8 @@ describe("location descriptions", () => {
 
     A dead squirrel lies at the base of a tree. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(
       expect.arrayContaining(["wizard", "squirrel"]),
     );
   });
@@ -1296,9 +1296,9 @@ describe("location descriptions", () => {
 
     A dead squirrel lies at the base of a tree. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(expect.arrayContaining(["squirrel"]));
-    expect(connections.A).toStrictEqual(expect.not.arrayContaining(["wizard"]));
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(expect.arrayContaining(["squirrel"]));
+    expect(interactions).toStrictEqual(expect.not.arrayContaining(["wizard"]));
   });
 
   test("clearing description, not cursed, squirrel dead, horse dead but not here", () => {
@@ -1317,8 +1317,8 @@ describe("location descriptions", () => {
 
     A squirrel scampers around a tree. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(
       expect.arrayContaining(["wizard", "squirrel"]),
     );
   });
@@ -1342,8 +1342,8 @@ describe("location descriptions", () => {
 
     A dead horse lies on the ground, foam and partially chewed berries coming from its mouth. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(
       expect.arrayContaining(["wizard", "squirrel"]),
     );
   });
@@ -1365,8 +1365,8 @@ describe("location descriptions", () => {
 
     A squirrel scampers around a tree. "
   `);
-    const connections = locations[location].getConnections(gameState);
-    expect(connections.A).toStrictEqual(
+    const interactions = locations[location].getInteractions(gameState);
+    expect(interactions).toStrictEqual(
       expect.arrayContaining(["wizard", "squirrel"]),
     );
   });
@@ -1613,7 +1613,7 @@ describe("location descriptions", () => {
       `"The horse cannot make it up the rocky cliff. You must return to the clearing. "`,
     );
     const connections = locations[location].getConnections(gameState);
-    expect(connections.N).toStrictEqual("");
+    expect(connections.N).toStrictEqual(undefined);
   });
 
   test("caveEntrance description, dragon not asleep, clothes not poopy not worn", () => {
@@ -2028,6 +2028,30 @@ describe("location descriptions", () => {
       };
       const description = dragonDescription(gameState);
       expect(description).toMatchSnapshot();
+    },
+  );
+});
+
+describe("location connections", () => {
+  test.each(Object.entries(locations))(
+    "every location has at least 1 connection: %s",
+    (_, {getConnections}) => {
+      const connections = getConnections(newGameState);
+      expect(Object.keys(connections).length).toBeGreaterThan(0);
+    },
+  );
+
+  test.each(Object.entries(locations))(
+    "all location connections are to a direction: %s",
+    (_, {getConnections}) => {
+      const connections = getConnections(newGameState);
+
+      const invalidConnections = Object.keys(connections).filter(
+        (connectionKey) =>
+          !(directions as readonly string[]).includes(connectionKey),
+      );
+
+      expect(invalidConnections).toStrictEqual([]);
     },
   );
 });

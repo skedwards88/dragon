@@ -5,17 +5,17 @@ import {
   type ItemMovement,
 } from "./items";
 
-export type Direction = "N" | "S" | "E" | "W";
+export const directions = ["N", "S", "E", "W"] as const;
+export type Direction = (typeof directions)[number];
 
-export type Connections = Record<Direction, LocationName | ""> & {
-  A: LocationName[];
-};
+export type Connections = Partial<Record<Direction, LocationName>>;
 
 type LocationInfo = {
   id: string;
   getDisplayName: (gameState: GameState) => string;
   getBackgroundName: (gameState: GameState) => string;
   getConnections: (gameState: GameState) => Connections;
+  getInteractions: (gameState: GameState) => LocationName[];
   dropPreposition: string;
   getSentient: (gameState: GameState) => boolean;
   getHuman: () => boolean;
@@ -42,6 +42,7 @@ function createLocation(
     getCustomPay: (): ItemInteraction => {
       return createItemInteraction({});
     },
+    getInteractions: () => [],
     ...options,
   };
 }
@@ -52,9 +53,7 @@ const room = createLocation({
     return {
       N: "wardrobe",
       S: "inn",
-      E: "",
       W: "window",
-      A: [],
     };
   },
   dropPreposition: "in",
@@ -76,11 +75,7 @@ const window = createLocation({
   id: "window",
   getConnections() {
     return {
-      N: "",
-      S: "",
       E: "room",
-      W: "",
-      A: [],
     };
   },
   dropPreposition: "at",
@@ -95,11 +90,8 @@ const wardrobe = createLocation({
   id: "wardrobe",
   getConnections() {
     return {
-      N: "",
       S: "room",
       E: "mirror",
-      W: "",
-      A: [],
     };
   },
   dropPreposition: "in",
@@ -116,11 +108,8 @@ const mirror = createLocation({
   id: "mirror",
   getConnections() {
     return {
-      N: "",
       S: "room",
-      E: "",
       W: "wardrobe",
-      A: [],
     };
   },
   dropPreposition: "at",
@@ -140,9 +129,6 @@ const inn = createLocation({
     return {
       N: "room",
       S: "courtyard",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   dropPreposition: "in",
@@ -171,10 +157,8 @@ const courtyard = createLocation({
   getConnections() {
     return {
       N: "inn",
-      S: "",
       E: "smithy",
       W: "fountain",
-      A: [],
     };
   },
   dropPreposition: "in",
@@ -203,10 +187,7 @@ const fountain = createLocation({
   getConnections() {
     return {
       N: "lawn",
-      S: "",
       E: "courtyard",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -239,10 +220,7 @@ const lawn = createLocation({
   getConnections() {
     return {
       N: "entryway",
-      S: "",
       E: "fountain",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -325,11 +303,8 @@ const entryway = createLocation({
   },
   getConnections(gameState) {
     return {
-      N: gameState.manorFire ? "nursery" : "",
+      ...(gameState.manorFire && {N: "nursery"}),
       S: "lawn",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -375,9 +350,6 @@ const nursery = createLocation({
     return {
       N: "nurseryWindow",
       S: "entryway",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -405,11 +377,7 @@ const nurseryWindow = createLocation({
   dropPreposition: "at",
   getConnections() {
     return {
-      N: "",
       S: "nursery",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -428,11 +396,11 @@ const smithy = createLocation({
   getConnections() {
     return {
       N: "gate",
-      S: "",
-      E: "",
       W: "courtyard",
-      A: ["blacksmith"],
     };
+  },
+  getInteractions() {
+    return ["blacksmith"];
   },
   getDescription(gameState) {
     let text =
@@ -458,10 +426,6 @@ const blacksmith = createLocation({
   getConnections() {
     return {
       N: "smithy",
-      S: "",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -558,11 +522,7 @@ const pasture = createLocation({
   dropPreposition: "at",
   getConnections() {
     return {
-      N: "",
-      S: "",
       E: "gate",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -587,10 +547,11 @@ const gate = createLocation({
     return {
       N: "road1",
       S: "smithy",
-      E: "",
       W: "pasture",
-      A: ["youth"],
     };
+  },
+  getInteractions() {
+    return ["youth"];
   },
   getDescription(gameState) {
     return `You are standing at the city gate. You see a pasture and a road leading up a mountain. \n\nThe youth that you saw earlier stands at the gate${
@@ -625,10 +586,6 @@ const youth = createLocation({
   getConnections() {
     return {
       N: "gate",
-      S: "",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -663,9 +620,6 @@ const road1 = createLocation({
     return {
       N: gameState.horseMounted ? "stream" : "road2",
       S: "gate",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -691,9 +645,6 @@ const road2 = createLocation({
     return {
       N: gameState.horseMounted ? "stream" : "road3",
       S: gameState.horseMounted ? "gate" : "road1",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -721,9 +672,6 @@ const road3 = createLocation({
     return {
       N: "stream",
       S: gameState.horseMounted ? "gate" : "road2",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -785,9 +733,6 @@ const stream = createLocation({
     return {
       N: "clearing",
       S: "road3",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -807,14 +752,14 @@ const stream = createLocation({
 const clearing = createLocation({
   id: "clearing",
   dropPreposition: "in",
-  getConnections(gameState) {
+  getConnections() {
     return {
       N: "cliff",
       S: "stream",
-      E: "",
-      W: "",
-      A: gameState.cursed ? ["squirrel"] : ["wizard", "squirrel"],
     };
+  },
+  getInteractions(gameState) {
+    return gameState.cursed ? ["squirrel"] : ["wizard", "squirrel"];
   },
   getDescription(gameState) {
     let text = `You stand in a clearing, in the shadow of a rocky cliff with a cave. A bush full of berries catches your eye. ${
@@ -856,10 +801,6 @@ const squirrel = createLocation({
   getConnections() {
     return {
       N: "clearing",
-      S: "",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -881,10 +822,6 @@ const wizard = createLocation({
   getConnections() {
     return {
       N: "clearing",
-      S: "",
-      E: "",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -1017,13 +954,10 @@ const cliff = createLocation({
   dropPreposition: "on",
   getConnections(gameState) {
     return {
-      N: gameState.itemLocations.inventory.includes("horse")
-        ? ""
-        : "caveEntrance",
+      ...(!gameState.itemLocations.inventory.includes("horse") && {
+        N: "caveEntrance",
+      }),
       S: "clearing",
-      E: "",
-      W: "",
-      A: [],
     };
   },
 
@@ -1046,11 +980,9 @@ const caveEntrance = createLocation({
   dropPreposition: "at",
   getConnections() {
     return {
-      N: "",
       S: "cliff",
       E: "lair",
       W: "defecatory",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -1079,7 +1011,6 @@ const defecatory = createLocation({
       S: "crevice",
       E: "caveEntrance",
       W: "dung",
-      A: [],
     };
   },
   getDescription() {
@@ -1092,11 +1023,9 @@ const puddle = createLocation({
   dropPreposition: "in",
   getConnections() {
     return {
-      N: "",
       S: "crevice",
       E: "defecatory",
       W: "dung",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -1124,10 +1053,8 @@ const crevice = createLocation({
   getConnections() {
     return {
       N: "puddle",
-      S: "",
       E: "defecatory",
       W: "dung",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -1172,8 +1099,6 @@ const dung = createLocation({
       N: "puddle",
       S: "crevice",
       E: "defecatory",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {
@@ -1200,11 +1125,7 @@ const lair = createLocation({
   dropPreposition: "in",
   getConnections() {
     return {
-      N: "",
-      S: "",
       E: "caveEntrance",
-      W: "",
-      A: [],
     };
   },
   getDescription(gameState) {

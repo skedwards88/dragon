@@ -1,4 +1,10 @@
-import {type Connections, type Direction, locations} from "../logic/locations";
+import type {LocationName} from "../logic/locations";
+import {
+  type Connections,
+  type Direction,
+  directions,
+  locations,
+} from "../logic/locations";
 import Stats from "./stats";
 import {type ItemName, items} from "../logic/items";
 import Share from "@skedwards88/shared-components/src/components/Share";
@@ -78,9 +84,7 @@ function Connections({
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 
-  const connectionValues = Object.values(connections)
-    .flatMap((i) => i)
-    .filter((connection) => connection !== "");
+  const connectionValues = Object.values(connections).flatMap((i) => i);
 
   return (
     <>
@@ -100,17 +104,17 @@ function Connections({
 }
 
 function MapInteractions({
-  connections,
+  interactions,
   itemsAtLocation,
   dispatchGameState,
   setCurrentDisplay,
 }: {
-  connections: Connections;
+  interactions: LocationName[];
   itemsAtLocation: ItemName[];
   dispatchGameState: React.Dispatch<ReducerPayload>;
   setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
 }): React.JSX.Element {
-  const interactionDivs = connections.A.map((interaction) => {
+  const interactionDivs = interactions.map((interaction) => {
     return (
       <button
         className="connection"
@@ -150,22 +154,16 @@ function MapInteractions({
 
 function MapLocation({
   direction,
-  connections,
+  locationName,
   gameState,
   dispatchGameState,
 }: {
   direction: Direction;
-  connections: Connections;
+  locationName: LocationName;
   gameState: GameState;
   dispatchGameState: React.Dispatch<ReducerPayload>;
 }): React.JSX.Element {
-  const connection = connections[direction];
-
-  if (!connection) {
-    return <button className="connection" id={direction} disabled />;
-  }
-
-  const name = locations[connection].getDisplayName(gameState);
+  const name = locations[locationName].getDisplayName(gameState);
 
   return (
     <button
@@ -173,7 +171,7 @@ function MapLocation({
       onClick={() => {
         dispatchGameState({
           action: "movePlayer",
-          newLocation: connection,
+          newLocation: locationName,
         });
       }}
       id={direction}
@@ -197,44 +195,51 @@ function Map({
   const connections =
     locations[gameState.playerLocation].getConnections(gameState);
 
+  const interactions =
+    locations[gameState.playerLocation].getInteractions(gameState);
+
   const itemsAtLocation = gameState.itemLocations[gameState.playerLocation];
+
   const backgroundName =
     locations[gameState.playerLocation].getBackgroundName(gameState);
+
+  const mapLocationDivs = directions.map((direction) => {
+    const locationName = connections[direction];
+
+    if (!locationName) {
+      return (
+        <button
+          className="connection"
+          id={direction}
+          key={direction}
+          disabled
+        />
+      );
+    }
+
+    return (
+      <MapLocation
+        key={direction}
+        direction={direction}
+        locationName={locationName}
+        gameState={gameState}
+        dispatchGameState={dispatchGameState}
+      />
+    );
+  });
+
   return (
     <div id="navigation" className="navigation-map">
       <div id="map">
-        <MapLocation
-          direction="N"
-          connections={connections}
-          gameState={gameState}
-          dispatchGameState={dispatchGameState}
-        />
-        <MapLocation
-          direction="W"
-          connections={connections}
-          gameState={gameState}
-          dispatchGameState={dispatchGameState}
-        />
         <div id="A" className={showPhoto ? backgroundName : ""}>
           <MapInteractions
-            connections={connections}
+            interactions={interactions}
             dispatchGameState={dispatchGameState}
             itemsAtLocation={itemsAtLocation}
             setCurrentDisplay={setCurrentDisplay}
           />
         </div>
-        <MapLocation
-          direction="E"
-          connections={connections}
-          gameState={gameState}
-          dispatchGameState={dispatchGameState}
-        />
-        <MapLocation
-          direction="S"
-          connections={connections}
-          gameState={gameState}
-          dispatchGameState={dispatchGameState}
-        />
+        {mapLocationDivs}
       </div>
     </div>
   );
