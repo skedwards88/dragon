@@ -19,106 +19,107 @@ describe("reducer", () => {
     );
 
     expect(output).toMatchInlineSnapshot(`
-   {
-     "appleBitesRemaining": 5,
-     "babyCough": false,
-     "clothesPoopy": false,
-     "consequenceText": "",
-     "cursed": false,
-     "dragonAsleep": false,
-     "dragonDead": false,
-     "dragonPoisoned": false,
-     "firstCourtyardEntry": true,
-     "gold": 0,
-     "gotScoreByCredit": false,
-     "gotScoreByTrade": false,
-     "handkerchiefDamp": false,
-     "horseDead": false,
-     "horseMounted": false,
-     "horseTethered": false,
-     "itemLocations": {
-       "blacksmith": [],
-       "caveEntrance": [],
-       "clearing": [
-         "berries",
-       ],
-       "cliff": [],
-       "courtyard": [
-         "handkerchief",
-       ],
-       "crevice": [],
-       "defecatory": [],
-       "dung": [],
-       "entryway": [],
-       "fountain": [],
-       "gate": [],
-       "inn": [
-         "apple",
-       ],
-       "inventory": [],
-       "lair": [
-         "treasure",
-       ],
-       "lawn": [],
-       "mirror": [],
-       "nursery": [
-         "baby",
-       ],
-       "nurseryWindow": [],
-       "outOfPlay": [],
-       "pasture": [
-         "horse",
-       ],
-       "puddle": [],
-       "road1": [],
-       "road2": [],
-       "road3": [],
-       "room": [
-         "lute",
-       ],
-       "smithy": [
-         "sword",
-       ],
-       "squirrel": [],
-       "stream": [],
-       "wardrobe": [
-         "clothes",
-       ],
-       "window": [],
-       "wizard": [
-         "score",
-       ],
-       "youth": [],
-     },
-     "journalEntry": null,
-     "journalPagesRemaining": 3,
-     "locationConsequenceText": "",
-     "manorFire": true,
-     "maxGold": 310,
-     "maxReputation": 17,
-     "maxSwordCost": 50,
-     "naked": true,
-     "offeredHandkerchiefToYouth": false,
-     "ownSword": false,
-     "paidDebt": false,
-     "playedForYouth": false,
-     "playerCough": false,
-     "playerLocation": "room",
-     "playerMasked": false,
-     "playerPoisoned": false,
-     "preCreditTreasureLevel": 0,
-     "receivedBabyReward": false,
-     "reputation": 10,
-     "resumedFromSaved": false,
-     "savedBaby": false,
-     "singeCount": 0,
-     "squirrelDead": false,
-     "swordCost": 40,
-     "timeInCave": 0,
-     "treasureAmount": 300,
-     "treasureLevel": 0,
-   }
-  `);
+     {
+       "appleBitesRemaining": 5,
+       "babyCough": false,
+       "clothesPoopy": false,
+       "consequenceText": "",
+       "cursed": false,
+       "dragonAsleep": false,
+       "dragonDead": false,
+       "dragonPoisoned": false,
+       "firstCourtyardEntry": true,
+       "gold": 0,
+       "gotScoreByCredit": false,
+       "gotScoreByTrade": false,
+       "handkerchiefDamp": false,
+       "horseDead": false,
+       "horseMounted": false,
+       "horseTethered": false,
+       "itemLocations": {
+         "blacksmith": [],
+         "caveEntrance": [],
+         "clearing": [
+           "berries",
+         ],
+         "cliff": [],
+         "courtyard": [
+           "handkerchief",
+         ],
+         "crevice": [],
+         "defecatory": [],
+         "dung": [],
+         "entryway": [],
+         "fountain": [],
+         "gate": [],
+         "inn": [
+           "apple",
+         ],
+         "inventory": [],
+         "lair": [
+           "treasure",
+         ],
+         "lawn": [],
+         "mirror": [],
+         "nursery": [
+           "baby",
+         ],
+         "nurseryWindow": [],
+         "outOfPlay": [],
+         "pasture": [
+           "horse",
+         ],
+         "puddle": [],
+         "road1": [],
+         "road2": [],
+         "road3": [],
+         "room": [
+           "lute",
+         ],
+         "smithy": [
+           "sword",
+         ],
+         "squirrel": [],
+         "stream": [],
+         "wardrobe": [
+           "clothes",
+         ],
+         "window": [],
+         "wizard": [
+           "score",
+         ],
+         "youth": [],
+       },
+       "journalEntry": null,
+       "journalPagesRemaining": 3,
+       "lastBreakingChange": "20261108",
+       "locationConsequenceText": "",
+       "manorFire": true,
+       "maxGold": 310,
+       "maxReputation": 17,
+       "maxSwordCost": 50,
+       "naked": true,
+       "offeredHandkerchiefToYouth": false,
+       "ownSword": false,
+       "paidDebt": false,
+       "playedForYouth": false,
+       "playerCough": false,
+       "playerLocation": "room",
+       "playerMasked": false,
+       "playerPoisoned": false,
+       "preCreditTreasureLevel": 0,
+       "receivedBabyReward": false,
+       "reputation": 10,
+       "resumedFromSaved": false,
+       "savedBaby": false,
+       "singeCount": 0,
+       "squirrelDead": false,
+       "swordCost": 40,
+       "timeInCave": 0,
+       "treasureAmount": 300,
+       "treasureLevel": 0,
+     }
+    `);
   });
 
   test("Taking the sword from the smithy increases sword cost (once) and reduces reputation (every time)", () => {
@@ -142,10 +143,10 @@ describe("reducer", () => {
     );
 
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     const output2 = reducer(output, {
       action: "takeItem",
@@ -161,10 +162,10 @@ describe("reducer", () => {
       expect.arrayContaining([item]),
     );
     expect(output2.consequenceText).toMatchInlineSnapshot(`
-    "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
   });
 
   test("Playing the lute for the youth will boost reputation only once", () => {
@@ -191,10 +192,10 @@ describe("reducer", () => {
       expect.not.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You play a song for the crying youth. The music seems to cheer the youth up. 
+         "You play a song for the crying youth. The music seems to cheer the youth up. 
 
-    Reputation +1"
-  `);
+         Reputation +1"
+      `);
 
     const output2 = reducer(output, {
       action: "useItem",
@@ -234,10 +235,10 @@ describe("reducer", () => {
       expect.not.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You strip down. The youth eyes you suspiciously.
+         "You strip down. The youth eyes you suspiciously.
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     location = "blacksmith";
     output = reducer(
@@ -262,10 +263,10 @@ describe("reducer", () => {
       expect.not.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You strip down. The blacksmith eyes you suspiciously.
+         "You strip down. The blacksmith eyes you suspiciously.
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     location = "inn";
     output = reducer(
@@ -290,10 +291,10 @@ describe("reducer", () => {
       expect.not.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You strip down. The innkeeper eyes you suspiciously.
+         "You strip down. The innkeeper eyes you suspiciously.
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     location = "wizard";
     output = reducer(
@@ -370,10 +371,10 @@ describe("reducer", () => {
       expect.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You strip down and drop your clothes by the youth. The youth eyes you suspiciously.
+         "You strip down and drop your clothes by the youth. The youth eyes you suspiciously.
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     location = "blacksmith";
     output = reducer(
@@ -398,10 +399,10 @@ describe("reducer", () => {
       expect.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You strip down and drop your clothes by the blacksmith. The blacksmith eyes you suspiciously.
+         "You strip down and drop your clothes by the blacksmith. The blacksmith eyes you suspiciously.
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     location = "inn";
     output = reducer(
@@ -426,10 +427,10 @@ describe("reducer", () => {
       expect.arrayContaining([item]),
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You strip down and drop your clothes in the inn. The innkeeper eyes you suspiciously.
+         "You strip down and drop your clothes in the inn. The innkeeper eyes you suspiciously.
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
 
     location = "wizard";
     output = reducer(
@@ -1597,12 +1598,12 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." 
+         "You offer the handkerchief that you saw the youth drop. "Th-thank you," they sob, "but I don't want it back. You keep it; perhaps you will find a use for it." 
 
-    The youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. 
+         The youth tells you that they were meant to be sacrificed to the dragon in exchange for another year of safety for the town. In retaliation, they set the mayor's house on fire, not realizing that the baby was trapped inside. 
 
-    Reputation +1"
-  `);
+         Reputation +1"
+      `);
     expect(output.playerMasked).toBe(true);
     expect(output.offeredHandkerchiefToYouth).toBe(true);
     expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
@@ -1833,10 +1834,10 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. 
+         "You cut off the head of the dragon, freeing the town from the dragon's tyrannical rule. 
 
-    Reputation +2"
-  `);
+         Reputation +2"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.arrayContaining([item]),
     );
@@ -1873,10 +1874,10 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. 
+         "Despite the poison, the dragon is still able to singe you once you get near enough to cut off its head. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.arrayContaining([item]),
     );
@@ -1913,10 +1914,10 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You try to cut off the dragon's head, but it singes you as soon as you get close enough. 
+         "You try to cut off the dragon's head, but it singes you as soon as you get close enough. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.arrayContaining([item]),
     );
@@ -1987,10 +1988,10 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.not.arrayContaining([item]),
     );
@@ -2005,10 +2006,10 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
+         "You grab the sword and place it in your bag. "Hey! Are you stealing my sword?" The blacksmith grabs the sword from you and returns it to the table. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.not.arrayContaining([item]),
     );
@@ -2648,10 +2649,10 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
+         "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.arrayContaining([item]),
     );
@@ -2666,10 +2667,10 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
+         "You pop some berries into your mouth. Immediately, your mouth starts to tingle, so you spit out the berries. You narrowly avoided death, but your face is splotchy and swollen, and your lips are a nasty shade of purple. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.itemLocations.inventory).toStrictEqual(
       expect.arrayContaining([item]),
     );
@@ -3143,10 +3144,10 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
+         "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
 
-    Gold +300"
-  `);
+         Gold +300"
+      `);
     expect(output.treasureLevel).toBe(3);
     expect(output.gold).toBe(newGameState.gold + 300);
     expect(output.itemLocations.inventory).toStrictEqual(
@@ -3182,12 +3183,12 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
+         "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
 
-    Reputation -1
+         Reputation -1
 
-    Gold +200"
-  `);
+         Gold +200"
+      `);
     expect(output.treasureLevel).toBe(2);
     expect(output.gold).toBe(newGameState.gold + 200);
     expect(output.singeCount).toBe(newGameState.singeCount + 1);
@@ -3207,12 +3208,12 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon snores, releasing a burst of flame that singes your eyebrows. 
+         "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon snores, releasing a burst of flame that singes your eyebrows. 
 
-    Reputation -1
+         Reputation -1
 
-    Gold 0"
-  `);
+         Gold 0"
+      `);
     expect(output.treasureLevel).toBe(2);
     expect(output.gold).toBe(newGameState.gold + 200);
     expect(output.singeCount).toBe(newGameState.singeCount + 2);
@@ -3251,12 +3252,12 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
+         "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
 
-    Reputation -2
+         Reputation -2
 
-    Gold +100"
-  `);
+         Gold +100"
+      `);
     expect(output.treasureLevel).toBe(1);
     expect(output.gold).toBe(newGameState.gold + 100);
     expect(output.singeCount).toBe(newGameState.singeCount + 2);
@@ -3276,12 +3277,12 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. 
+         "You already took the treasure that you can safely reach. As you edge closer to take more, the dragon shoots a burst of flame, burning your hands. 
 
-    Reputation -2
+         Reputation -2
 
-    Gold 0"
-  `);
+         Gold 0"
+      `);
     expect(output.treasureLevel).toBe(1);
     expect(output.gold).toBe(newGameState.gold + 100);
     expect(output.singeCount).toBe(newGameState.singeCount + 4);
@@ -3320,10 +3321,10 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You try to steal the treasure, but the dragon singes you before you can get close. 
+         "You try to steal the treasure, but the dragon singes you before you can get close. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.treasureLevel).toBe(0);
     expect(output.gold).toBe(newGameState.gold);
     expect(output.singeCount).toBe(newGameState.singeCount + 1);
@@ -3343,10 +3344,10 @@ describe("reducer", () => {
       item,
     });
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You try to steal the treasure, but the dragon singes you before you can get close. 
+         "You try to steal the treasure, but the dragon singes you before you can get close. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.treasureLevel).toBe(0);
     expect(output.gold).toBe(newGameState.gold);
     expect(output.singeCount).toBe(newGameState.singeCount + 2);
@@ -3385,10 +3386,10 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You try to steal the treasure, but the dragon singes you before you can get close. 
+         "You try to steal the treasure, but the dragon singes you before you can get close. 
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
     expect(output.treasureLevel).toBe(0);
     expect(output.gold).toBe(newGameState.gold);
     expect(output.singeCount).toBe(newGameState.singeCount + 1);
@@ -3411,12 +3412,12 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
+         "With the dragon slower from the poison, you can now reach the edge of the treasure pile. You scoop all of the treasure within reach into your bag, but the dragon shoots a blast of flame, preventing you from getting any closer. 
 
-    Reputation -2
+         Reputation -2
 
-    Gold +100"
-  `);
+         Gold +100"
+      `);
     expect(output.treasureLevel).toBe(1);
     expect(output.gold).toBe(newGameState.gold + 100);
     expect(output.singeCount).toBe(newGameState.singeCount + 3);
@@ -3439,12 +3440,12 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
+         "Giving a wide berth to the snoring dragon, you scoop as much treasure as possible into your bag. The dragon's head rests on the last of the treasure, and a snore of fire singes you as you try to take it. 
 
-    Reputation -1
+         Reputation -1
 
-    Gold +100"
-  `);
+         Gold +100"
+      `);
     expect(output.treasureLevel).toBe(2);
     expect(output.gold).toBe(newGameState.gold + 200);
     expect(output.singeCount).toBe(newGameState.singeCount + 4);
@@ -3467,10 +3468,10 @@ describe("reducer", () => {
       },
     );
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
+         "You scoop all of the treasure that you can fit into your bag, avoiding the gore from the severed dragon head. 
 
-    Gold +100"
-  `);
+         Gold +100"
+      `);
     expect(output.treasureLevel).toBe(3);
     expect(output.gold).toBe(newGameState.gold + 300);
     expect(output.singeCount).toBe(newGameState.singeCount + 4);
@@ -3580,12 +3581,12 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation + 2);
     expect(output.gold).toStrictEqual(newGameState.gold + 50);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation +2
+         Reputation +2
 
-    Gold +50"
-  `);
+         Gold +50"
+      `);
   });
 
   test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, clothed", () => {
@@ -3611,12 +3612,12 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
     expect(output.gold).toStrictEqual(newGameState.gold + 50);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation +1
+         Reputation +1
 
-    Gold +50"
-  `);
+         Gold +50"
+      `);
   });
 
   test("Entering the lawn: saved baby, not rewarded yet, no cough, baby cough, clothed", () => {
@@ -3642,12 +3643,12 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
     expect(output.gold).toStrictEqual(newGameState.gold + 50);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation +1
+         Reputation +1
 
-    Gold +50"
-  `);
+         Gold +50"
+      `);
   });
 
   test("Entering the lawn: saved baby, not rewarded yet, no cough, no baby cough, not clothed", () => {
@@ -3673,12 +3674,12 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation + 1);
     expect(output.gold).toStrictEqual(newGameState.gold + 50);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation +1
+         Reputation +1
 
-    Gold +50"
-  `);
+         Gold +50"
+      `);
   });
 
   test("Entering the lawn: saved baby, not rewarded yet, cough, no baby cough, not clothed", () => {
@@ -3704,12 +3705,12 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation + 0);
     expect(output.gold).toStrictEqual(newGameState.gold + 50);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation +0
+         Reputation +0
 
-    Gold +50"
-  `);
+         Gold +50"
+      `);
   });
 
   test("Entering the lawn: saved baby, not rewarded yet, cough, baby cough, not clothed", () => {
@@ -3735,12 +3736,12 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
     expect(output.gold).toStrictEqual(newGameState.gold + 50);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1
+         Reputation -1
 
-    Gold +50"
-  `);
+         Gold +50"
+      `);
   });
 
   test("Entering the lawn: baby goes out of play", () => {
@@ -4188,12 +4189,12 @@ describe("reducer", () => {
     expect(output.paidDebt).toBe(false);
     expect(output.cursed).toBe(false);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1
+         Reputation -1
 
-    Gold -100"
-  `);
+         Gold -100"
+      `);
 
     // The game state doesn't reflect cursed until you leave the location though
     output = reducer(
@@ -4442,10 +4443,10 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
     expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
   });
 
   test("When enter puddle, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
@@ -4515,10 +4516,10 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
     expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
   });
 
   test("When enter dung, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
@@ -4588,10 +4589,10 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
     expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
   });
 
   test("When enter crevice, if enough time has elapsed but dragon is poisoned, you don't get singed.", () => {
@@ -4668,10 +4669,10 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
     expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
   });
 
   test("When enter crevice, if enough time has elapsed and you have are wearing clothes but they are not poopy, you get singed.", () => {
@@ -4698,10 +4699,10 @@ describe("reducer", () => {
     expect(output.reputation).toStrictEqual(newGameState.reputation - 1);
     expect(output.singeCount).toStrictEqual(newGameState.singeCount + 1);
     expect(output.locationConsequenceText).toMatchInlineSnapshot(`
-    "
+         "
 
-    Reputation -1"
-  `);
+         Reputation -1"
+      `);
   });
 
   test("When exit crevice, if berries are in the puddle and you are wearing poopy clothes, dragon is poisoned.", () => {
@@ -5056,10 +5057,10 @@ describe("reducer", () => {
     expect(output.ownSword).toBe(true);
     expect(output.gold).toStrictEqual(startingGold - output.swordCost);
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    "You hand the blacksmith 40 gold in exchange for the sword. 
+         "You hand the blacksmith 40 gold in exchange for the sword. 
 
-    Gold -40"
-  `);
+         Gold -40"
+      `);
   });
 
   test("Paying the blacksmith will not give you the sword if you don't have enough money", () => {
@@ -5306,10 +5307,10 @@ describe("reducer", () => {
     expect(output.paidDebt).toBe(true);
     expect(output.gold).toStrictEqual(startingGold - 50);
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+         ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
 
-    Gold -50"
-  `);
+         Gold -50"
+      `);
   });
 
   test("If you are in debt and earned treasure level 1 but already had treasure level 1, debt is not paid", () => {
@@ -5361,10 +5362,10 @@ describe("reducer", () => {
     expect(output.paidDebt).toBe(true);
     expect(output.gold).toStrictEqual(startingGold - 100);
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+         ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
 
-    Gold -100"
-  `);
+         Gold -100"
+      `);
   });
 
   test("If you are in debt and earned treasure level 2 but had level 1 pre-debt", () => {
@@ -5390,10 +5391,10 @@ describe("reducer", () => {
     expect(output.paidDebt).toBe(true);
     expect(output.gold).toStrictEqual(startingGold - 50);
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
+         ""It looks like you succeeded, though not as well as I hoped." The wizard takes a share of your treasure. 
 
-    Gold -50"
-  `);
+         Gold -50"
+      `);
   });
 
   test("If you are in debt and earned treasure level 3", () => {
@@ -5418,10 +5419,10 @@ describe("reducer", () => {
     expect(output.paidDebt).toBe(true);
     expect(output.gold).toStrictEqual(startingGold - 150);
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
+         ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
 
-    Gold -150"
-  `);
+         Gold -150"
+      `);
   });
 
   test("If you are in debt and earned treasure level 3 but had level 1 pre-debt", () => {
@@ -5447,10 +5448,10 @@ describe("reducer", () => {
     expect(output.paidDebt).toBe(true);
     expect(output.gold).toStrictEqual(startingGold - 100);
     expect(output.consequenceText).toMatchInlineSnapshot(`
-    ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
+         ""It looks like you succeeded nicely." The wizard takes a share of your treasure. 
 
-    Gold -100"
-  `);
+         Gold -100"
+      `);
   });
 
   test("If you already paid debt, wizard won't take again", () => {
