@@ -111,17 +111,19 @@ function MapInteractions({
   setCurrentDisplay: React.Dispatch<React.SetStateAction<DisplayState>>;
 }): React.JSX.Element {
   const interactionDivs = connections.A.map((interaction) => {
-    <button
-      className="connection"
-      onClick={() => {
-        dispatchGameState({
-          action: "movePlayer",
-          newLocation: interaction,
-        });
-      }}
-      id={interaction}
-      key={interaction}
-    />;
+    return (
+      <button
+        className="connection"
+        onClick={() => {
+          dispatchGameState({
+            action: "movePlayer",
+            newLocation: interaction,
+          });
+        }}
+        id={interaction}
+        key={interaction}
+      />
+    );
   });
 
   const itemDivs = itemsAtLocation.map((item) => {
