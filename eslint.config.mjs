@@ -35,7 +35,10 @@ export default tseslint.config(
       "@typescript-eslint/explicit-function-return-type": "warn",
       "@typescript-eslint/prefer-optional-chain": "warn",
       "@typescript-eslint/switch-exhaustiveness-check": "error",
-      "@typescript-eslint/no-unnecessary-condition": "error",
+      "@typescript-eslint/no-unnecessary-condition": [
+        "error",
+        {allowConstantLoopConditions: true},
+      ],
       "@typescript-eslint/strict-boolean-expressions": [
         "warn",
         {
