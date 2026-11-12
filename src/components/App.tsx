@@ -8,7 +8,7 @@ import Info from "./info";
 import Restart from "./restart";
 import Resume from "./resume";
 import {reducer} from "../logic/reducer";
-import {init} from "../logic/init";
+import {init, SAVED_STATE_KEY} from "../logic/init";
 import {useInstallPrompt} from "@skedwards88/shared-components/src/logic/handleInstall";
 import InstallOverview from "@skedwards88/shared-components/src/components/InstallOverview";
 import PWAInstall from "@skedwards88/shared-components/src/components/PWAInstall";
@@ -64,7 +64,7 @@ function App(): React.JSX.Element {
   }, [showPhoto]);
 
   React.useEffect(() => {
-    saveToStorage("dragonHeroGameState", gameState);
+    saveToStorage(SAVED_STATE_KEY, gameState);
   }, [gameState]);
 
   // ******

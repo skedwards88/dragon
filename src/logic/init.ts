@@ -7,6 +7,7 @@ import {type ItemName, type ItemInfo, items} from "./items";
 import {getFromStorage} from "@skedwards88/shared-components/src/logic/safeStorage";
 
 const LAST_BREAKING_CHANGE = "20261108";
+export const SAVED_STATE_KEY = "dragonHeroGameState";
 
 export type GameState = {
   reputation: number;
@@ -215,7 +216,7 @@ function savedStateValidQ(
 
 export function init({useSaved}: {useSaved: boolean}): GameState {
   if (useSaved) {
-    const savedState = getFromStorage<unknown>("dragonHeroGameState");
+    const savedState = getFromStorage<unknown>(SAVED_STATE_KEY);
 
     if (savedStateValidQ(savedState)) {
       return {...savedState, resumedFromSaved: true};
